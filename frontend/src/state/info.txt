@@ -1,0 +1,5 @@
+📁 state
+Folder that contains frontend state management stuff (↔ see Redux).
+
+📁 state / 📁 api
+Folder that contains one file per API in order to receive data from the backend (↔ see Redux Toolkit).

@@ -1,0 +1,4 @@
+📁 pages
+Folder that contains all different pages or views of our application (↔ see figma pages, e.g. LoginPage, DashboardPage, …).
+Each page is build up by several components. 
+Each file in this directory typically corresponds to a route in the application.

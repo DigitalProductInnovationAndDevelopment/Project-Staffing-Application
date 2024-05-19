@@ -1,0 +1,2 @@
+📁 utils
+Folder that contains utility functions and helper modules that can be used throughout the application.

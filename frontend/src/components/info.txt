@@ -1,0 +1,3 @@
+📁 components 
+Folder that contains reusable MUI components, that are used to build the UI of a page (e.g. Buttons, Cards, Tables, …). 
+One component can be used across several different pages.
