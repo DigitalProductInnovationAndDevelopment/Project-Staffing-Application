@@ -1,0 +1,82 @@
+
+.container {
+  display: flex !important;
+  height: 100vh !important;
+  margin: 0px !important;
+}
+
+.form-container {
+  width: 50% !important;
+  padding-left: 350px !important;
+  padding-right: 200px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+}
+
+.title-container {
+  width: 100% !important;
+  text-align: left !important;
+}
+
+.form {
+  width: 100% !important;
+}
+
+.image-container {
+  margin: 0 !important;
+  height: 100% !important;
+}
+
+.image {
+  width: 100% !important;
+}
+
+.login-title {
+  color: #4FD1C5 !important;
+  line-height: 130% !important;
+  font-family: 'Actor', sans-serif !important;
+  font-size: 32px !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+.login-sub-title {
+  color: #A0AEC0 !important;
+  line-height: 140% !important;
+  font-family: 'Helvetica', sans-serif !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 30px !important;
+}
+
+.input-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  margin-bottom: 25px !important;
+}
+
+.login-button {
+  margin-top: 20px !important;
+}
+
+.email-label,
+.password-label {
+  font-family: 'Helvetica', sans-serif !important;
+  color: #2D3748 !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 5px !important;
+}
+
+.MuiInputBase-input::placeholder {
+  color: #2D3748 !important;
+  font-family: 'Helvetica', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
+  letter-spacing: 0 !important;
+}
