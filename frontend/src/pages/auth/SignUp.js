@@ -6,9 +6,12 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link } from 'react-router-dom';
 
 
-function Login() {
+function SignUp() {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
   
@@ -25,25 +28,35 @@ function Login() {
       setPassword(e.target.value);
       setErrorMessage('');
     };
+ 
+    const handleNameChange = (e) => {
+      setName(e.target.value);
+      setErrorMessage('');
+    };
   
+    const handleLastNameChange = (e) => {
+      setLastName(e.target.value);
+      setErrorMessage('');
+    };
+
     const handleSubmit = (e) => {
       e.preventDefault();
-      
+
       //prevent empty inputs
-      if (email === '' || password === '') {
-        setErrorMessage('Email or password is empty');
+      if (email === '' || password === '' || name === '' || lastName === '') {
+        setErrorMessage('Please fill your credentials');
         return;
       }
 
       // Mock validation
       const mockEmail = 'user@example.com';
       const mockPassword = 'password123';
-  
-      if (email === mockEmail && password === mockPassword) {
-        setErrorMessage('');
-        // Perform login action (redirect, store auth token, etc.)
+      const mockName = 'Test';
+      const mockLastName = 'User';
+
+      if (email === mockEmail && password === mockPassword  && name === mockName  && lastName === mockLastName) {
+        // Perform signup action (redirect, store auth token, etc.)
       } else {
-        setErrorMessage('Email or password is invalid');
       }
     };
 
@@ -54,12 +67,42 @@ function Login() {
         <Grid item xs={12} md={6} container direction="column" alignItems="flex-start" justifyContent="center" className="form-container">
           <div className="title-container">
             <Typography variant="h4" className="login-title">GREAT STAFF</Typography>
-            <Typography className="login-sub-title">Login with your email and password</Typography> 
+            <Typography variant="h6" className="login-sub-title">Sign Up with your credentials</Typography> 
           </div>
           {/* Form */}
           <form noValidate autoComplete='off' className="form" onSubmit={handleSubmit}>
             <div className="input-container">
-              <Typography htmlFor="email" className="input-label">Email</Typography>
+              <Typography htmlFor="name" className="input-label">First Name*</Typography>
+              <TextField
+                id="name"
+                fullWidth
+                placeholder="Your first name"
+                onChange={handleNameChange}
+                InputProps={{
+                  style: {
+                    borderRadius: '15px',
+                    height: '50px',
+                  }
+                }}
+              />
+            </div>
+            <div className="input-container">
+              <Typography htmlFor="lastname" className="input-label">Last Name*</Typography>
+              <TextField
+                id="lastName"
+                fullWidth
+                placeholder="Your last name"
+                onChange={handleLastNameChange}
+                InputProps={{
+                  style: {
+                    borderRadius: '15px',
+                    height: '50px',
+                  }
+                }}
+              />
+            </div>
+            <div className="input-container">
+              <Typography htmlFor="email" className="input-label">Email*</Typography>
               <TextField
                 id="email"
                 fullWidth
@@ -74,7 +117,7 @@ function Login() {
               />
             </div>
             <div className="password-input-container">
-              <Typography htmlFor="password" className="input-label">Password</Typography>
+              <Typography htmlFor="password" className="input-label">Password*</Typography>
               <TextField
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -100,7 +143,7 @@ function Login() {
                 }}
               />
             </div>
-            
+
             {errorMessage && (
               <Typography color="error" className="error-message">
                 {errorMessage}
@@ -108,7 +151,7 @@ function Login() {
             )}
 
             <Typography variant="body2" className="account-message-text">
-              Don't you have an account? <Link to="/signup" className="route-link">Sign Up</Link>
+              You already have an account? <Link to="/login" className="route-link">Login</Link>
             </Typography>
 
             <Button
@@ -128,7 +171,7 @@ function Login() {
                 letterSpacing: '0'
               }}
             >
-              Login
+              Sign Up
             </Button>
           </form>
         </Grid>
@@ -142,4 +185,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default SignUp;

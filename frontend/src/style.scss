@@ -52,6 +52,14 @@
   margin-bottom: 30px !important;
 }
 
+.error-message{
+  line-height: 140% !important;
+  font-family: 'Helvetica', sans-serif !important;
+  text-align: left !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+}
+
 .input-container {
   display: flex !important;
   flex-direction: column !important;
@@ -59,12 +67,36 @@
   margin-bottom: 25px !important;
 }
 
-.login-button {
+.password-input-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  margin-bottom: 5px !important;
+}
+
+.submit-button {
   margin-top: 20px !important;
 }
 
-.email-label,
-.password-label {
+.account-message-text {
+  font-family: 'Helvetica', sans-serif !important;
+  color: #2D3748 !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
+  letter-spacing: 0 !important;
+  margin-top: 20px !important;
+}
+
+.route-link {
+  font-family: 'Helvetica', sans-serif !important;
+  color: #4FD1C5 !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
+  letter-spacing: 0 !important;
+}
+
+.input-label {
   font-family: 'Helvetica', sans-serif !important;
   color: #2D3748 !important;
   font-size: 14px !important;
