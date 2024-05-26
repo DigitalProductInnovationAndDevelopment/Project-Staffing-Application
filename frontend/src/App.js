@@ -1,6 +1,8 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Login from './pages/auth/Login.js'; 
+import Login from './pages/auth/Login.js';
+import SignUp from './pages/auth/SignUp';
 import './style.scss';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -11,6 +13,12 @@ const theme = createTheme({
     },
     secondary: {
       main: '#4fd1c5',
+    },
+    iconGrey: {
+      main: '#CCCCCC',
+    },
+    textGrey: {
+      main: '#A0AEC0',
     },
   },
   components: {
@@ -43,9 +51,13 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}> 
-      <div className="App">
-        <Login /> 
-      </div>
+      <Router>
+        <Routes> {/* Use Routes instead of Switch */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/" element={<Login />} /> {/* Default route */}
+        </Routes>
+      </Router>
     </ThemeProvider> 
   );
 }
