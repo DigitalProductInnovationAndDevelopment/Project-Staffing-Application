@@ -51,8 +51,8 @@ function Login() {
           </div>
           {/* Form */}
           <form noValidate autoComplete='off' className="form" onSubmit={handleSubmit}>
-            <div className="email-input-container">
-              <Typography htmlFor="email" className="email-label">Email</Typography>
+            <div className="input-container">
+              <Typography htmlFor="email" className="input-label">Email</Typography>
               <TextField
                 id="email"
                 fullWidth
@@ -67,7 +67,7 @@ function Login() {
               />
             </div>
             <div className="password-input-container">
-              <Typography htmlFor="password" className="password-label">Password</Typography>
+              <Typography htmlFor="password" className="input-label">Password</Typography>
               <TextField
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -100,14 +100,14 @@ function Login() {
               </Typography>
             )}
 
-            <Typography variant="body2" className="signup-text">
-              Don't you have an account? <Link to="/signup" className="signup-link">Sign Up</Link>
+            <Typography variant="body2" className="account-message-text">
+              Don't you have an account? <Link to="/signup" className="route-link">Sign Up</Link>
             </Typography>
 
             <Button
               variant="contained"
               color="secondary"
-              className="login-button"
+              className="submit-button"
               fullWidth
               type="submit"
               sx={{ 

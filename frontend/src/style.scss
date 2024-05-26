@@ -60,7 +60,7 @@
   letter-spacing: 0 !important;
 }
 
-.email-input-container {
+.input-container {
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
@@ -74,11 +74,11 @@
   margin-bottom: 5px !important;
 }
 
-.login-button {
+.submit-button {
   margin-top: 20px !important;
 }
 
-.signup-text {
+.account-message-text {
   font-family: 'Helvetica', sans-serif !important;
   color: #2D3748 !important;
   font-size: 14px !important;
@@ -87,7 +87,7 @@
   margin-top: 20px !important;
 }
 
-.signup-link {
+.route-link {
   font-family: 'Helvetica', sans-serif !important;
   color: #4FD1C5 !important;
   font-weight: bold !important;
@@ -96,8 +96,7 @@
   letter-spacing: 0 !important;
 }
 
-.email-label,
-.password-label {
+.input-label {
   font-family: 'Helvetica', sans-serif !important;
   color: #2D3748 !important;
   font-size: 14px !important;
