@@ -1,0 +1,2 @@
+📁 models
+Folder that contains files defining the schema for our data (mapping of the UML data model) and make it easier to interact with the mongoDB database in a structured way.

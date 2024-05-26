@@ -1,0 +1,2 @@
+📁 mockData
+Folder that contains mock data files used for testing or during development, helping to simulate database reponses or API calls

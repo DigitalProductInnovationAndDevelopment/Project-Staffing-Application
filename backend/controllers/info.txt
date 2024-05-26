@@ -1,0 +1,10 @@
+📁 controllers
+Folder that contains controller files which handle the logic for different routes defined in the 📁 routes folder.
+Controllers at first get a request via a route endpoint. 
+They then interact with 📁 models and coordinate the use of (one or several) 📁 services to perform the requested task.
+In the end they send back the response via the endpoint to the frontend.
+
+difference between 📁 controllers and 📁 services:
+- a controller should worry about the request itself: receive HTTP request, validate request data (check headers, path & query parameters), initial data validation, ...
+- a controller then coordinates one or more services which handle the actual specific tasks (database query, ...) and then sends back a response
+- a service really only performs business logic (interact with 📁 models and the database)

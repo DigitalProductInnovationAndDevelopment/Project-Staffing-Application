@@ -1,0 +1,3 @@
+📁 routes
+Folder that contains the route files which define the CRUD (CREATE READ UPADTE DELETE) API endpoints for each specific file (Users, Projects, ...). 
+Routes map URLs to specific controllers.

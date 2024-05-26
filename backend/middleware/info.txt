@@ -1,0 +1,2 @@
+📁 middleware
+Folder that contains backend related middleware functions that are executed during the request-response cycle, for purposes such as authentication (verifyToken, checkAuthorization, ...)

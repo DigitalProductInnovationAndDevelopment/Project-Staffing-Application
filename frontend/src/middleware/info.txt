@@ -1,2 +1,2 @@
 📁 middleware
-Folder where we can add AuthenticationMiddleware, CsrfMiddleware etc. later
+Folder where we can add frontend related middleware like ProtectedRoutes, Authentication, Csrf etc. later

@@ -1,0 +1,2 @@
+📁 config
+Folder that stores configuration files for the backend (e.g. database username & password or other environment variables)

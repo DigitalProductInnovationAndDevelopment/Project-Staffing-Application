@@ -1,2 +1,2 @@
 📁 utils
-Folder that contains utility functions and helper modules that can be used throughout the application.
+Folder that contains frontend utility functions and helper modules that can be used throughout the frontend part of the application.
