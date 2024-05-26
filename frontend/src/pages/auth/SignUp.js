@@ -13,6 +13,7 @@ function SignUp() {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
   
     const handleClickShowPassword = () => {
       setShowPassword(!showPassword);
@@ -20,22 +21,33 @@ function SignUp() {
   
     const handleEmailChange = (e) => {
       setEmail(e.target.value);
+      setErrorMessage('');
     };
   
     const handlePasswordChange = (e) => {
       setPassword(e.target.value);
+      setErrorMessage('');
     };
  
     const handleNameChange = (e) => {
       setName(e.target.value);
+      setErrorMessage('');
     };
   
     const handleLastNameChange = (e) => {
       setLastName(e.target.value);
+      setErrorMessage('');
     };
 
     const handleSubmit = (e) => {
       e.preventDefault();
+
+      //prevent empty inputs
+      if (email === '' || password === '' || name === '' || lastName === '') {
+        setErrorMessage('Please fill your credentials');
+        return;
+      }
+
       // Mock validation
       const mockEmail = 'user@example.com';
       const mockPassword = 'password123';
@@ -60,7 +72,7 @@ function SignUp() {
           {/* Form */}
           <form noValidate autoComplete='off' className="form" onSubmit={handleSubmit}>
             <div className="input-container">
-              <Typography htmlFor="name" className="input-label">First Name</Typography>
+              <Typography htmlFor="name" className="input-label">First Name*</Typography>
               <TextField
                 id="name"
                 fullWidth
@@ -75,7 +87,7 @@ function SignUp() {
               />
             </div>
             <div className="input-container">
-              <Typography htmlFor="lastname" className="input-label">Last Name</Typography>
+              <Typography htmlFor="lastname" className="input-label">Last Name*</Typography>
               <TextField
                 id="lastName"
                 fullWidth
@@ -90,7 +102,7 @@ function SignUp() {
               />
             </div>
             <div className="input-container">
-              <Typography htmlFor="email" className="input-label">Email</Typography>
+              <Typography htmlFor="email" className="input-label">Email*</Typography>
               <TextField
                 id="email"
                 fullWidth
@@ -105,7 +117,7 @@ function SignUp() {
               />
             </div>
             <div className="password-input-container">
-              <Typography htmlFor="password" className="input-label">Password</Typography>
+              <Typography htmlFor="password" className="input-label">Password*</Typography>
               <TextField
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -131,6 +143,12 @@ function SignUp() {
                 }}
               />
             </div>
+
+            {errorMessage && (
+              <Typography color="error" className="error-message">
+                {errorMessage}
+              </Typography>
+            )}
 
             <Typography variant="body2" className="account-message-text">
               You already have an account? <Link to="/login" className="route-link">Login</Link>

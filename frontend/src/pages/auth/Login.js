@@ -28,6 +28,13 @@ function Login() {
   
     const handleSubmit = (e) => {
       e.preventDefault();
+      
+      //prevent empty inputs
+      if (email === '' || password === '') {
+        setErrorMessage('Email or password is empty');
+        return;
+      }
+
       // Mock validation
       const mockEmail = 'user@example.com';
       const mockPassword = 'password123';
