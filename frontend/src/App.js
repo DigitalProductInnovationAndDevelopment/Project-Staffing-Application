@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './pages/auth/Login.js';
 import SignUp from './pages/auth/SignUp';
+import EditProject from './components/EditProject';
 import './style.scss';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -55,6 +56,7 @@ function App() {
         <Routes> {/* Use Routes instead of Switch */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/projects/edit" element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company:'Itestra Project', image: '' }} />} />
             <Route path="/" element={<Login />} /> {/* Default route */}
         </Routes>
       </Router>
