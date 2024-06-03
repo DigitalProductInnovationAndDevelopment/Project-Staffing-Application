@@ -14,7 +14,7 @@ import {
   Grid,
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
 const Overview = () => {
   const [startDate, setStartDate] = useState(new Date());
