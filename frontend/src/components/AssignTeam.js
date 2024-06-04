@@ -155,6 +155,7 @@ const AssignTeam = () => {
     </Box>
 
     <Box
+        key={activeTab}
         sx={{
           marginTop: 3,
           padding: 3,
