@@ -63,6 +63,7 @@ const EditProject = ({ open, onClose, project }) => {
           <Box
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.90)',
+              boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
               borderRadius: '15px',
               marginTop: '-56px',
               ml: 2, mr: 2,
