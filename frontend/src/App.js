@@ -6,6 +6,7 @@ import SignUp from './pages/auth/SignUp';
 import EditProject from './components/EditProject';
 import './style.scss';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import ProjectDisplay from './pages/Projects.js';
 
 const theme = createTheme({
   palette: {
@@ -55,6 +56,7 @@ function App() {
       <Router>
         <Routes> {/* Use Routes instead of Switch */}
             <Route path="/login" element={<Login />} />
+            <Route path="/projects" element={<ProjectDisplay />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/projects/edit" element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company:'Itestra Project', image: '' }} />} />
             <Route path="/" element={<Login />} /> {/* Default route */}
