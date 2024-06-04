@@ -1,12 +1,46 @@
 import React, { useState } from 'react';
 import { Box, Typography, Tabs, Tab, Slider } from '@mui/material';
 
+const skillsets = {
+  'PROJECT LEAD': [
+    { skill: 'Technology', points: '5/10' },
+    { skill: 'Solution Engineering', points: '8/10' },
+    { skill: 'Self-Management', points: '7/10' },
+    { skill: 'Communication Skills', points: '6/10' },
+    { skill: 'Employee Leadership', points: '9/10' },
+  ],
+  'FULL-STACK DEVELOPER': [
+    { skill: 'Frontend Development', points: '8/10' },
+    { skill: 'Backend Development', points: '7/10' },
+    { skill: 'Database Management', points: '6/10' },
+    { skill: 'DevOps', points: '5/10' },
+    { skill: 'Problem Solving', points: '9/10' },
+  ],
+  'CLOUD EXPERT': [
+    { skill: 'Cloud Architecture', points: '9/10' },
+    { skill: 'Security', points: '8/10' },
+    { skill: 'Networking', points: '7/10' },
+    { skill: 'Cost Management', points: '6/10' },
+    { skill: 'Automation', points: '7/10' },
+  ],
+  'SOFTWARE TESTING': [
+    { skill: 'Test Automation', points: '8/10' },
+    { skill: 'Manual Testing', points: '7/10' },
+    { skill: 'Performance Testing', points: '6/10' },
+    { skill: 'Security Testing', points: '5/10' },
+    { skill: 'Bug Reporting', points: '9/10' },
+  ],
+};
+
 const AssignTeam = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
+
+  const tabLabels = Object.keys(skillsets);
+  const currentSkillsets = skillsets[tabLabels[activeTab]];
 
   return (
     <Box>
@@ -49,10 +83,9 @@ const AssignTeam = () => {
             },
           }}
         >
-          <Tab label="PROJECT LEAD" />
-          <Tab label="FULL-STACK DEVELOPER" />
-          <Tab label="CLOUD EXPERT" />
-          <Tab label="SOFTWARE TESTING" />
+        {tabLabels.map((label) => (
+          <Tab key={label} label={label} />
+        ))}
         </Tabs>
       </Box>
       <Box
@@ -120,6 +153,92 @@ const AssignTeam = () => {
         />
       </Box>
     </Box>
+
+    <Box
+        sx={{
+          marginTop: 3,
+          padding: 3,
+          borderRadius: '15px',
+          backgroundColor: 'white',
+          boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+          display: 'grid',
+          gridTemplateColumns: `repeat(${currentSkillsets.length + 1}, auto)`,
+          gap: 1,
+        }}
+      >
+        <Typography
+          sx={{
+            fontFamily: 'Helvetica, sans-serif',
+            fontSize: '18px',
+            lineHeight: '140%',
+            letterSpacing: '0',
+            fontWeight: 'bold',
+            color: '#2D3748',
+            marginRight: 2,
+            alignSelf: 'center',
+          }}
+        >
+          Target Skillsets
+        </Typography>
+        {currentSkillsets.map((skillset) => (
+          <Box key={skillset.skill} sx={{ display: 'inline-block' }}>
+            <Typography
+              sx={{
+                fontFamily: 'Roboto, sans-serif',
+                fontSize: '13px',
+                lineHeight: '18px',
+                letterSpacing: '0.16px',
+                color: 'black',
+                backgroundColor: '#bdbdbd20',
+                border: '1px solid #BDBDBD',
+                borderRadius: '100px',
+                padding: '4px 8px',
+                textAlign: 'center',
+                margin: '0',
+                display: 'inline-block',
+              }}
+            >
+              {skillset.skill}
+            </Typography>
+          </Box>
+        ))}
+        <Typography
+          sx={{
+            fontFamily: 'Helvetica, sans-serif',
+            fontSize: '18px',
+            lineHeight: '140%',
+            letterSpacing: '0',
+            fontWeight: 'bold',
+            color: '#AEAEAE',
+            marginRight: 2,
+            alignSelf: 'center',
+          }}
+        >
+          Target Points
+        </Typography>
+        {currentSkillsets.map((skillset) => (
+          <Box key={skillset.points} sx={{ display: 'inline-block' }}>
+            <Typography
+              sx={{
+                fontFamily: 'Roboto, sans-serif',
+                fontSize: '13px',
+                lineHeight: '18px',
+                letterSpacing: '0.16px',
+                color: '#718096',
+                backgroundColor: 'white',
+                border: '1px solid #BDBDBD',
+                borderRadius: '100px',
+                padding: '4px 8px',
+                textAlign: 'center',
+                margin: '0',
+                display: 'inline-block',
+              }}
+            >
+              {skillset.points}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
   </Box>
   );
 };
