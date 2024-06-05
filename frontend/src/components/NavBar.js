@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Typography, Box, List, ListItemButton, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import ProjectsIcon from '../assets/images/projects-icon.svg'; // Adjust path
-import EmployeesIcon from '../assets/images/employees-icon.svg'; // Adjust path
-import staffIcon from '../assets/images/logo-creative-tim-black.svg'; // Adjust path
+import ProjectsIcon from '../assets/images/projects-icon.svg';
+import EmployeesIcon from '../assets/images/employees-icon.svg';
+import staffIcon from '../assets/images/logo-creative-tim-black.svg';
 
 function Sidebar() {
   const [activeItem, setActiveItem] = useState(null);
@@ -15,7 +15,7 @@ function Sidebar() {
   return (
     <Box 
         sx={{ 
-            bgcolor: '#f0f0f0', 
+            bgcolor: '#F8F9FA', // Background color of the entire sidebar
             minHeight: '100vh', 
             padding: '20px', 
             width: { xs: '25%', sm: '18%', md: '12%' }, 
@@ -27,30 +27,28 @@ function Sidebar() {
     >
         <Box 
             sx={{ 
-                marginBottom: '20px', 
+                marginBottom: '10px', 
                 display: 'flex', 
                 alignItems: 'center', 
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 padding: '10px', 
                 borderRadius: '5px',
                 width: '100%'
             }}
         >
-            <img src={staffIcon} alt="Logo" />
+            <img src={staffIcon} alt="Logo" style={{ marginRight: 8, height: 22, width: 22 }} />
             <Typography 
                 variant="h6" 
                 component="div" 
                 sx={{ 
-                    ml: 2,
                     color: '#2D3748',
                     fontFamily: 'Helvetica',
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: 700,
                     lineHeight: '150%',
-                    textAlign: 'center'
                 }}
             >
-                Great Staff
+                GREAT STAFF
             </Typography>
         </Box>
         <Divider sx={{ width: '100%', mb: 2 }} />
@@ -63,22 +61,21 @@ function Sidebar() {
                 sx={{
                     mb: 1,
                     borderRadius: '12px',
-                    color: activeItem === index ? '#2D3748' : '#A0AEC0',
-                    bgcolor: activeItem === index ? 'white' : 'transparent',
+                    color: activeItem === index ? '#FFFFFF' : '#4FD1C5', // Icon color
+                    bgcolor: activeItem === index ? '#FFFFFF' : 'transparent', // Background color
                     '&:hover': {
                         bgcolor: '#e0e0e0',
                     },
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    textAlign: 'center',
                 }}
             >
                 <ListItemIcon 
                     sx={{ 
                         minWidth: 'auto', 
                         mr: 1,
-                        bgcolor: activeItem === index ? '#4FD1C5' : 'transparent',
+                        bgcolor: activeItem === index ? '#4FD1C5' : '#FFFFFF', // Background color for the icon
                         borderRadius: '12px',
                         padding: '5px'
                     }}
@@ -89,7 +86,7 @@ function Sidebar() {
                         style={{ 
                             width: '20px', 
                             height: '20px',
-                            filter: activeItem === index ? 'brightness(0) invert(1)' : 'none'
+                            filter: activeItem === index ? 'brightness(0) invert(1)' : 'none' // White icon when active
                         }} 
                     />
                 </ListItemIcon>
