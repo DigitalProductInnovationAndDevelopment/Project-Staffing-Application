@@ -21,6 +21,9 @@ const theme = createTheme({
     textGrey: {
       main: '#A0AEC0',
     },
+    primBlue: {
+      main: '#2684FF',
+    },
   },
   components: {
     MuiTextField: {
