@@ -123,9 +123,9 @@ const EditProject = ({ open, onClose, project }) => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '15px',
+                borderRadius: '12px',
                 backgroundColor: activeTab === 0 ? '#fff' : 'transparent',
-                boxShadow: activeTab === 0 ? '0px 1px 1px rgba(0, 0, 0, 0.25)' : 'none',
+                boxShadow: activeTab === 0 ? '0px 2px 4px rgba(0, 0, 0, 0.2)' : 'none',
                 minHeight: '10px',
                 '& .MuiTab-iconWrapper': { marginBottom: 0 },
               }}
@@ -146,9 +146,9 @@ const EditProject = ({ open, onClose, project }) => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '15px',
+                borderRadius: '12px',
                 backgroundColor: activeTab === 1 ? '#fff' : 'transparent',
-                boxShadow: activeTab === 1 ? '0px 1px 1px rgba(0, 0, 0, 0.25)' : 'none',
+                boxShadow: activeTab === 1 ? '0px 2px 4px rgba(0, 0, 0, 0.2)' : 'none',
                 minHeight: '10px',
                 '& .MuiTab-iconWrapper': { marginBottom: 0 },
               }}
