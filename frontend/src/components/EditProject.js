@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography } from '@mui/material';
+import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button} from '@mui/material';
 import Overview from './Overview';
 import AssignTeam from './AssignTeam';
 import backgroundImage from './../assets/images/edit_background.svg';
@@ -12,6 +12,11 @@ const EditProject = ({ open, onClose, project }) => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+  };
+
+  const handleSaveAndClose = () => {
+    // Add save logic here
+    onClose();
   };
 
   return (
@@ -154,6 +159,29 @@ const EditProject = ({ open, onClose, project }) => {
             {activeTab === 0 && <Overview />}
             {activeTab === 1 && <AssignTeam />}
           </DialogContent>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
+            <Button 
+              variant="contained"
+              color="secondary"
+              fullWidth
+              sx={{
+                textTransform: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                height: '40px',
+                fontFamily: 'Halvetica, sans-serif',
+                fontWeight: 'Bold',
+                fontSize: '14px',
+                lineHeight: '150%',
+                letterSpacing: '0',
+                width: '120px',
+                padding: 0
+              }}
+              onClick={handleSaveAndClose}
+            >
+              Save & Close
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Dialog>
