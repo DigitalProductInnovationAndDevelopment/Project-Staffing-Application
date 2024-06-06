@@ -1,10 +1,16 @@
 import React from "react";
 import { Box, Typography, Button, Grid, Divider, Avatar, AvatarGroup, IconButton, LinearProgress } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import spotifyIcon from './../assets/images/icons/spotify-2 1.svg';
+import slackIcon from './../assets/images/icons/slack-new-logo 1.svg';
+import JiraIcon from './../assets/images/icons/jira-3 1.svg';
+import AdobeIcon from './../assets/images/icons/Adobe_XD_CC_icon 1.svg';
+import AltassianIcon from './../assets/images/icons/Icon.svg';
 
 function ProjectOverview() {
   const projects = [
     {
+      icon: spotifyIcon,
       title: "Mobile App Performance",
       company: "Itestra",
       avatars: [
@@ -19,6 +25,7 @@ function ProjectOverview() {
       daysLeft: "5 Days left",
     },
     {
+      icon: slackIcon,
       title: "Add Progress Track",
       company: "Company B",
       avatars: [
@@ -32,6 +39,7 @@ function ProjectOverview() {
       daysLeft: "14 Days left",
     },
     {
+      icon: JiraIcon,
       title: "Fix Platform Errors",
       company: "Company C",
       avatars: [],
@@ -42,6 +50,7 @@ function ProjectOverview() {
       daysLeft: "20 Days left",
     },
     {
+      icon: AdobeIcon,
       title: "Launch our Mobile App",
       company: "Company D",
       avatars: [],
@@ -52,6 +61,7 @@ function ProjectOverview() {
       daysLeft: "35 Days left",
     },
     {
+      icon: AltassianIcon,
       title: "Add the New Pricing Page",
       company: "Company E",
       avatars: [],
@@ -63,41 +73,61 @@ function ProjectOverview() {
     },
   ];
 
+  const handleAddProject = () => {
+    // Add save logic here
+    //onClose();
+  };
+
+
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none" }}>
-
-      {/* Main Content */}
       <Box sx={{ flexGrow: 1, p: 3 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-          
-          <Button
+          <Button 
             variant="contained"
+            color="secondary"
+            fullWidth
             sx={{
-              backgroundColor: "#4FD1C5",
-              '&:hover': {
-                backgroundColor: "#66bab2",
-              },
-              color: "white",
-              fontSize: "14px",
-              textTransform: "none"
+              textTransform: 'none',
+              borderRadius: '8px',
+              color: 'white',
+              height: '40px',
+              fontFamily: 'Helvetica, sans-serif',
+              fontWeight: 'Bold',
+              fontSize: '14px',
+              lineHeight: '150%',
+              letterSpacing: '0',
+              width: '120px',
+              padding: 0
             }}
+            onClick={handleAddProject}
           >
             + Add Project
           </Button>
         </Box>
-        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, fontFamily: 'Helvetica' }}>
-        <Typography sx={{ fontWeight: "bold", color: '#2D3748', fontFamily: 'Helvetica', fontSize: '18px',  lineHeight: '140%', fontStyle: 'normal', marginBottom: '20px' }}>Current Projects</Typography>
-          <Grid container spacing={2} sx={{ fontWeight: "bold"}}>
+        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, fontFamily: 'Helvetica', fontWeight:'700' }}>
+        <Typography
+          sx={{
+            fontFamily: 'Helvetica, sans-serif',
+            fontSize: '18px',
+            lineHeight: '140%',
+            letterSpacing: '0',
+            fontWeight: 'bold',
+            color: '#2D3748',
+            marginBottom: 2,
+          }}
+        >Current Projects</Typography>
+          <Grid container spacing={2}  sx={{fontFamily: 'Helvetica, sans-serif'}}>
             <Grid item xs={12}>
-              <Grid container sx={{ fontWeight: "bold", color: '#A0AEC0', fontFamily: 'Helvetica', fontSize: '10px',  lineHeight: '100%', fontStyle: 'normal', marginBottom: '5px'   }}>
-                <Grid item xs={3}><Typography variant="body2">PROJECT TITLE</Typography></Grid>
-                <Grid item xs={2}><Typography variant="body2">ALLOCATED FTEs</Typography></Grid>
-                <Grid item xs={1}><Typography variant="body2"> DEMAND</Typography></Grid>
-                <Grid item xs={1}><Typography variant="body2">ASSIGN</Typography></Grid>
-                <Grid item xs={2}><Typography variant="body2">STAFFING RATE</Typography></Grid>
-                <Grid item xs={1}><Typography variant="body2">PRIORITY</Typography></Grid>
-                <Grid item xs={1}><Typography variant="body2">START DATE</Typography></Grid>
-                <Grid item xs={1}><Typography variant="body2">EDIT</Typography></Grid>
+              <Grid container sx={{ fontWeight: "bold", color: '#A0AEC0',  }}>
+                <Grid item xs={3}><Typography variant="body1">PROJECT TITLE</Typography></Grid>
+                <Grid item xs={2}><Typography variant="body1">ALLOCATED FTEs</Typography></Grid>
+                <Grid item xs={1}><Typography variant="body1">DEMAND</Typography></Grid>
+                <Grid item xs={1}><Typography variant="body1">ASSIGN</Typography></Grid>
+                <Grid item xs={2}><Typography variant="body1">STAFFING RATE</Typography></Grid>
+                <Grid item xs={1}><Typography variant="body1">PRIORITY</Typography></Grid>
+                <Grid item xs={1}><Typography variant="body1">START DATE</Typography></Grid>
+                <Grid item xs={1}><Typography variant="body1">EDIT</Typography></Grid>
               </Grid>
             </Grid>
             {projects.map((project, index) => (
@@ -105,9 +135,13 @@ function ProjectOverview() {
                 <Grid item xs={12}>
                   <Divider />
                 </Grid>
-                <Grid container alignItems="left" item xs={12}>
+                <Grid container alignItems="left" item xs={12} sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}>
                   <Grid container sx={{ fontSize: "14px" }}>
-                    <Grid item xs={3}>
+                    <Grid item xs={0.3}>
+                      {/* Hier das Icon einfügen */}
+                      <Avatar src={project.icon} sx={{ width: 24, height: 24 }} />
+                    </Grid>
+                    <Grid item xs={2.7}>
                       <Typography variant="body2">{project.title}</Typography> 
                     </Grid>
                     <Grid container alignItems="left" item xs={2}>
@@ -125,7 +159,7 @@ function ProjectOverview() {
                     </Grid>
                     <Grid item xs={2}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Typography sx={{ mr: 1, color: {
+                      <Typography sx={{ mr: 1, color: {
                           color:
                           project.capacity >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
                           project.capacity > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
