@@ -105,7 +105,7 @@ function ProjectOverview() {
             + Add Project
           </Button>
         </Box>
-        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, fontFamily: 'Helvetica', fontWeight:'700' }}>
+        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2 }}>
         <Typography
           sx={{
             fontFamily: 'Helvetica, sans-serif',
@@ -117,9 +117,9 @@ function ProjectOverview() {
             marginBottom: 2,
           }}
         >Current Projects</Typography>
-          <Grid container spacing={2}  sx={{fontFamily: 'Helvetica, sans-serif'}}>
+          <Grid container spacing={2} >
             <Grid item xs={12}>
-              <Grid container sx={{ fontWeight: "bold", color: '#A0AEC0',  }}>
+              <Grid container sx={{color: '#A0AEC0', fontFamily: 'Helvetica, sans-serif', }}>
                 <Grid item xs={3}><Typography variant="body1">PROJECT TITLE</Typography></Grid>
                 <Grid item xs={2}><Typography variant="body1">ALLOCATED FTEs</Typography></Grid>
                 <Grid item xs={1}><Typography variant="body1">DEMAND</Typography></Grid>
@@ -135,7 +135,7 @@ function ProjectOverview() {
                 <Grid item xs={12}>
                   <Divider />
                 </Grid>
-                <Grid container alignItems="left" item xs={12} sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}>
+                <Grid container alignItems="left" sx={{ lineHeight: '0,5' }} item xs={12} >
                   <Grid container sx={{ fontSize: "14px" }}>
                     <Grid item xs={0.3}>
                       {/* Hier das Icon einfügen */}
@@ -164,7 +164,10 @@ function ProjectOverview() {
                           project.capacity >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
                           project.capacity > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
                           "#DC395F", // Rot bei 20% oder weniger
-                        } }}>{project.capacity}</Typography>
+                        },
+                          fontFamily: 'Helvetica, sans-serif',
+                          fontWeight: 'bold',
+                        }}>{project.capacity}</Typography>
                         <LinearProgress
                             variant="determinate"
                             value={parseInt(project.capacity)}
