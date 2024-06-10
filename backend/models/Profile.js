@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const ProfileSchema = new mongoose.Schema(
     {
-        skills: [{ type: Schema.Types.ObjectId, ref: 'Skill' }]
+        skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }]
     },
     {timestamps: true}
 );

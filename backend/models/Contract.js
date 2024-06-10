@@ -16,7 +16,7 @@ const ContractSchema = new mongoose.Schema(
             max: 40,
         },
 
-        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 
     },
     {timestamps: true}

@@ -24,8 +24,8 @@ const ProjectSchema = new mongoose.Schema(
             max: 100,
         },
 
-        projectWorkingHours: [{ type: Schema.Types.ObjectId, ref: 'ProjectWorkingHours' }],
-        demandProfiles: [{ type: Schema.Types.ObjectId, ref: 'ProjectDemandProfile' }],
+        projectWorkingHours: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProjectWorkingHours' }],
+        demandProfiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProjectDemandProfile' }],
 
         priority: {
             type: String,

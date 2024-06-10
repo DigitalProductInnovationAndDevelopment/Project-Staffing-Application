@@ -29,20 +29,16 @@ const UserSchema = new mongoose.Schema(
             required: true,
             min: 5,
         },
-        workingLocation: {
-            type: String,
-            max: 100,
-        },
         canWorkRemote: {
             type: Boolean,
             default: false,
         },
 
-        contractId: { type: Schema.Types.ObjectId, ref: 'Contract' },
-        leaveIds: [{ type: Schema.Types.ObjectId, ref: 'Leave' }],
-        currentProfile: { type: Schema.Types.ObjectId, ref: 'EmployeeProfile' },
+        contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' },
+        leaveIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Leave' }],
+        currentProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'EmployeeProfile' },
 
-        projectWorkingHours: [{ type: Schema.Types.ObjectId, ref: 'ProjectWorkingHours' }],
+        projectWorkingHours: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProjectWorkingHours' }],
 
         officeLocation: {
             type: String,
