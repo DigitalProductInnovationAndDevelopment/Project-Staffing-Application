@@ -39,7 +39,7 @@ export const updateProjectController = async (req, res, next) => {
 };
 
 
-export const getProjectAssignmentByProjectIdC = async (req, res, next) => {
+export const getProjectAssignmentByProjectIdController = async (req, res, next) => {
     try {
         // TODO
     } catch (err) {

@@ -21,7 +21,7 @@ export const loginController = async (req, res, next) => {
 };
 
 
-export const logutController = async (req, res, next) => {
+export const logoutController = async (req, res, next) => {
     try {
         // TODO
     } catch (err) {
