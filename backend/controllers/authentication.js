@@ -6,6 +6,8 @@
 export const registerController = async (req, res, next) => {
     try {
         // TODO
+        res.send('registerController');
+
     } catch (err) {
         next(err);
     }
@@ -15,6 +17,8 @@ export const registerController = async (req, res, next) => {
 export const loginController = async (req, res, next) => {
     try {
         // TODO
+        res.send('loginController');
+
     } catch (err) {
         next(err);
     }
@@ -24,6 +28,8 @@ export const loginController = async (req, res, next) => {
 export const logoutController = async (req, res, next) => {
     try {
         // TODO
+        res.send('logoutController');
+
     } catch (err) {
         next(err);
     }
