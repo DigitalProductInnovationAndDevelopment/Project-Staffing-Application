@@ -55,6 +55,11 @@ app.use("/project", projectRoutes);
 app.use("/profile", profileRoutes);
 
 /* UNKNOWN ROUTES */
+app.all('*', (req, res, next) => {
+  const err = new Error(`Route ${req.originalUrl} not found`);
+  err.statusCode = 404;
+  next(err);
+});
 
 
 /* GLOBAL ERROR HANDLING */
