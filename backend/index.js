@@ -7,6 +7,13 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
+// import routes
+import authRoutes from "./routes/authentication.js";
+import userRoutes from "./routes/user.js";
+import projectRoutes from "./routes/project.js";
+import profileRoutes from "./routes/profile.js";
+
+
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -34,12 +41,20 @@ mongoose
   })
   .catch((error) => console.log(`${error} did not connect`));
 
-
 app.get('/', (req, res) => {
     res.send('Hello World! This is the GREAT STAFF server!');
 });
 
 /* MIDDLEWARE */
+
+
 /* ROUTES */
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+app.use("/project", projectRoutes);
+app.use("/profile", profileRoutes);
+
 /* UNKNOWN ROUTES */
+
+
 /* GLOBAL ERROR HANDLING */
