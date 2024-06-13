@@ -145,15 +145,15 @@ const Overview = () => {
               sx={{
                 padding: 4,
                 backgroundColor: "white",
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Added shadow blur
-                borderRadius: 2,
+                boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+                borderRadius: '15px',
               }}
             >
               <Typography
                 variant="h6"
                 sx={{
                   fontFamily: "Helvetica, sans-serif",
-                  fontSize: "14px", // Adjusted font size
+                  fontSize: "14px",
                   lineHeight: "100%",
                   letterSpacing: "0",
                   fontWeight: "bold",
@@ -193,15 +193,15 @@ const Overview = () => {
               sx={{
                 padding: 4,
                 backgroundColor: "white",
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Added shadow blur
-                borderRadius: 2,
+                boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',     
+                borderRadius: '15px',
               }}
             >
               <Typography
                 variant="h6"
                 sx={{
                   fontFamily: "Helvetica, sans-serif",
-                  fontSize: "14px", // Adjusted font size
+                  fontSize: "14px",
                   lineHeight: "100%",
                   letterSpacing: "0",
                   fontWeight: "bold",
@@ -227,13 +227,13 @@ const Overview = () => {
                   value="High"
                   control={<Radio color="primary" />}
                   label="High"
-                  sx={{ "& .MuiTypography-root": { fontSize: "14px" } }} // Adjusted font size
+                  sx={{ "& .MuiTypography-root": { fontSize: "14px" } }}
                 />
                 <FormControlLabel
                   value="Normal"
                   control={<Radio color="primary" />}
                   label="Normal"
-                  sx={{ "& .MuiTypography-root": { fontSize: "14px" } }} // Adjusted font size
+                  sx={{ "& .MuiTypography-root": { fontSize: "14px" } }}
                 />
               </RadioGroup>
             </Paper>
@@ -245,15 +245,15 @@ const Overview = () => {
               sx={{
                 padding: 4,
                 backgroundColor: "white",
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Added shadow blur
-                borderRadius: 2,
+                boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+                borderRadius: '15px',
               }}
             >
               <Typography
                 variant="h6"
                 sx={{
                   fontFamily: "Helvetica, sans-serif",
-                  fontSize: "14px", // Adjusted font size
+                  fontSize: "14px",
                   lineHeight: "100%",
                   letterSpacing: "0",
                   fontWeight: "bold",
@@ -325,15 +325,15 @@ const Overview = () => {
               sx={{
                 padding: 4,
                 backgroundColor: "white",
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Added shadow blur
-                borderRadius: 2,
+                boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+                borderRadius: '15px',
               }}
             >
               <Typography
                 variant="h6"
                 sx={{
                   fontFamily: "Helvetica, sans-serif",
-                  fontSize: "14px", // Adjusted font size
+                  fontSize: "14px",
                   lineHeight: "100%",
                   letterSpacing: "0",
                   fontWeight: "bold",
