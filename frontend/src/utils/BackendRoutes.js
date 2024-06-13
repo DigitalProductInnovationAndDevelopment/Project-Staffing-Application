@@ -21,8 +21,7 @@ const BackendRoutes = {
     UPDATE_PROJECT: (projectId) => "/projects/" + projectId,
     GET_PROJECT_ASSIGNMENT_BY_PROJECT_ID: (projectId) => "/projects/" + projectId +  "assign",
     UPDATE_PROJECT_ASSIGNMENT: (projectId) => "/projects/" + projectId +  "assign",
-
-    //profile_api
+    //project_api >> profile_api
     GET_ALL_PROFILES_BY_PROJECT_ID: (projectId) => "/projects/" + projectId + "/profiles",
     GET_PROFILE_BY_ID: (projectId, profileId) => "/projects/" + projectId + "/" + profileId,
     CREATE_NEW_PROFILE: (projectId) => "/projects/" + projectId,

@@ -6,8 +6,13 @@ import slackIcon from './../assets/images/icons/slack-new-logo 1.svg';
 import JiraIcon from './../assets/images/icons/jira-3 1.svg';
 import AdobeIcon from './../assets/images/icons/Adobe_XD_CC_icon 1.svg';
 import AltassianIcon from './../assets/images/icons/Icon.svg';
+//imports for backend connection
+import {projectApi} from "../state/api/projectApi.js";
 
 function ProjectOverview() {
+
+  const { data: projectData, isError, isLoading, isSuccess } = projectApi.endpoints.getAllProjects.useQuery();
+
   const projects = [
     {
       icon: spotifyIcon,
@@ -78,7 +83,26 @@ function ProjectOverview() {
     //onClose();
   };
 
+  if (isError) {
+    console.log("isError");
+    return (
+      <>
+        <p>isError</p>
+      </>
+    );
+  }
 
+  if (isLoading) {
+    console.log("isLoading");
+    return (
+      <>
+        <p>isLoading</p>
+      </>
+    );
+  }
+
+  if (isSuccess) {
+    console.log("isSuccess");
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none" }}>
       <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -117,6 +141,21 @@ function ProjectOverview() {
             marginBottom: 2,
           }}
         >Current Projects</Typography>
+
+      {/* DISPLAY FETCHED DATA FROM BACKEND */}
+      {/* 
+
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h4" gutterBottom>Project Names</Typography>
+        <ul>
+          {projectData.projects.map((project) => (
+          <li key={project._id}>{project.projectName}</li>
+          ))}
+        </ul>
+      </Box>
+
+      */}
+
           <Grid container spacing={2} >
             <Grid item xs={12}>
               <Grid container sx={{color: '#A0AEC0', fontFamily: 'Helvetica, sans-serif', }}>
@@ -205,6 +244,9 @@ function ProjectOverview() {
       </Box>
     </Box>
   );
+
+  }
+
 }
 
 export default ProjectOverview;
