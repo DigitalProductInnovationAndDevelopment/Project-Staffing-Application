@@ -6,7 +6,8 @@ import Project from "../models/Project.js";
 export const getAllProjectsController = async (req, res, next) => {
     try {
         const all_projects = await Project.find();
-        res.status(200).json(all_projects);
+        res.status(200).json({projects: all_projects});
+
 
     } catch (err) {
         next(err);
