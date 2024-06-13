@@ -450,13 +450,6 @@ const Overview = () => {
           </Grid>
         </Grid>
       </LocalizationProvider>
-
-      {/* Save & Close Button */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
-        <Button variant="contained" color="success">
-          Save & Close
-        </Button>
-      </Box>
     </Box>
   );
 };
