@@ -1,14 +1,13 @@
-
-
+import User from "../models/User.js";
 
 
 
 
 export const getAllEmployeesController = async (req, res, next) => {
     try {
-        // TODO
-        res.send('getAllEmployeesController');
-        
+        const all_users = await User.find();
+        res.status(200).json(all_users);
+
     } catch (err) {
         next(err);
     }
@@ -17,8 +16,9 @@ export const getAllEmployeesController = async (req, res, next) => {
 
 export const getEmployeeByIdController = async (req, res, next) => {
     try {
-        // TODO
-        res.send('getEmployeeByIdController');
+        const { employeeId } = req.params;
+        const user = await User.findOne({ userId: employeeId });
+        res.status(200).json(user);
 
     } catch (err) {
         next(err);
