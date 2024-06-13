@@ -5,7 +5,7 @@ import User from "../models/User.js";
 
 export const getAllEmployeesController = async (req, res, next) => {
     try {
-        const all_users = await User.find();
+        const all_users = await User.find().select('-password'); //exclude password from query response
         res.status(200).json(all_users);
 
     } catch (err) {
@@ -17,7 +17,7 @@ export const getAllEmployeesController = async (req, res, next) => {
 export const getEmployeeByIdController = async (req, res, next) => {
     try {
         const { employeeId } = req.params;
-        const user = await User.findOne({ userId: employeeId });
+        const user = await User.findOne({ userId: employeeId }).select('-password'); //exclude password from query response
         res.status(200).json(user);
 
     } catch (err) {
