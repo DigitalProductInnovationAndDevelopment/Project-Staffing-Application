@@ -7,6 +7,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
+import config from "config";
 // import routes
 import authRoutes from "./routes/authentication.js";
 import userRoutes from "./routes/user.js";
@@ -29,11 +30,13 @@ app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, 'public/assets'))); // set directory of where to store our assets (i.e. images) (in this case locally)
 
 /* MIDDLEWARE */
+//cors set-up
+app.use(cors({origin: await config.get('origin'), credentials: true,}));
 
 /* ROUTES */
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
-app.use("/project", projectRoutes);
+app.use("/projects", projectRoutes);
 app.use("/profile", profileRoutes);
 //home route (remove later)
 app.get('/', (req, res) => {
