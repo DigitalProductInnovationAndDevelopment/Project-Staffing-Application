@@ -1,12 +1,12 @@
-
+import Project from "../models/Project.js";
 
 
 
 
 export const getAllProjectsController = async (req, res, next) => {
     try {
-        // TODO
-        res.send('getAllProjectsController');
+        const all_projects = await Project.find();
+        res.status(200).json(all_projects);
 
     } catch (err) {
         next(err);
@@ -16,8 +16,9 @@ export const getAllProjectsController = async (req, res, next) => {
 
 export const getProjectByIdController = async (req, res, next) => {
     try {
-        // TODO
-        res.send('getProjectByIdController');
+        const { projectId } = req.params;
+        const project = await Project.findOne({ projectId: projectId });
+        res.status(200).json(project);
 
     } catch (err) {
         next(err);
