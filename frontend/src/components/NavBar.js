@@ -15,7 +15,7 @@ function Sidebar() {
   return (
     <Box 
       sx={{ 
-        bgcolor: '#F8F9FA', 
+        backgroundColor: "#F5F7FA",
         minHeight: '100vh', 
         padding: '20px', 
         width: { xs: '25%', sm: '18%', md: '12%' }, 
@@ -62,13 +62,16 @@ function Sidebar() {
               mb: 1,
               borderRadius: '12px',
               color: activeItem === item.key ? '#FFFFFF' : '#4FD1C5',
-              bgcolor: activeItem === item.key ? '#4FD1C5' : 'transparent',
+              backgroundColor: activeItem === item.key ? '#FFFFFF' : 'transparent',
+              '&.Mui-selected': {
+                backgroundColor: '#FFFFFF',
+              },
               '&:hover': {
                 bgcolor: '#e0e0e0',
               },
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              borderRadius: '12px',
+              minHeight: '54px',
+              boxShadow: activeItem === item.key ? '0px 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
             }}
           >
             <ListItemIcon 
@@ -93,11 +96,11 @@ function Sidebar() {
             <ListItemText 
               primary={item.text} 
               sx={{ 
-                color: '#2D3748',
-                fontFamily: 'Helvetica',
+                color: activeItem === item.key ? '#2D3748' : '#A0AEC0',
+                fontFamily: 'Helvetica, sans-serif',
                 fontSize: 12,
-                fontStyle: 'normal',
-                fontWeight: 700,
+                fontStyle: 'bold',
+                letterSpacing: '0',
                 lineHeight: '150%',
               }} 
             />
