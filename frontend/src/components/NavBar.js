@@ -99,13 +99,15 @@ function Sidebar({ setActiveItem, activeItem }) {
             </ListItemIcon>
             <ListItemText
               primary={item.text}
-              sx={{
-                color: activeItem === item.key ? '#2D3748' : '#A0AEC0',
-                fontFamily: 'Helvetica, sans-serif',
-                fontSize: 12,
-                fontStyle: 'bold',
-                letterSpacing: '0',
-                lineHeight: '150%',
+              primaryTypographyProps={{
+                sx: {
+                  fontFamily: 'Helvetica, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  letterSpacing: '0',
+                  lineHeight: '150%',
+                  color: activeItem === item.key ? '#2D3748' : '#A0AEC0',
+                }
               }}
             />
           </ListItemButton>
