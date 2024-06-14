@@ -129,7 +129,7 @@ function ProjectOverview() {
             + Add Project
           </Button>
         </Box>
-        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2 }}>
+        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)" }}>
         <Typography
           sx={{
             fontFamily: 'Helvetica, sans-serif',

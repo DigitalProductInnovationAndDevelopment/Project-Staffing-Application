@@ -1,13 +1,22 @@
 import React from 'react';
-import { Typography, Box, List, ListItemButton, ListItemIcon, ListItemText, Divider } from '@mui/material';
+import { Typography, Box, List, ListItemButton, ListItemIcon, ListItemText, Divider, IconButton } from '@mui/material';
 import ProjectsIcon from '../assets/images/projects-icon.svg';
 import EmployeesIcon from '../assets/images/employees-icon.svg';
 import staffIcon from '../assets/images/logo-creative-tim-black.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import SignOutIcon from '../assets/images/signout_icon.svg';
 
 function Sidebar({ setActiveItem, activeItem }) {
+  const navigate = useNavigate();
+
   const handleItemClick = (itemKey) => {
     setActiveItem(itemKey); // Update activeItem in parent component
+  };
+
+  const handleSignOut = () => {
+    // Handle sign out logic here (e.g., clear local storage, reset state, etc.)
+    // Redirect to Login page
+    navigate('/login');
   };
 
   const menuItems = [
@@ -19,9 +28,8 @@ function Sidebar({ setActiveItem, activeItem }) {
     <Box
       sx={{
         backgroundColor: '#F5F7FA',
-        minHeight: '100vh',
         padding: '20px',
-        width: { xs: '25%', sm: '18%', md: '12%' },
+        width: { xs: '25%', sm: '18%', md: '12%' },       
         minWidth: '200px',
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +54,7 @@ function Sidebar({ setActiveItem, activeItem }) {
           sx={{
             color: '#2D3748',
             fontFamily: 'Helvetica',
-            fontSize: 14,
+            fontSize: 18,
             fontWeight: 700,
             lineHeight: '150%',
           }}
@@ -113,6 +121,23 @@ function Sidebar({ setActiveItem, activeItem }) {
           </ListItemButton>
         ))}
       </List>
+      {/* Sign Out */}
+      <Box onClick={handleSignOut} sx={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <IconButton>
+          <img src={SignOutIcon} alt="Sign Out" style={{ width: 24, height: 24 }} />
+        </IconButton>
+        <Typography
+          sx={{ 
+            color: '#718096',
+            fontFamily: 'Helvetica, sans-serif',
+            fontWeight: 'Bold',
+            fontSize: '14px',
+            lineHeight: '150%',
+            letterSpacing: '0',}}
+        >
+          Sign Out
+        </Typography>
+      </Box>
     </Box>
   );
 }
