@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './pages/auth/Login.js';
 import SignUp from './pages/auth/SignUp';
 import EditProject from './components/EditProject';
+import AppLayout from './pages/AppLayout';
 import './style.scss';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import ProjectOverview from './pages/Projects.js';
 
 const theme = createTheme({
   palette: {
@@ -70,18 +70,30 @@ const theme = createTheme({
 })
 
 function App() {
+  const [activeItem, setActiveItem] = useState('projects'); // Initialize activeItem state
+
   return (
-    <ThemeProvider theme={theme}> 
+    <ThemeProvider theme={theme}>
       <Router>
-        <Routes> {/* Use Routes instead of Switch */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/projects" element={<ProjectOverview />} />
-            <Route path="/projects/edit" element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company:'Itestra Project', image: '' }} />} />
-            <Route path="/" element={<Login />} /> {/* Default route */}
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/projects"
+            element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
+          />
+          <Route
+            path="/employees"
+            element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
+          />
+          <Route
+            path="/projects/edit"
+            element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company: 'Itestra Project', image: '' }} />}
+          />
+          <Route path="/" element={<Login />} /> {/* Default route */}
         </Routes>
       </Router>
-    </ThemeProvider> 
+    </ThemeProvider>
   );
 }
 

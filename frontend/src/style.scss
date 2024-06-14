@@ -105,10 +105,33 @@
   margin-bottom: 5px !important;
 }
 
+.instances-text {
+  font-family: 'Roboto', sans-serif !important;
+  color: #757575 !important;
+  font-size: 12px !important;
+  line-height: 13px !important;
+  letter-spacing: 0.25px !important;
+  margin-top: 6px !important;
+  font-weight: normal !important;
+}
+
+.table-title {
+  font-family: 'Helvetica', sans-serif !important;
+  color: #A0AEC0 !important;
+  font-size: 12px !important;
+  line-height: 150% !important;
+  letter-spacing: 0 !important;
+  font-weight: bold !important;
+}
+
 .MuiInputBase-input::placeholder {
   color: #2D3748 !important;
   font-family: 'Helvetica', sans-serif !important;
   font-size: 14px !important;
   line-height: 140% !important;
   letter-spacing: 0 !important;
+}
+
+.MuiAvatarGroup-root .MuiAvatar-root {
+  margin-left: -16px !important;
 }

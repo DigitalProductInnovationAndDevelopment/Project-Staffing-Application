@@ -3,7 +3,7 @@ import { Typography, TextField, Button, Grid, IconButton, InputAdornment } from 
 import { ReactComponent as LoginImage } from '../../assets/images/login-page.svg';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 function Login() {
@@ -11,6 +11,7 @@ function Login() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
   
     const handleClickShowPassword = () => {
       setShowPassword(!showPassword);
@@ -42,6 +43,7 @@ function Login() {
       if (email === mockEmail && password === mockPassword) {
         setErrorMessage('');
         // Perform login action (redirect, store auth token, etc.)
+        navigate('/projects');
       } else {
         setErrorMessage('Email or password is invalid');
       }
