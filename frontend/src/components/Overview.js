@@ -334,14 +334,7 @@ const Overview = () => {
                       <Typography
                         variant="body2"
                         color="textSecondary"
-                        sx={{
-                          fontFamily: 'Roboto, sans-serif',
-                          fontSize: '12px',
-                          lineHeight: '13px',
-                          letterSpacing: '0.25px',
-                          color: '#757575',
-                          mt: '6px',
-                        }}
+                        className="instances-text"
                       >
                         {profile.instances} Instances
                       </Typography>
