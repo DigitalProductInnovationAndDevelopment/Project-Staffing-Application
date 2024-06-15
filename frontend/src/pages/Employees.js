@@ -141,7 +141,7 @@ function EmployeeOverview() {
               <React.Fragment key={index}>
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
-                  <Grid container>
+                  <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Avatar src={employee.avatar} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
