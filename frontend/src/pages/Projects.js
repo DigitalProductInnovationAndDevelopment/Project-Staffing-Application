@@ -222,7 +222,7 @@ function ProjectOverview() {
                     <Box sx={{ width: '10%' }}>
                       <Typography variant="body2">{project.status}</Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', width: '20%' }}>
+                    <Box sx={{  display: 'flex', flexDirection: 'column', width: '20%' }}>
                       <Typography sx={{ mr: 1, color: {
                         color:
                         project.capacity >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
@@ -237,7 +237,7 @@ function ProjectOverview() {
                         value={parseInt(project.capacity)}
                         sx={{
                           width: "60%",
-                          height: 8,
+                          height: '6px',
                           borderRadius: 5,
                           "& .MuiLinearProgress-bar": {
                             backgroundColor:

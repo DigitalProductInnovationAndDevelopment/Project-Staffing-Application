@@ -124,6 +124,22 @@
   font-weight: bold !important;
 }
 
+.table-skillset-body{
+  font-family: 'Roboto', sans-serif !important;
+  font-size:  14px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  letter-spacing: 0.16px !important;
+  color: #BDBDBD !important;
+  background-color: white !important;
+  border: 1.2px solid #BDBDBD !important;
+  border-radius: 100px !important;
+  padding: 4px 8px !important;
+  text-align: center !important;
+  margin: 0 !important;
+  display: inline-block !important;
+}
+
 .MuiInputBase-input::placeholder {
   color: #2D3748 !important;
   font-family: 'Helvetica', sans-serif !important;
