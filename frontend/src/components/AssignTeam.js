@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { Box, Typography, Tabs, Tab, Slider, Avatar, Button } from '@mui/material';
+import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
+import AvatarEx4 from './../assets/images/icons/avatar_ex4.svg';
+import AvatarGreen from './../assets/images/icons/green_avatar.svg';
+import AvatarBlue from './../assets/images/icons/blue_avatar.svg';
+import AvatarDB from './../assets/images/icons/dblue_avatar.svg';
+import AvatarPurple from './../assets/images/icons/purple_avatar.svg';
 
 const skillsets = {
   'PROJECT LEAD': [
@@ -36,19 +42,9 @@ const skillsets = {
 
 const employees = [
   {
-    name: 'Andrej Karpathy',
-    email: 'karpathy@itestra.com',
-    skills: [
-      { skill: 'Technology', points: '5/10' },
-      { skill: 'Solution Engineering', points: '4/10' },
-      { skill: 'Self-Management', points: '6/10' },
-      { skill: 'Communication Skills', points: '6/10' },
-      { skill: 'Employee Leadership', points: '8/10' },
-    ],
-  },
-  {
     name: 'Peter Drucker',
     email: 'drucker@itestra.com',
+    avatar: AvatarEx4,
     skills: [
       { skill: 'Technology', points: '3/10' },
       { skill: 'Solution Engineering', points: '1/10' },
@@ -58,8 +54,57 @@ const employees = [
     ],
   },
   {
+    name: 'Andrej Karpathy',
+    email: 'karpathy@itestra.com',
+    avatar: AvatarDB,
+    skills: [
+      { skill: 'Technology', points: '8/10' },
+      { skill: 'Solution Engineering', points: '6/10' },
+      { skill: 'Self-Management', points: '7/10' },
+      { skill: 'Communication Skills', points: '2/10' },
+      { skill: 'Employee Leadership', points: '5/10' },
+    ],
+  },
+  {
+    name: 'Kales Urany',
+    email: 'kurany@itestra.com',
+    avatar: AvatarPurple,
+    skills: [
+      { skill: 'Technology', points: '5/10' },
+      { skill: 'Solution Engineering', points: '4/10' },
+      { skill: 'Self-Management', points: '6/10' },
+      { skill: 'Communication Skills', points: '6/10' },
+      { skill: 'Employee Leadership', points: '8/10' },
+    ],
+  },
+  {
+    name: 'Umay Cental',
+    email: 'ucental@itestra.com',
+    avatar: AvatarBlue,
+    skills: [
+      { skill: 'Technology', points: '1/10' },
+      { skill: 'Solution Engineering', points: '10/10' },
+      { skill: 'Self-Management', points: '2/10' },
+      { skill: 'Communication Skills', points: '5/10' },
+      { skill: 'Employee Leadership', points: '6/10' },
+    ],
+  },
+  {
+    name: 'Halsey Allison',
+    email: 'halsey@itestra.com',
+    avatar: AvatarGreen,
+    skills: [
+      { skill: 'Technology', points: '6/10' },
+      { skill: 'Solution Engineering', points: '1/10' },
+      { skill: 'Self-Management', points: '6/10' },
+      { skill: 'Communication Skills', points: '9/10' },
+      { skill: 'Employee Leadership', points: '4/10' },
+    ],
+  },
+  {
     name: 'Andrew Ng',
     email: 'andrew@itestra.com',
+    avatar: AvatarGreen,
     skills: [
       { skill: 'Frontend Development', points: '8/10' },
       { skill: 'Backend Development', points: '5/10' },
@@ -71,6 +116,7 @@ const employees = [
   {
     name: 'Paul Paulsen',
     email: 'paulsen@itestra.com',
+    avatar: AvatarDB,
     skills: [
       { skill: 'Frontend Development', points: '8/10' },
       { skill: 'Backend Development', points: '7/10' },
@@ -83,13 +129,31 @@ const employees = [
 
 const AssignTeam = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [open, setOpen] = useState(false);
+
   const [assigned, setAssigned] = useState({
     'PROJECT LEAD': [],
     'FULL-STACK DEVELOPER': [],
     'CLOUD EXPERT': [],
     'SOFTWARE TESTING': [],
   });
+  
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
+  const handleOpenEmployeeDialog = (employee) => {
+    setSelectedEmployee(employee);
+    setOpen(true);
+  };
+  const handleCloseEditDialog = () => {
+    setOpen(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleOnBack = () => {
+    setOpen(false);
+    setSelectedEmployee(null);
+  };
+  
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -348,7 +412,7 @@ const AssignTeam = () => {
         </Typography>
         {assigned[tabLabels[activeTab]].map((employee) => (
           <Box key={employee.email} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
-            <Avatar sx={{ marginRight: 2 }}>{employee.name[0]}</Avatar>
+            <Avatar src={employee.avatar} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.name[0]}</Avatar>
             <Box  sx={{ flex: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', mr: '30px'}}>
               <Typography
                 sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}
@@ -401,6 +465,7 @@ const AssignTeam = () => {
                   bgcolor: '#2D82C5',
                 },
               }}
+              onClick={() => handleOpenEmployeeDialog(employee)}
             >
               See Details
             </Button>
@@ -425,7 +490,7 @@ const AssignTeam = () => {
         </Typography>
         {getFilteredEmployees().map((employee) => (
           <Box key={employee.email} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
-            <Avatar sx={{ marginRight: 2 }}>{employee.name[0]}</Avatar>
+            <Avatar src={employee.avatar} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.name[0]}</Avatar>
             <Box sx={{ flex: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', mr: '30px' }}>
               <Typography
                sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}
@@ -479,6 +544,7 @@ const AssignTeam = () => {
                   bgcolor: '#2D82C5',
                 },
               }}
+              onClick={() => handleOpenEmployeeDialog(employee)}
             >
               See Details
             </Button>
@@ -512,6 +578,12 @@ const AssignTeam = () => {
         ))}
       </Box>
     </Box>
+    {selectedEmployee && (
+      <EditProfile open={open} onClose={handleCloseEditDialog} onBack={handleOnBack}
+        employee={{ name: selectedEmployee.name, email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+        source="AssignTeam"
+      />
+    )}
   </Box>
   );
 };

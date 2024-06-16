@@ -276,10 +276,10 @@ const Overview = () => {
                   <MenuItem value="">
                     <em>City/Location</em>
                   </MenuItem>
-                  <MenuItem value="New York">New York</MenuItem>
-                  <MenuItem value="San Francisco">San Francisco</MenuItem>
-                  <MenuItem value="Chicago">Chicago</MenuItem>
-                  <MenuItem value="Los Angeles">Los Angeles</MenuItem>
+                  <MenuItem value="Munich">Munich</MenuItem>
+                  <MenuItem value="Madrid">Madrid</MenuItem>
+                  <MenuItem value="Stockholm">Stockholm</MenuItem>
+                  <MenuItem value="Tallin">Tallin</MenuItem>
                 </Select>
               </Box>
             </Box>

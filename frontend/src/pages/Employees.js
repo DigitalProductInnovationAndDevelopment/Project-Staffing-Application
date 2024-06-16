@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Box,
   Typography,
@@ -9,10 +9,11 @@ import {
   IconButton
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import AvatarEx from './../assets/images/icons/ex_avatar.jpg';
-import AvatarEx2 from './../assets/images/icons/avatar_ex2.jpg';
-import AvatarEx3 from './../assets/images/icons/avatar_ex3.jpg';
-import AvatarEx4 from './../assets/images/icons/avatar_ex4.jpg';
+import AvatarEx from './../assets/images/icons/ex_avatar.svg';
+import AvatarEx2 from './../assets/images/icons/avatar_ex2.svg';
+import AvatarEx3 from './../assets/images/icons/avatar_ex3.svg';
+import AvatarEx4 from './../assets/images/icons/avatar_ex4.svg';
+import EditProfile from './../components/EditProfile';
 
 const employees = [
   {
@@ -83,6 +84,18 @@ const employees = [
 ];
 
 function EmployeeOverview() {
+  const [open, setOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const handleOpenEditDialog = (employee) => {
+    setSelectedEmployee(employee);
+    setOpen(true);
+  };
+  const handleCloseEditDialog = () => {
+    setOpen(false);
+    setSelectedEmployee(null);
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none" }}>
       <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -141,7 +154,7 @@ function EmployeeOverview() {
               <React.Fragment key={index}>
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
-                  <Grid container>
+                  <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Avatar src={employee.avatar} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
@@ -196,7 +209,7 @@ function EmployeeOverview() {
                       <Typography variant="body2">{employee.location}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => handleOpenEditDialog(employee)}>
                         <MoreVertIcon />
                       </IconButton>
                     </Grid>
@@ -207,6 +220,12 @@ function EmployeeOverview() {
           </Box>
         </Box>
       </Box>
+      {selectedEmployee && (
+        <EditProfile open={open} onClose={handleCloseEditDialog}
+          employee={{ name: selectedEmployee.name, email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+          source="Employees"
+        />
+      )}
     </Box>
   );
 }
