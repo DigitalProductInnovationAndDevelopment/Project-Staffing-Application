@@ -25,26 +25,29 @@ const theme = createTheme({
     primBlue: {
       main: '#2684FF',
     },
+    profBlue: {
+      main: '#36C5F0'
+    }
   },
   components: {
     MuiTextField: {
       styleOverrides: {
         root: {
           '& label.Mui-focused': {
-            color: '#4fd1c5',
+            color: '#718096',
           },
           '& .MuiInput-underline:after': {
-            borderBottomColor: '#4fd1c5',
+            borderBottomColor: '#718096',
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
-              borderColor: '#e2e8f0',
+              borderColor: '#A0AEC0',
             },
             '&:hover fieldset': {
-              borderColor: '#4fd1c5',
+              borderColor: '#718096',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#4fd1c5',
+              borderColor: '#718096',
             },
           },
         },

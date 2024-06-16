@@ -80,7 +80,7 @@
 
 .account-message-text {
   font-family: 'Helvetica', sans-serif !important;
-  color: #2D3748 !important;
+  color: #718096 !important;
   font-size: 14px !important;
   line-height: 140% !important;
   letter-spacing: 0 !important;
@@ -138,6 +138,14 @@
   text-align: center !important;
   margin: 0 !important;
   display: inline-block !important;
+}
+
+.text-regular{
+  font-family: 'Helvetica', sans-serif !important;
+  color: black !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
+  letter-spacing: 0 !important;
 }
 
 .MuiInputBase-input::placeholder {
