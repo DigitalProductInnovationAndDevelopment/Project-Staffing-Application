@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Tabs, Tab, Slider, Avatar, Button } from '@mui/material';
+import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
 import AvatarEx4 from './../assets/images/icons/avatar_ex4.svg';
@@ -128,13 +129,31 @@ const employees = [
 
 const AssignTeam = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [open, setOpen] = useState(false);
+
   const [assigned, setAssigned] = useState({
     'PROJECT LEAD': [],
     'FULL-STACK DEVELOPER': [],
     'CLOUD EXPERT': [],
     'SOFTWARE TESTING': [],
   });
+  
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
+  const handleOpenEmployeeDialog = (employee) => {
+    setSelectedEmployee(employee);
+    setOpen(true);
+  };
+  const handleCloseEditDialog = () => {
+    setOpen(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleOnBack = () => {
+    setOpen(false);
+    setSelectedEmployee(null);
+  };
+  
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -446,6 +465,7 @@ const AssignTeam = () => {
                   bgcolor: '#2D82C5',
                 },
               }}
+              onClick={() => handleOpenEmployeeDialog(employee)}
             >
               See Details
             </Button>
@@ -524,6 +544,7 @@ const AssignTeam = () => {
                   bgcolor: '#2D82C5',
                 },
               }}
+              onClick={() => handleOpenEmployeeDialog(employee)}
             >
               See Details
             </Button>
@@ -557,6 +578,12 @@ const AssignTeam = () => {
         ))}
       </Box>
     </Box>
+    {selectedEmployee && (
+      <EditProfile open={open} onClose={handleCloseEditDialog} onBack={handleOnBack}
+        employee={{ name: selectedEmployee.name, email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+        source="AssignTeam"
+      />
+    )}
   </Box>
   );
 };
