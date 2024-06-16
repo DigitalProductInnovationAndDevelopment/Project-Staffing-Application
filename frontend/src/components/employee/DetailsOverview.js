@@ -9,11 +9,11 @@ const data = [
 ];
 
 const initialSkills = [
-  { name: 'Technology', value: 70, min: 0, max: 8,},
-  { name: 'Solution Engineering', value: 80 , min: 0, max: 25,},
-  { name: 'Self Management', value: 90,  min: 0, max: 18, },
-  { name: 'Communication Skills', value: 85,  min: 0, max: 30, },
-  { name: 'Employee Leadership', value: 75,  min: 0, max: 30, },
+  { name: 'Technology', value: 3, min: 0, max: 20,},
+  { name: 'Solution Engineering', value: 7 , min: 0, max: 15,},
+  { name: 'Self Management', value: 5,  min: 0, max: 12, },
+  { name: 'Communication Skills', value: 7,  min: 0, max: 13, },
+  { name: 'Employee Leadership', value: 9,  min: 0, max: 10, },
 ];
 
 const Overview = () => {
