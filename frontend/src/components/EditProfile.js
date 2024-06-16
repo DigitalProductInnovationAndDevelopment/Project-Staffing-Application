@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button} from '@mui/material';
 import Overview from './employee/Overview';
+import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
 import OverviewIcon from './../assets/images/overview-icon.svg';
 import '../style.scss';
@@ -131,7 +132,11 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
             </Tabs>
           </Box>
           <DialogContent>
-            {activeTab === 0 && <Overview />}
+            {source === 'Employees' ? (
+              activeTab === 0 && <Overview />
+            ) : (
+              activeTab === 0 && <DetailsOverview />
+            )}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
           {source === 'Employees' ? (
