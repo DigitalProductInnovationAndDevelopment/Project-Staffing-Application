@@ -62,7 +62,7 @@ const Overview = () => {
       {
         id: 2,
         title: "Full-Stack Developer",
-        instances: 1,
+        instances: 2,
         sliders: {
           technology: 15,
           solutionEngineering: 8,
@@ -74,7 +74,7 @@ const Overview = () => {
       {
         id: 3,
         title: "Cloud Expert",
-        instances: 3,
+        instances: 1,
         sliders: {
           technology: 8,
           solutionEngineering: 7,
