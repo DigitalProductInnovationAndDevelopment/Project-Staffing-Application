@@ -61,7 +61,7 @@ const Overview = () => {
       },
       {
         id: 2,
-        title: "Front-End Developer",
+        title: "Full-Stack Developer",
         instances: 1,
         sliders: {
           technology: 15,
@@ -134,6 +134,31 @@ const Overview = () => {
       communicationSkills: 0,
       employeeLeadership: 0,
     });
+  };
+
+  const handleAddProfile = () => {
+    const newProfile = {
+      id: profiles.length + 1,
+      title: profileName,
+      instances: fteNumber,
+      sliders,
+    };
+
+    setProfiles([...profiles, newProfile]);
+
+    setProfileName("");
+    setFteNumber("");
+    setSliders({
+      technology: 0,
+      solutionEngineering: 0,
+      selfManagement: 0,
+      communicationSkills: 0,
+      employeeLeadership: 0,
+    });
+  };
+
+  const handleDeleteProfile = (profileId) => {
+    setProfiles(profiles.filter(profile => profile.id !== profileId));
   };
 
   return (
@@ -307,9 +332,9 @@ const Overview = () => {
               Profiles on this Project
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
-              {profiles.map((profile, index) => (
+              {profiles.map((profile) => (
                 <Box
-                  key={index}
+                  key={profile.id}
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -376,6 +401,7 @@ const Overview = () => {
                           bgcolor: '#CB074D',
                         },
                       }}
+                      onClick={() => handleDeleteProfile(profile.id)}
                     >
                       Delete <img src={deleteIcon} alt="Delete" style={{ marginLeft: '10px' }} />
                     </Button>
@@ -407,7 +433,7 @@ const Overview = () => {
                 pb: 1,
               }}
             >
-              Define Project Profiles
+              {selectedProfile ? "Edit Existing Profile" : "Add New Profile"}
             </Typography>
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
@@ -471,9 +497,9 @@ const Overview = () => {
                       bgcolor: '#2D82C5',
                     },
                   }}
-                  onClick={handleSaveProfile}
+                  onClick={selectedProfile ? handleSaveProfile : handleAddProfile}
                 >
-                  Save
+                  {selectedProfile ? "SAVE" : "ADD"}
                 </Button>
               </Box>
             {[
