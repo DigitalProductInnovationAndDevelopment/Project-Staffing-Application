@@ -31,7 +31,7 @@ const skillsets = {
     { skill: 'Communication Skills', points: '7/13' },
     { skill: 'Employee Leadership', points: '3/10' },
   ],
-  'SOFTWARE TESTING': [
+  'SOFTWARE TESTER': [
     { skill: 'Technology', points: '17/20' },
     { skill: 'Solution Engineering', points: '14/15' },
     { skill: 'Self-Management', points: '5/12' },
@@ -111,14 +111,14 @@ const AssignTeam = () => {
     'PROJECT LEAD': [],
     'FULL-STACK DEVELOPER': [],
     'CLOUD EXPERT': [],
-    'SOFTWARE TESTING': [],
+    'SOFTWARE TESTER': [],
   });
  
   const totalSlots = {
     'PROJECT LEAD': 1,
     'FULL-STACK DEVELOPER': 3,
     'CLOUD EXPERT': 1,
-    'SOFTWARE TESTING': 0,
+    'SOFTWARE TESTER': 0,
   };
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
