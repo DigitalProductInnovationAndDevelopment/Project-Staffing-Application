@@ -20,7 +20,7 @@ const employees = [
     name: "Esthera Jackson",
     email: "esthera@itestra.com",
     avatar: AvatarEx,
-    utilization: 75,
+    utilization: 60,
     projects: 2,
     technology: "5/20",
     solutionEngineering: "11/15",
