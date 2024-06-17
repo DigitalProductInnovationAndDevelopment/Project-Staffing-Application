@@ -11,32 +11,32 @@ import AvatarPurple from './../assets/images/icons/purple_avatar.svg';
 
 const skillsets = {
   'PROJECT LEAD': [
-    { skill: 'Technology', points: '5/10' },
-    { skill: 'Solution Engineering', points: '8/10' },
-    { skill: 'Self-Management', points: '7/10' },
-    { skill: 'Communication Skills', points: '6/10' },
+    { skill: 'Technology', points: '5/20' },
+    { skill: 'Solution Engineering', points: '7/15' },
+    { skill: 'Self-Management', points: '5/12' },
+    { skill: 'Communication Skills', points: '10/13' },
     { skill: 'Employee Leadership', points: '9/10' },
   ],
   'FULL-STACK DEVELOPER': [
-    { skill: 'Frontend Development', points: '8/10' },
-    { skill: 'Backend Development', points: '7/10' },
-    { skill: 'Database Management', points: '6/10' },
-    { skill: 'DevOps', points: '5/10' },
-    { skill: 'Problem Solving', points: '9/10' },
+    { skill: 'Technology', points: '18/20' },
+    { skill: 'Solution Engineering', points: '12/15' },
+    { skill: 'Self-Management', points: '8/12' },
+    { skill: 'Communication Skills', points: '5/13' },
+    { skill: 'Employee Leadership', points: '3/10' },
   ],
   'CLOUD EXPERT': [
-    { skill: 'Cloud Architecture', points: '9/10' },
-    { skill: 'Security', points: '8/10' },
-    { skill: 'Networking', points: '7/10' },
-    { skill: 'Cost Management', points: '6/10' },
-    { skill: 'Automation', points: '7/10' },
+    { skill: 'Technology', points: '19/20' },
+    { skill: 'Solution Engineering', points: '9/15' },
+    { skill: 'Self-Management', points: '8/12' },
+    { skill: 'Communication Skills', points: '7/13' },
+    { skill: 'Employee Leadership', points: '3/10' },
   ],
-  'SOFTWARE TESTING': [
-    { skill: 'Test Automation', points: '8/10' },
-    { skill: 'Manual Testing', points: '7/10' },
-    { skill: 'Performance Testing', points: '6/10' },
-    { skill: 'Security Testing', points: '5/10' },
-    { skill: 'Bug Reporting', points: '9/10' },
+  'SOFTWARE TESTER': [
+    { skill: 'Technology', points: '17/20' },
+    { skill: 'Solution Engineering', points: '14/15' },
+    { skill: 'Self-Management', points: '5/12' },
+    { skill: 'Communication Skills', points: '2/13' },
+    { skill: 'Employee Leadership', points: '2/10' },
   ],
 };
 
@@ -46,9 +46,9 @@ const employees = [
     email: 'drucker@itestra.com',
     avatar: AvatarEx4,
     skills: [
-      { skill: 'Technology', points: '3/10' },
-      { skill: 'Solution Engineering', points: '1/10' },
-      { skill: 'Self-Management', points: '7/10' },
+      { skill: 'Technology', points: '9/10' },
+      { skill: 'Solution Engineering', points: '10/10' },
+      { skill: 'Self-Management', points: '9/10' },
       { skill: 'Communication Skills', points: '6/10' },
       { skill: 'Employee Leadership', points: '9/10' },
     ],
@@ -59,7 +59,7 @@ const employees = [
     avatar: AvatarDB,
     skills: [
       { skill: 'Technology', points: '8/10' },
-      { skill: 'Solution Engineering', points: '6/10' },
+      { skill: 'Solution Engineering', points: '10/10' },
       { skill: 'Self-Management', points: '7/10' },
       { skill: 'Communication Skills', points: '2/10' },
       { skill: 'Employee Leadership', points: '5/10' },
@@ -78,8 +78,8 @@ const employees = [
     ],
   },
   {
-    name: 'Umay Cental',
-    email: 'ucental@itestra.com',
+    name: 'Andrew Ng',
+    email: 'andrew@itestra.com',
     avatar: AvatarBlue,
     skills: [
       { skill: 'Technology', points: '1/10' },
@@ -90,8 +90,8 @@ const employees = [
     ],
   },
   {
-    name: 'Halsey Allison',
-    email: 'halsey@itestra.com',
+    name: 'Paul Paulsen',
+    email: 'paulsen@itestra.com',
     avatar: AvatarGreen,
     skills: [
       { skill: 'Technology', points: '6/10' },
@@ -99,30 +99,6 @@ const employees = [
       { skill: 'Self-Management', points: '6/10' },
       { skill: 'Communication Skills', points: '9/10' },
       { skill: 'Employee Leadership', points: '4/10' },
-    ],
-  },
-  {
-    name: 'Andrew Ng',
-    email: 'andrew@itestra.com',
-    avatar: AvatarGreen,
-    skills: [
-      { skill: 'Frontend Development', points: '8/10' },
-      { skill: 'Backend Development', points: '5/10' },
-      { skill: 'Database Management', points: '6/10' },
-      { skill: 'DevOps', points: '5/10' },
-      { skill: 'Problem Solving', points: '9/10' },
-    ],
-  },
-  {
-    name: 'Paul Paulsen',
-    email: 'paulsen@itestra.com',
-    avatar: AvatarDB,
-    skills: [
-      { skill: 'Frontend Development', points: '8/10' },
-      { skill: 'Backend Development', points: '7/10' },
-      { skill: 'Database Management', points: '6/10' },
-      { skill: 'DevOps', points: '5/10' },
-      { skill: 'Problem Solving', points: '9/10' },
     ],
   },
 ];
@@ -135,9 +111,16 @@ const AssignTeam = () => {
     'PROJECT LEAD': [],
     'FULL-STACK DEVELOPER': [],
     'CLOUD EXPERT': [],
-    'SOFTWARE TESTING': [],
+    'SOFTWARE TESTER': [],
   });
-  
+ 
+  const totalSlots = {
+    'PROJECT LEAD': 1,
+    'FULL-STACK DEVELOPER': 3,
+    'CLOUD EXPERT': 1,
+    'SOFTWARE TESTER': 0,
+  };
+
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const handleOpenEmployeeDialog = (employee) => {
@@ -205,6 +188,9 @@ const AssignTeam = () => {
 
   const tabLabels = Object.keys(skillsets);
   const currentSkillsets = skillsets[tabLabels[activeTab]];
+  const assignedCount = assigned[tabLabels[activeTab]].length;
+  const totalSlotsForRole = totalSlots[tabLabels[activeTab]];
+  const sliderValue = (assignedCount / totalSlotsForRole) * 100;
 
   return (
     <Box>
@@ -290,10 +276,10 @@ const AssignTeam = () => {
             alignSelf: 'flex-start',
           }}
         >
-          1/3
+          {assigned[tabLabels[activeTab]].length}/{totalSlots[tabLabels[activeTab]]}
         </Typography>
         <Slider
-          value={33}
+          value={sliderValue}
           sx={{
             width: '100%',
             height: '2px',

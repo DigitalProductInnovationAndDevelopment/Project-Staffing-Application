@@ -1,17 +1,11 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button} from '@mui/material';
+import React from 'react';
+import { Dialog, DialogContent, Box, Avatar, Typography, Button} from '@mui/material';
 import Overview from './employee/Overview';
 import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
-import OverviewIcon from './../assets/images/overview-icon.svg';
 import '../style.scss';
 
 const EditProfile = ({ open, onClose, employee, source, onBack}) => {
-  const [activeTab, setActiveTab] = useState(0);
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
 
   const handleSaveAndClose = () => {
     // Add save logic here
@@ -49,7 +43,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                 mb: 1, mt: 2, ml: 2,
               }}
             >
-              Start / Employees / Edit Profile
+              {source === 'Employees' ?  ' Start / Employees / Edit Profile' : ( 'Start / Projects / Assign Team / See Profile' )}
             </Typography>
             <Typography
               sx={{
@@ -61,7 +55,11 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                 mb: 15, ml: 2,
               }}
             >
-              Edit Profile
+            {source === 'Employees' ? 
+              'Edit Profile'
+             : (
+              'See Profile'
+            )}
             </Typography>
           </Box>
           <Box
@@ -105,37 +103,12 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                 </Typography>
               </Box>
             </Box>
-            <Tabs value={activeTab} onChange={handleTabChange} sx={{ '& .MuiTabs-indicator': { backgroundColor: 'transparent' }, mt: '6px'}}>
-              <Tab
-              icon={<img src={OverviewIcon} alt="Overview" />}
-              label={<Typography sx={{
-                fontFamily: 'Helvetica, sans-serif',
-                color: '#2D3748',
-                fontWeight: 'bold',
-                fontSize: '10px',
-                lineHeight: '150%',
-                letterSpacing: '0', 
-                ml: '3px'
-              }}>OVERVIEW</Typography>}
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '12px',
-                backgroundColor: activeTab === 0 ? '#fff' : 'transparent',
-                boxShadow: activeTab === 0 ? '0px 2px 4px rgba(0, 0, 0, 0.2)' : 'none',
-                minHeight: '10px',
-                '& .MuiTab-iconWrapper': { marginBottom: 0 },
-              }}
-              />
-            </Tabs>
           </Box>
           <DialogContent>
             {source === 'Employees' ? (
-              activeTab === 0 && <Overview />
+              <Overview />
             ) : (
-              activeTab === 0 && <DetailsOverview />
+              <DetailsOverview />
             )}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>

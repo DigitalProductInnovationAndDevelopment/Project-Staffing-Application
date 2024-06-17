@@ -37,8 +37,8 @@ function Login() {
       }
 
       // Mock validation
-      const mockEmail = 'user@example.com';
-      const mockPassword = 'password123';
+      const mockEmail = 'user@ex.com';
+      const mockPassword = '1234';
   
       if (email === mockEmail && password === mockPassword) {
         setErrorMessage('');
