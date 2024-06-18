@@ -3,7 +3,7 @@ import User from "../models/User.js";
 
 
 
-export const getAllEmployeesController = async (req, res, next) => {
+export const getAllUsersController = async (req, res, next) => {
     try {
         const all_users = await User.find().select('-password'); //exclude password from query response
         res.status(200).json(all_users);
@@ -14,7 +14,7 @@ export const getAllEmployeesController = async (req, res, next) => {
 };
 
 
-export const getEmployeeByIdController = async (req, res, next) => {
+export const getUserByIdController = async (req, res, next) => {
     try {
         const { employeeId } = req.params;
         const user = await User.findOne({ userId: employeeId }).select('-password'); //exclude password from query response
@@ -26,10 +26,10 @@ export const getEmployeeByIdController = async (req, res, next) => {
 };
 
 
-export const updateEmployeeController = async (req, res, next) => {
+export const updateUserController = async (req, res, next) => {
     try {
         // TODO
-        res.send('updateEmployeeController');
+        res.send('updateUserController');
 
     } catch (err) {
         next(err);
@@ -37,10 +37,10 @@ export const updateEmployeeController = async (req, res, next) => {
 };
 
 
-export const createNewEmployeeController = async (req, res, next) => {
+export const createNewUserController = async (req, res, next) => {
     try {
         // TODO
-        res.send('createNewEmployeeController');
+        res.send('createNewUserController');
 
     } catch (err) {
         next(err);
