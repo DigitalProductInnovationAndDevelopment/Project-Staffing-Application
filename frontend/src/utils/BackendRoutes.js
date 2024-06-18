@@ -9,24 +9,24 @@ const BackendRoutes = {
     LOGOUT: "/auth/logout",
 
     //user_api
-    GET_ALL_EMPLOYEES: "/employees",
-    GET_EMPLOYEE_BY_ID: (employeeId) => "/employees/" + employeeId,
-    UPDATE_EMPLOYEE: (employeeId) => "/employees/" + employeeId,
-    CREATE_NEW_EMPLOYEE: "/employees",
+    CREATE_NEW_USER: "/user",
+    GET_ALL_USERS: "/user",
+    GET_USER_BY_ID: (userId) => "/user/" + userId,
+    UPDATE_USER: (userId) => "/user/" + userId,
 
     //project_api
-    GET_ALL_PROJECTS: "/projects",
-    GET_PROJECT_BY_ID: (projectId) => "/projects/" + projectId,
-    CREATE_NEW_PROJECT: "/projects",
-    UPDATE_PROJECT: (projectId) => "/projects/" + projectId,
-    GET_PROJECT_ASSIGNMENT_BY_PROJECT_ID: (projectId) => "/projects/" + projectId +  "assign",
-    UPDATE_PROJECT_ASSIGNMENT: (projectId) => "/projects/" + projectId +  "assign",
+    CREATE_NEW_PROJECT: "/project",
+    GET_ALL_PROJECTS: "/project",
+    GET_PROJECT_BY_ID: (projectId) => "/project/" + projectId,
+    GET_PROJECT_ASSIGNMENT_BY_PROJECT_ID: (projectId) => "/project/" + projectId +  "assign",
+    UPDATE_PROJECT: (projectId) => "/project/" + projectId,
+    UPDATE_PROJECT_ASSIGNMENT: (projectId) => "/project/" + projectId +  "assign",
     //project_api >> profile_api
-    GET_ALL_PROFILES_BY_PROJECT_ID: (projectId) => "/projects/" + projectId + "/profiles",
-    GET_PROFILE_BY_ID: (projectId, profileId) => "/projects/" + projectId + "/" + profileId,
-    CREATE_NEW_PROFILE: (projectId) => "/projects/" + projectId,
-    UPDATE_PROFILE: (projectId, profileId) => "/projects/" + projectId + "/" + profileId,
-    DELETE_PROFILE: (projectId, profileId) => "/projects/" + projectId + "/" + profileId,
+    CREATE_NEW_PROFILE: (projectId) => "/project/" + projectId,
+    GET_ALL_PROFILES_BY_PROJECT_ID: (projectId) => "/project/" + projectId + "/profiles",
+    GET_PROFILE_BY_ID: (projectId, profileId) => "/project/" + projectId + "/" + profileId,
+    UPDATE_PROFILE: (projectId, profileId) => "/project/" + projectId + "/" + profileId,
+    DELETE_PROFILE: (projectId, profileId) => "/project/" + projectId + "/" + profileId,
 
 };
 

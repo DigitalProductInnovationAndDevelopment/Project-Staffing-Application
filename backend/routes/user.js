@@ -1,17 +1,17 @@
 import express from "express";
-import { createNewEmployeeController, getAllEmployeesController, getEmployeeByIdController, updateEmployeeController } from "../controllers/user.js";
+import { createNewUserController, getAllUsersController, getUserByIdController, updateUserController } from "../controllers/user.js";
 
 const router = express.Router();
 
 // CREATE
-router.post("/", createNewEmployeeController);
+router.post("/", createNewUserController);
 
 // READ
-router.get("/", getAllEmployeesController);
-router.get("/:employeeId", getEmployeeByIdController);
+router.get("/", getAllUsersController);
+router.get("/:userId", getUserByIdController);
 
 // UPDATE
-router.put("/:employeeId", updateEmployeeController);
+router.put("/:userId", updateUserController);
 
 // DELETE
 
