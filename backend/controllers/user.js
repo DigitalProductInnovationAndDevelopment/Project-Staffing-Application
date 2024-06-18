@@ -16,8 +16,8 @@ export const getAllUsersController = async (req, res, next) => {
 
 export const getUserByIdController = async (req, res, next) => {
     try {
-        const { employeeId } = req.params;
-        const user = await User.findOne({ userId: employeeId }).select('-password'); //exclude password from query response
+        const { userId } = req.params;
+        const user = await User.findOne({ userId: userId }).select('-password'); //exclude password from query response
         res.status(200).json(user);
 
     } catch (err) {
