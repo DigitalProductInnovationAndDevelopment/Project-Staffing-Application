@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './pages/auth/Login.js';
+import PageNotFound from './pages/PageNotFound.js';
 import SignUp from './pages/auth/SignUp';
 import EditProject from './components/EditProject';
 import AppLayout from './pages/AppLayout';
@@ -94,6 +95,7 @@ function App() {
             element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company: 'Itestra Project', image: '' }} />}
           />
           <Route path="/" element={<Login />} /> {/* Default route */}
+          <Route path="*" element={<PageNotFound/>}/>
         </Routes>
       </Router>
     </ThemeProvider>
