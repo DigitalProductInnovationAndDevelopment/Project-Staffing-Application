@@ -62,7 +62,9 @@ export const updateProjectController = async (req, res, next) => {
       return res.status(404).json({ message: 'Project not found' })
     }
     const updatedProject = await updateProjectService(project._id, req.body)
-    res.status(200).json(updatedProject)
+    res
+      .status(200)
+      .json({ message: 'Project updated successfully', updatedProject })
   } catch (err) {
     res
       .status(500)
