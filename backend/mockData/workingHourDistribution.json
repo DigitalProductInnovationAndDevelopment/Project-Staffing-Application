@@ -1,53 +1,52 @@
 [
-    {
-        "date": "2024-05-20",
-        "numberOfRealWorkingHours": 4,
-        "userId": "user1",
-        "projectId": "project1"
-    },
-    {
-        "date": "2024-05-20",
-        "numberOfRealWorkingHours": 4,
-        "userId": "user1",
-        "projectId": "project2"
-    },
+  {
+    "date": "2024-05-20",
+    "numberOfRealWorkingHours": 4,
+    "userId": "user1",
+    "projectId": "project1"
+  },
+  {
+    "date": "2024-05-20",
+    "numberOfRealWorkingHours": 4,
+    "userId": "user1",
+    "projectId": "project2"
+  },
 
-    {
-        "date": "2024-05-21",
-        "numberOfRealWorkingHours": 5,
-        "userId": "user1",
-        "projectId": "project1"
-    },
-    {
-        "date": "2024-05-21",
-        "numberOfRealWorkingHours": 2,
-        "userId": "user1",
-        "projectId": "project2"
-    },
-    {
-        "date": "2024-05-21",
-        "numberOfRealWorkingHours": 1,
-        "userId": "user1",
-        "projectId": "project3"
-    },
+  {
+    "date": "2024-05-21",
+    "numberOfRealWorkingHours": 5,
+    "userId": "user1",
+    "projectId": "project1"
+  },
+  {
+    "date": "2024-05-21",
+    "numberOfRealWorkingHours": 2,
+    "userId": "user1",
+    "projectId": "project2"
+  },
+  {
+    "date": "2024-05-21",
+    "numberOfRealWorkingHours": 1,
+    "userId": "user1",
+    "projectId": "project3"
+  },
 
-
-    {
-        "date": "2024-05-20",
-        "numberOfRealWorkingHours": 3,
-        "userId": "user2",
-        "projectId": "project1"
-    },
-    {
-        "date": "2024-05-20",
-        "numberOfRealWorkingHours": 3,
-        "userId": "user2",
-        "projectId": "project2"
-    },
-    {
-        "date": "2024-05-20",
-        "numberOfRealWorkingHours": 2,
-        "userId": "user2",
-        "projectId": "project3"
-    }
+  {
+    "date": "2024-05-20",
+    "numberOfRealWorkingHours": 3,
+    "userId": "user2",
+    "projectId": "project1"
+  },
+  {
+    "date": "2024-05-20",
+    "numberOfRealWorkingHours": 3,
+    "userId": "user2",
+    "projectId": "project2"
+  },
+  {
+    "date": "2024-05-20",
+    "numberOfRealWorkingHours": 2,
+    "userId": "user2",
+    "projectId": "project3"
+  }
 ]
