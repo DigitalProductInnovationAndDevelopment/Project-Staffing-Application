@@ -49,6 +49,15 @@ app.all('*', (req, res, next) => {
 });
 
 /* GLOBAL ERROR HANDLING */
+app.use((err, req, res, next) => {
+  err.status = err.status || 'error';
+  err.statusCode = err.statusCode || 500;
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  });
+});
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;
