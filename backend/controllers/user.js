@@ -1,13 +1,14 @@
 import User from "../models/User.js";
-
-
+import { getAllUsersService } from "../services/user.js";
 
 
 export const getAllUsersController = async (req, res, next) => {
     try {
-        const all_users = await User.find().select('-password'); //exclude password from query response
+        const all_users = await getAllUsersService();
+        if (!all_users) {
+            next(new AppError('Users not found.', 400));
+        }
         res.status(200).json(all_users);
-
     } catch (err) {
         next(err);
     }
