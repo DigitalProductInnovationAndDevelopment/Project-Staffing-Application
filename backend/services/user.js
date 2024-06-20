@@ -1,5 +1,17 @@
 import User from '../models/User.js';
 
+
+
+export const createNewUserService = async (userData) => {
+    try {
+        const newUser = new User(userData);
+        await newUser.save();
+        return newUser;
+    } catch (error) {
+        throw new Error(`Failed to create user: ${error.message}`);
+    }
+};
+
 export const getAllUsersService = async () => {
   const all_users = await User.find().select('-password'); //exclude password from query response
   return all_users;

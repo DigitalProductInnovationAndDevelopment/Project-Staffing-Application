@@ -3,14 +3,34 @@ import {
   getUserByUserIdService,
   updateUserService,
   deleteUserService,
+  createNewUserService,
 } from '../services/user.js';
 
-export const createNewUserController = async (req, res, next) => {
+export const createNewUserController = async (req, res) => {
+  //TODO: use data from frontend
+  //const userData = req.body;
+  const userData = {
+    "userId": "001",
+    "firstName": "new",
+    "lastName": "user",
+    "email": "new@user.com",
+    "password": "0000",
+    //"canWorkRemote": true,
+    "officeLocation": "MUNICH",
+    "roles": [
+      "ADMIN"
+    ]
+  }
   try {
-    // TODO
-    res.send('createNewUserController');
-  } catch (err) {
-    next(err);
+    const newUser = await createNewUserService(userData);
+    return res.status(201).json({
+      message: 'User created successfully',
+      data: newUser,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
