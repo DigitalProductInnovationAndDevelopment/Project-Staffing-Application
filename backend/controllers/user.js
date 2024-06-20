@@ -1,5 +1,4 @@
-import User from "../models/User.js";
-import { getAllUsersService } from "../services/user.js";
+import { getAllUsersService, getUserByIdService } from "../services/user.js";
 
 
 export const getAllUsersController = async (req, res, next) => {
@@ -18,9 +17,11 @@ export const getAllUsersController = async (req, res, next) => {
 export const getUserByIdController = async (req, res, next) => {
     try {
         const { userId } = req.params;
-        const user = await User.findOne({ userId: userId }).select('-password'); //exclude password from query response
+        const user = await getUserByIdService(userId);
+        if (!user) {
+            next(new AppError('User not found.', 400));
+        }
         res.status(200).json(user);
-
     } catch (err) {
         next(err);
     }

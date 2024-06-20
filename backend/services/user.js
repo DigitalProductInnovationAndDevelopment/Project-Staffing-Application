@@ -7,3 +7,8 @@ export const getAllUsersService = async () => {
         return(all_users);
 };
 
+export const getUserByIdService = async (userId) => {
+    const user = await User.findOne({ userId: userId }).select('-password'); //exclude password from query response
+    return(user);
+};
+
