@@ -11,7 +11,7 @@ router.get("/", getAllUsersController);
 router.get("/:userId", getUserByIdController);
 
 // UPDATE
-router.put("/:userId", updateUserController);
+router.patch("/:userId", updateUserController);
 
 // DELETE
 
