@@ -13,6 +13,7 @@ const BackendRoutes = {
     GET_ALL_USERS: "/user",
     GET_USER_BY_ID: (userId) => "/user/" + userId,
     UPDATE_USER: (userId) => "/user/" + userId,
+    DELETE_USER: (userId) => "/user/" + userId,
 
     //project_api
     CREATE_NEW_PROJECT: "/project",

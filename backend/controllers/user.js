@@ -2,7 +2,17 @@ import {
   getAllUsersService,
   getUserByUserIdService,
   updateUserService,
+  deleteUserService,
 } from '../services/user.js';
+
+export const createNewUserController = async (req, res, next) => {
+  try {
+    // TODO
+    res.send('createNewUserController');
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const getAllUsersController = async (req, res, next) => {
   try {
@@ -53,11 +63,19 @@ export const updateUserController = async (req, res) => {
   }
 };
 
-export const createNewUserController = async (req, res, next) => {
+export const deleteUserController = async (req, res) => {
+  const { userId } = req.params;
+  const user = await getUserByUserIdService(userId);
+  const _id = user._id;
   try {
-    // TODO
-    res.send('createNewUserController');
-  } catch (err) {
-    next(err);
+    const deletedUser = await deleteUserService(_id);
+    return res.status(200).json({
+      message: 'User deleted successfully',
+      data: deletedUser,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
