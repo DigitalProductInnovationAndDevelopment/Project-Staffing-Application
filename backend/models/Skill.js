@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import SkillCategory from './enums/SkillCategory.js';
+import mongoose from 'mongoose'
+import SkillCategory from './enums/SkillCategory.js'
 
 const SkillSchema = new mongoose.Schema(
   {
@@ -16,7 +16,7 @@ const SkillSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
-);
+)
 
-const Skill = mongoose.model('Skill', SkillSchema);
-export default Skill;
+const Skill = mongoose.model('Skill', SkillSchema)
+export default Skill

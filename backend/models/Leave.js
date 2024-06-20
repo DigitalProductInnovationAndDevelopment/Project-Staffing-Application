@@ -1,18 +1,18 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const LeaveSchema = new mongoose.Schema(
-    {
-        startDate: {
-            type: Date,
-            required: true,
-        },
-        endDate: {
-            type: Date,
-            required: true,
-        },
+  {
+    startDate: {
+      type: Date,
+      required: true,
     },
-    {timestamps: true}
-);
+    endDate: {
+      type: Date,
+      required: true,
+    },
+  },
+  { timestamps: true }
+)
 
-const Leave = mongoose.model("Leave", LeaveSchema);
-export default Leave;
+const Leave = mongoose.model('Leave', LeaveSchema)
+export default Leave
