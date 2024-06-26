@@ -22,6 +22,14 @@ export const getUserByUserIdService = async (userId) => {
   return user;
 };
 
+export const getUserByIdService = async (userId) => {
+  return User.findById(userId);
+}
+
+export const getUserByEmailService = async (email) => {
+  return User.findOne({email: email});
+}
+
 //mongoose will only update the specified fields within "updateData" and leave the other fields unchanged
 export const updateUserService = async (_id, updateData) => {
   try {

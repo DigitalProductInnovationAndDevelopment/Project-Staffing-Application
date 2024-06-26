@@ -8,6 +8,11 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import config from "config";
+import csrf from "@dr.pogodin/csurf";
+import cookieParser from "cookie-parser";
+import NodeCache from "node-cache";
+
+
 // import routes
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
@@ -25,12 +30,27 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin"}));
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, 'public/assets'))); // set directory of where to store our assets (i.e. images) (in this case locally)
+app.use(cors());
+app.use(cookieParser());
+
+/*
+set-up a cache for storing session data using the node-cache module
+- stdTTL = Standard Time-To-Live = sets the default TTL (in seconds) for each cache entry
+- keys (sessions) get stored for 90 min (defined in config) and deletion is done every 2 min, holds up to 1million entries
+*/
+export const sessionCache = new NodeCache({stdTTL: config.get('sessionExpiresIn') * 60, checkperiod: 120});
 
 /* MIDDLEWARE */
-//cors set-up
+//cors
 app.use(cors({origin: await config.get('origin'), credentials: true,}));
+//csrf
+app.use(csrf({cookie: {httpOnly: true}}));
+app.use((req, res, next) => {
+  res.cookie('X-XSRF-TOKEN', req.csrfToken());
+  next();
+});
+
 
 /* ROUTES */
 app.use("/auth", authRoutes);

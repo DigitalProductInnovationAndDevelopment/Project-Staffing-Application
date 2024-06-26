@@ -4,9 +4,11 @@ const BackendRoutes = {
     BASE: server,
 
     //authentication_api
-    REGISTER: "/auth/register",
     LOGIN: "/auth/login",
     LOGOUT: "/auth/logout",
+    VERIFY_ACCOUNT: "/auth/verifyAccount",
+    REFRESH: "/auth/refresh",
+    CSRF: "/auth/csrf",
 
     //user_api
     CREATE_NEW_USER: "/user",
