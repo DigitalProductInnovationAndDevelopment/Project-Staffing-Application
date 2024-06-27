@@ -5,9 +5,13 @@ import EmployeesIcon from '../assets/images/employees-icon.svg';
 import staffIcon from '../assets/images/logo-creative-tim-black.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import SignOutIcon from '../assets/images/signout_icon.svg';
+import { useDispatch } from 'react-redux';
+import { setLogin } from '../state/authSlice';
 
 function Sidebar({ setActiveItem, activeItem }) {
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleItemClick = (itemKey) => {
     setActiveItem(itemKey); // Update activeItem in parent component
@@ -15,6 +19,7 @@ function Sidebar({ setActiveItem, activeItem }) {
 
   const handleSignOut = () => {
     // Handle sign out logic here (e.g., clear local storage, reset state, etc.)
+    dispatch(setLogin({ loggedIn: false }));
     // Redirect to Login page
     navigate('/login');
   };
