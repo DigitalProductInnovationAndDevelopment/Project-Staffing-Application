@@ -8,6 +8,8 @@ import EditProject from './components/EditProject';
 import AppLayout from './pages/AppLayout';
 import './style.scss';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import AuthenticationMiddleware from "./middleware/AuthenticationMiddleware";
+
 
 const theme = createTheme({
   palette: {
@@ -77,28 +79,30 @@ function App() {
   const [activeItem, setActiveItem] = useState('projects'); // Initialize activeItem state
 
   return (
-    <ThemeProvider theme={theme}>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route
-            path="/projects"
-            element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
-          />
-          <Route
-            path="/employees"
-            element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
-          />
-          <Route
-            path="/projects/edit"
-            element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company: 'Itestra Project', image: '' }} />}
-          />
-          <Route path="/" element={<Login />} /> {/* Default route */}
-          <Route path="*" element={<PageNotFound/>}/>
-        </Routes>
-      </Router>
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <Router>
+          <AuthenticationMiddleware>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route
+                path="/projects"
+                element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
+              />
+              <Route
+                path="/employees"
+                element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
+              />
+              <Route
+                path="/projects/edit"
+                element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company: 'Itestra Project', image: '' }} />}
+              />
+              <Route path="/" element={<Login />} /> {/* Default route */}
+              <Route path="*" element={<PageNotFound/>}/>
+            </Routes>
+          </AuthenticationMiddleware>
+        </Router>
+      </ThemeProvider>
   );
 }
 

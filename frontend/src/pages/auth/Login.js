@@ -1,67 +1,109 @@
-import React, { useState } from 'react';
-import { Typography, TextField, Button, Grid, IconButton, InputAdornment } from '@mui/material';
+import { useState } from 'react';
+import {
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  IconButton,
+  InputAdornment,
+} from '@mui/material';
 import { ReactComponent as LoginImage } from '../../assets/images/login-page.svg';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link, useNavigate } from 'react-router-dom';
+import FrontendRoutes from '../../utils/FrontendRoutes';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLogin } from '../../state/authSlice';
 
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
-  
-    const handleClickShowPassword = () => {
-      setShowPassword(!showPassword);
-    };
-  
-    const handleEmailChange = (e) => {
-      setEmail(e.target.value);
-      setErrorMessage('');
-    };
-  
-    const handlePasswordChange = (e) => {
-      setPassword(e.target.value);
-      setErrorMessage('');
-    };
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      
-      //prevent empty inputs
-      if (email === '' || password === '') {
-        setErrorMessage('Email or password is empty');
-        return;
-      }
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const loggedIn = useSelector((state) => state.authSlice.loggedIn);
+  const dispatch = useDispatch();
 
-      // Mock validation
-      const mockEmail = 'user@ex.com';
-      const mockPassword = '1234';
-  
-      if (email === mockEmail && password === mockPassword) {
-        setErrorMessage('');
-        // Perform login action (redirect, store auth token, etc.)
-        navigate('/projects');
-      } else {
-        setErrorMessage('Email or password is invalid');
-      }
-    };
+  useEffect(() => {
+    if (loggedIn) {
+      navigate(FrontendRoutes.PROJECTS);
+    }
+  }, [loggedIn]);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setErrorMessage('');
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setErrorMessage('');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    //prevent empty inputs
+    if (email === '' || password === '') {
+      setErrorMessage('Email or password is empty');
+      return;
+    }
+
+    // Mock validation
+    const mockEmail = 'user@ex.com';
+    const mockPassword = '1234';
+
+    if (email === mockEmail && password === mockPassword) {
+
+      dispatch(setLogin({ loggedIn: true }));
+
+      setErrorMessage('');
+      // Perform login action (redirect, store auth token, etc.)
+      navigate('/projects');
+    } else {
+      setErrorMessage('Email or password is invalid');
+    }
+  };
 
   return (
     <div className="container">
       <Grid container>
         {/* Form Grid item */}
-        <Grid item xs={12} md={6} container direction="column" alignItems="flex-start" justifyContent="center" className="form-container">
+        <Grid
+          item
+          xs={12}
+          md={6}
+          container
+          direction="column"
+          alignItems="flex-start"
+          justifyContent="center"
+          className="form-container"
+        >
           <div className="title-container">
-            <Typography variant="h4" className="login-title">GREAT STAFF</Typography>
-            <Typography className="login-sub-title">Login with your email and password</Typography> 
+            <Typography variant="h4" className="login-title">
+              GREAT STAFF
+            </Typography>
+            <Typography className="login-sub-title">
+              Login with your email and password
+            </Typography>
           </div>
           {/* Form */}
-          <form noValidate autoComplete='off' className="form" onSubmit={handleSubmit}>
+          <form
+            noValidate
+            autoComplete="off"
+            className="form"
+            onSubmit={handleSubmit}
+          >
             <div className="input-container">
-              <Typography htmlFor="email" className="input-label">Email</Typography>
+              <Typography htmlFor="email" className="input-label">
+                Email
+              </Typography>
               <TextField
                 id="email"
                 fullWidth
@@ -71,12 +113,14 @@ function Login() {
                   style: {
                     borderRadius: '15px',
                     height: '50px',
-                  }
+                  },
                 }}
               />
             </div>
             <div className="password-input-container">
-              <Typography htmlFor="password" className="input-label">Password</Typography>
+              <Typography htmlFor="password" className="input-label">
+                Password
+              </Typography>
               <TextField
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -89,7 +133,7 @@ function Login() {
                       <IconButton
                         onClick={handleClickShowPassword}
                         edge="end"
-                        color='iconGrey'
+                        color="iconGrey"
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -98,11 +142,11 @@ function Login() {
                   style: {
                     borderRadius: '15px',
                     height: '50px',
-                  }
+                  },
                 }}
               />
             </div>
-            
+
             {errorMessage && (
               <Typography color="error" className="error-message">
                 {errorMessage}
@@ -110,7 +154,10 @@ function Login() {
             )}
 
             <Typography variant="body2" className="account-message-text">
-              Don't you have an account? <Link to="/signup" className="route-link">Sign Up</Link>
+              Don't you have an account?{' '}
+              <Link to="/signup" className="route-link">
+                Sign Up
+              </Link>
             </Typography>
 
             <Button
@@ -119,7 +166,7 @@ function Login() {
               className="submit-button"
               fullWidth
               type="submit"
-              sx={{ 
+              sx={{
                 borderRadius: '12px',
                 color: 'white',
                 height: '45px',
@@ -127,7 +174,7 @@ function Login() {
                 fontWeight: 'Bold',
                 fontSize: '10px',
                 lineHeight: '150%',
-                letterSpacing: '0'
+                letterSpacing: '0',
               }}
             >
               Login
@@ -136,7 +183,13 @@ function Login() {
         </Grid>
 
         {/* Image Grid item */}
-        <Grid item xs={12} md={6} alignItems="flex-start" className="image-container">
+        <Grid
+          item
+          xs={12}
+          md={6}
+          alignItems="flex-start"
+          className="image-container"
+        >
           <LoginImage className="image" />
         </Grid>
       </Grid>
