@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { persistReducer, persistStore } from 'redux-persist';
+import { persistReducer, persistStore, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { thunk } from 'redux-thunk';
 // import APIs
@@ -37,7 +37,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       immutableCheck: false,
-      serializableCheck: false,
+      serializableCheck: {ignoreActions: [REHYDRATE]},
     })
       .concat(thunk)
       .concat(authApi.middleware)
