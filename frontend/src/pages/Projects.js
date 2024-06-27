@@ -93,7 +93,7 @@ function ProjectOverview() {
               }}
               >Current Projects</Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: '80vh', overflowY: 'auto' }}>
               <Box sx={{ display: 'flex', color: '#A0AEC0', fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>
                 <Box sx={{ width: '25%', paddingLeft: 1 }}>
                   <Typography className="table-title">PROJECT TITLE</Typography>
