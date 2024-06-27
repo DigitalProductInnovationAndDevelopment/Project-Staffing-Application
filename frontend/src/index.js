@@ -9,6 +9,14 @@ import FullScreenLoader from './pages/FullScreenLoader.js';
 import {SnackbarProvider} from "notistack";
 
 
+// run this code only if you want to completely sweep the redux persist store
+/* 
+const resetStore = async () => {
+  await persistor.purge(); // Clear persisted state
+};
+resetStore();
+*/
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
