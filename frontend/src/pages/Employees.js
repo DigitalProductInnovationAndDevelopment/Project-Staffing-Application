@@ -174,7 +174,7 @@ if (isSuccess) {
       </Box>
       {selectedEmployee && (
         <EditProfile open={open} onClose={handleCloseEditDialog}
-          employee={{ name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+          employee={{ userId: selectedEmployee.userId, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar }} 
           source="Employees"
         />
       )}
