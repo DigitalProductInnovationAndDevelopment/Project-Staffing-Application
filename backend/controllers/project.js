@@ -91,25 +91,3 @@ export const deleteProjectController = async (req, res, next) => {
       .json({ message: 'Failed to delete project', error: err.message })
   }
 }
-
-export const getProjectAssignmentByProjectIdController = async (
-  req,
-  res,
-  next
-) => {
-  try {
-    // TODO
-    res.send('getProjectAssignmentByProjectIdController')
-  } catch (err) {
-    next(err)
-  }
-}
-
-export const updateProjectAssignmentController = async (req, res, next) => {
-  try {
-    // TODO
-    res.send('updateProjectAssignmentController')
-  } catch (err) {
-    next(err)
-  }
-}

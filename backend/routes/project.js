@@ -3,9 +3,7 @@ import {
   createNewProjectController,
   getAllProjectsController,
   getProjectByIdController,
-  getProjectAssignmentByProjectIdController,
   updateProjectController,
-  updateProjectAssignmentController,
   deleteProjectController,
 } from '../controllers/project.js'
 import {
@@ -14,6 +12,8 @@ import {
   getProfileByIdController,
   updateProfileController,
   deleteProfileController,
+  getAssignmentByProfileIdController,
+  updateAssignmentController,
 } from '../controllers/profile.js'
 
 const router = express.Router()
@@ -26,14 +26,14 @@ router.post('/:projectId', createNewProfileController)
 // READ
 router.get('/', getAllProjectsController)
 router.get('/:projectId', getProjectByIdController)
-router.get('/:projectId/assign', getProjectAssignmentByProjectIdController)
+router.get('/:projectId/:profileId/assign', getAssignmentByProfileIdController)
 
 router.get('/:projectId/profiles', getAllProfilesByProjectIdController)
 router.get('/:projectId/:profileId', getProfileByIdController)
 
 // UPDATE
 router.patch('/:projectId', updateProjectController)
-router.patch('/:projectId/assign', updateProjectAssignmentController)
+router.patch('/:projectId/:profileId/assign', updateAssignmentController)
 
 router.patch('/:projectId/:profileId', updateProfileController)
 
