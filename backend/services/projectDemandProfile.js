@@ -6,7 +6,7 @@ import { getProjectByProjectIdService } from './project.js'
 
 export const getAllProfileIdsByProjectIdService = async (projectId) => {
   try {
-    const project = await getProjectByProjectIdService({ projectId })
+    const project = await getProjectByProjectIdService(projectId)
     const profileIds = project.demandProfiles
     return profileIds
   } catch (error) {
@@ -28,9 +28,9 @@ export const getProfileByIdService = async (profileId) => {
 export const createNewProfileService = async (profileData) => {
   try {
     // create a minimal demand object
-    const newMinimalDemand = new Demand(profileData.minimalDemand)
-    await newMinimalDemand.save()
-    const newMinimalDemandId = newMinimalDemand._id
+    // const newMinimalDemand = new Demand(profileData.minimalDemand)
+    // await newMinimalDemand.save()
+    // const newMinimalDemandId = newMinimalDemand._id
     // create a target demand object
     const newTargetDemand = new Demand(profileData.targetDemand)
     await newTargetDemand.save()
@@ -110,8 +110,8 @@ export const deleteProfileService = async (profileId) => {
 
 export const addProfileIdToProjectService = async (projectId, profileId) => {
   try {
-    await Project.findOneAndUpdate(
-      { projectId: projectId },
+    await Project.findByIdAndUpdate(
+      projectId,
       { $push: { demandProfiles: profileId } },
       { new: true, useFindAndModify: false }
     )
@@ -126,7 +126,7 @@ export const removeProfileIdFromProjectService = async (
   profileId
 ) => {
   try {
-    const project = await Project.findOne({ projectId })
+    const project = await Project.findById(projectId)
     if (!project) {
       throw new Error('Project not found')
     }
