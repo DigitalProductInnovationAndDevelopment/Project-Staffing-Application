@@ -3,8 +3,6 @@ import Priority from './enums/Priority.js'
 
 const ProjectSchema = new mongoose.Schema(
   {
-    // TODO: do we need this userId or is it created automatically via mongo?
-    projectId: { type: String, required: true },
 
     projectName: {
       type: String,

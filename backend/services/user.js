@@ -16,7 +16,7 @@ export const getAllUsersService = async () => {
 }
 
 export const getUserByUserIdService = async (userId) => {
-  const user = await User.findOne({ userId: userId }).select('-password') //exclude password from query response
+  const user = await User.findById(userId).select('-password') //exclude password from query response
   return user
 }
 

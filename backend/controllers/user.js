@@ -10,7 +10,7 @@ export const createNewUserController = async (req, res) => {
   //TODO: use data from frontend
   //const userData = req.body;
   const userData = {
-    userId: '001',
+    // userId: '001',
     firstName: 'new',
     lastName: 'user',
     email: 'new@user.com',
