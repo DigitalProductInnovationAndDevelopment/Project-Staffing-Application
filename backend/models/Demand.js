@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const DemandSchema = new mongoose.Schema(
   {
-    now: { type: Number },
+    now: { type: Number, required: true },
     nextQuarter: { type: Number },
     nextNextQuarter: { type: Number },
   },
