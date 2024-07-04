@@ -24,7 +24,7 @@ export const getAllProjectsController = async (req, res, next) => {
 export const getProjectByIdController = async (req, res, next) => {
   try {
     const { projectId } = req.params
-    const project = await getProjectByProjectIdService({ projectId })
+    const project = await getProjectByProjectIdService(projectId)
     if (!project) {
       return res.status(404).json({ message: 'Project not found' })
     }
@@ -39,7 +39,7 @@ export const getProjectByIdController = async (req, res, next) => {
 export const createNewProjectController = async (req, res, next) => {
   try {
     const { projectId } = req.body
-    const existingProject = await getProjectByProjectIdService({ projectId })
+    const existingProject = await getProjectByProjectIdService(projectId)
     if (existingProject) {
       return res
         .status(400)
@@ -59,7 +59,7 @@ export const createNewProjectController = async (req, res, next) => {
 export const updateProjectController = async (req, res, next) => {
   try {
     const { projectId } = req.params
-    const project = await getProjectByProjectIdService({ projectId })
+    const project = await getProjectByProjectIdService(projectId)
     if (!project) {
       return res.status(404).json({ message: 'Project not found' })
     }
@@ -77,7 +77,7 @@ export const updateProjectController = async (req, res, next) => {
 export const deleteProjectController = async (req, res, next) => {
   try {
     const { projectId } = req.params
-    const project = await getProjectByProjectIdService({ projectId })
+    const project = await getProjectByProjectIdService(projectId)
     if (!project) {
       return res.status(404).json({ message: 'Project not found' })
     }

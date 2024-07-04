@@ -5,7 +5,7 @@ export const getAllProjectsService = async () => {
 }
 
 export const getProjectByProjectIdService = async (projectId) => {
-  return Project.findOne(projectId)
+  return Project.findById(projectId)
 }
 
 export const createNewProjectService = async (projectData) => {

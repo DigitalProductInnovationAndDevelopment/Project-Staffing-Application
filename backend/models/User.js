@@ -4,8 +4,6 @@ import Role from './enums/Role.js'
 
 const UserSchema = new mongoose.Schema(
   {
-    // TODO: do we need this userId or is it created automatically via mongo?
-    userId: { type: String, required: true },
 
     firstName: {
       type: String,
