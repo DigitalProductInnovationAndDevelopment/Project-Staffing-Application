@@ -8,7 +8,12 @@ import {
   removeProfileIdFromProjectService,
 } from '../services/projectDemandProfile.js'
 import { getProjectByIdController } from './project.js'
-import { createNewAssignmentService, deleteAssignmentService, getAssignmentByProfileIdService, updateAssignmentService } from '../services/assignment.js'
+import {
+  createNewAssignmentService,
+  deleteAssignmentService,
+  getAssignmentByProfileIdService,
+  updateAssignmentService,
+} from '../services/assignment.js'
 
 export const getAllProfilesByProjectIdController = async (req, res, next) => {
   try {
@@ -122,14 +127,8 @@ export const deleteProfileController = async (req, res, next) => {
   }
 }
 
-
-export const getAssignmentByProfileIdController = async (
-  req,
-  res,
-  next
-) => {
+export const getAssignmentByProfileIdController = async (req, res, next) => {
   try {
-    
     const { projectId, profileId } = req.params
 
     const assignment = await getAssignmentByProfileIdService(profileId)
@@ -137,16 +136,24 @@ export const getAssignmentByProfileIdController = async (
       return res.status(404).json({ message: 'Assignment not found' })
     }
 
-    res.status(200).json({ message: 'Assignment by profile id successfully retrieved', data: assignment})
-
+    res
+      .status(200)
+      .json({
+        message: 'Assignment by profile id successfully retrieved',
+        data: assignment,
+      })
   } catch (err) {
-    res.status(500).json({ message: 'Failed to get project assignment by profile id', error: err.message })
+    res
+      .status(500)
+      .json({
+        message: 'Failed to get project assignment by profile id',
+        error: err.message,
+      })
   }
 }
 
 export const updateAssignmentController = async (req, res, next) => {
   try {
-
     const { projectId, profileId } = req.params
 
     const assignment = await getAssignmentByProfileIdService(profileId)
@@ -156,10 +163,22 @@ export const updateAssignmentController = async (req, res, next) => {
 
     console.log(assignment._id)
 
-    const updatedAssignment = await updateAssignmentService(assignment._id, req.body)
-    res.status(200).json({ message: 'Assignment successfully updated', data: updatedAssignment })
-
+    const updatedAssignment = await updateAssignmentService(
+      assignment._id,
+      req.body
+    )
+    res
+      .status(200)
+      .json({
+        message: 'Assignment successfully updated',
+        data: updatedAssignment,
+      })
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update assignment by profile', error: err.message })
+    res
+      .status(500)
+      .json({
+        message: 'Failed to update assignment by profile',
+        error: err.message,
+      })
   }
 }

@@ -9,9 +9,9 @@ const assignmentSchema = new mongoose.Schema({
   projectDemandProfileId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'DemandProfile',
-    required: true
+    required: true,
   },
-});
+})
 
-const Assignment = mongoose.model('Assignment', assignmentSchema);
-export default Assignment;
+const Assignment = mongoose.model('Assignment', assignmentSchema)
+export default Assignment
