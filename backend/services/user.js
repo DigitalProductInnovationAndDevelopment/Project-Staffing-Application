@@ -11,12 +11,12 @@ export const createNewUserService = async (userData) => {
 }
 
 export const getAllUsersService = async () => {
-  const all_users = await User.find().select('-password') //exclude password from query response
+  const all_users = await User.find().select('-password').populate("skills") //exclude password from query response
   return all_users
 }
 
 export const getUserByUserIdService = async (userId) => {
-  const user = await User.findById(userId).select('-password') //exclude password from query response
+  const user = await User.findById(userId).select('-password').populate("skills") //exclude password from query response
   return user
 }
 
