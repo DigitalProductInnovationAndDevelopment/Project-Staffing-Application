@@ -9,7 +9,6 @@ const assignmentSchema = new mongoose.Schema({
   projectDemandProfileId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'DemandProfile',
-    required: true,
   },
 })
 
