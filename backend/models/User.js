@@ -33,9 +33,9 @@ const UserSchema = new mongoose.Schema(
 
     contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' },
     leaveIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Leave' }],
-    currentProfile: {
+    skills: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'EmployeeProfile',
+      ref: 'Skill',
     },
 
     projectWorkingHours: [
