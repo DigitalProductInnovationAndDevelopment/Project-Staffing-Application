@@ -12,7 +12,7 @@ export const createNewUserService = async (userData) => {
   }
 };
 
-// enriches each user with the number of projects they have been working on within last 3 months <-> based on ProjectWorkingHours
+// enriches each returned user object with 1 additional value: "numberOfProjectsLast3Months" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
 
   // get all users
@@ -34,6 +34,7 @@ export const getAllUsersService = async () => {
       startDate,
       endDate
     );
+    // enrich user object with additional value
     user.numberOfProjectsLast3Months = workingHourDistribution.numberOfProjects;
     all_users[i] = user;
   }
@@ -42,12 +43,40 @@ export const getAllUsersService = async () => {
   return all_users;
 };
 
+// enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getUserByUserIdService = async (userId) => {
-  const user = await User.findById(userId)
-    .select('-password')
-    .populate('skills'); //exclude password from query response
-  return user;
+  try {
+    const user = await User.findById(userId).select('-password').populate('skills');
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const all_projectWorkingHours = await ProjectWorkingHours.find();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 3);
+    const endDate = new Date();
+    const workingHourDistribution = getProjectWorkingHourDistributionByUserId(
+      all_projectWorkingHours,
+      userId,
+      startDate,
+      endDate
+    );
+
+    const userObject = user.toObject(); // Convert user document to plain JavaScript object
+
+    // enrich userObject with additional values
+    userObject.numberOfProjectsLast3Months = workingHourDistribution.numberOfProjects;
+    userObject.projectWorkingHourDistributionInHours = workingHourDistribution.distribution;
+    userObject.projectWorkingHourDistributionInPercentage = workingHourDistribution.percentageDistribution;
+
+    return userObject;
+  } catch (error) {
+    throw new Error(`Failed to get user: ${error.message}`);
+  }
 };
+
+
+
 
 //mongoose will only update the specified fields within "updateData" and leave the other fields unchanged
 export const updateUserService = async (_id, updateData) => {
