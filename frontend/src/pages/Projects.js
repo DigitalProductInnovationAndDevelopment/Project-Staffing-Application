@@ -4,6 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { projectApi } from "../state/api/projectApi.js";
 import EditProject from './../components/EditProject';
 import FullScreenLoader from './FullScreenLoader.js';
+import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
 
 function ProjectOverview() {
   const { data: projectData, isError, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
@@ -147,8 +148,8 @@ function ProjectOverview() {
                   <Divider />
                   <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1 }}>
-                      <Avatar src={project.icon || ''} sx={{ "& .MuiAvatar-img": { width: 24, height: 24 }, 
-                        "& .MuiAvatar-root": { borderRadius: '15px', overflow: 'hidden' } }} />
+                      <Avatar src={project.icon || AvatarGreen} sx={{ "& .MuiAvatar-img": {borderRadius: '15px', overflow: 'hidden'}, 
+                        "& .MuiAvatar-root": {width: 24, height: 24 } }} />
                       <Typography sx={{ ml: '8px' }} variant="body2">{project.projectName}</Typography>
                     </Box>
                     <Box sx={{ width: '15%' }}>
@@ -163,7 +164,7 @@ function ProjectOverview() {
                       </AvatarGroup>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.fte || 'N/A'}</Typography>
+                      <Typography variant="body2">{project.demandProfiles.length || 0}</Typography>
                     </Box>
                     <Box sx={{ width: '10%' }}>
                       <Typography variant="body2">{project.status || 'N/A'}</Typography>
