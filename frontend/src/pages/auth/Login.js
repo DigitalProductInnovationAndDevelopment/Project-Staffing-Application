@@ -15,6 +15,9 @@ import FrontendRoutes from '../../utils/FrontendRoutes';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLogin } from '../../state/authSlice';
+import {useSnackbar} from "notistack";
+import SnackbarOptions from "../../utils/SnackbarOptions";
+import { authApi, useLoginMutation } from '../../state/api/authApi.js';
 
 
 function Login() {
@@ -25,6 +28,8 @@ function Login() {
   const navigate = useNavigate();
   const loggedIn = useSelector((state) => state.authSlice.loggedIn);
   const dispatch = useDispatch();
+  const {enqueueSnackbar} = useSnackbar();
+  const [loginMutation, {isLoading: loginLoading}] = useLoginMutation();
 
   useEffect(() => {
     if (loggedIn) {
@@ -55,21 +60,25 @@ function Login() {
       return;
     }
 
-    // Mock validation
-    const mockEmail = 'user@ex.com';
-    const mockPassword = '1234';
-
-    if (email === mockEmail && password === mockPassword) {
-
+    // Proper validation
+    loginMutation({ email, password }).unwrap().then((payload) => {
       dispatch(setLogin({ loggedIn: true }));
-
       setErrorMessage('');
       // Perform login action (redirect, store auth token, etc.)
       navigate('/projects');
-    } else {
-      setErrorMessage('Email or password is invalid');
-    }
+      enqueueSnackbar("You were logged in successfully", SnackbarOptions.SUCCESS);
+    })
+      .catch((error) => {
+        if (error.status === 'FETCH_ERROR') {
+            setErrorMessage('Login failed. Server not reachable.');
+            enqueueSnackbar("Login failed. Server not reachable.", SnackbarOptions.ERROR);
+        } else {
+            setErrorMessage('Login failed. Please check your credentials.');
+            enqueueSnackbar("Login failed. Please check your credentials.", SnackbarOptions.ERROR);
+        }
+    })
   };
+
 
   return (
     <div className="container">
