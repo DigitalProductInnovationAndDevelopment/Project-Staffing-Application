@@ -33,10 +33,10 @@ const UserSchema = new mongoose.Schema(
 
     contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' },
     leaveIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Leave' }],
-    skills: {
+    skills: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Skill',
-    },
+    }],
 
     projectWorkingHours: [
       {

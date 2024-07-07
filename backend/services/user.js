@@ -6,6 +6,10 @@ export const createNewUserService = async (userData) => {
   try {
     const newUser = new User(userData);
     await newUser.save();
+    // create skills objects
+    // create working hours objects
+    // create leave objects
+    // create contract object
     return newUser;
   } catch (error) {
     throw new Error(`Failed to create user: ${error.message}`);
@@ -85,6 +89,10 @@ export const updateUserService = async (_id, updateData) => {
     const updatedUser = await User.findByIdAndUpdate(_id, updateData, {
       new: true,
     }); // { new: true } => return updated document
+    // update skills objects
+    // update working hours objects
+    // update leave objects
+    // update contract object
     if (!updatedUser) {
       throw new Error('User not found');
     }
