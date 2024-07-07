@@ -1,4 +1,6 @@
 {
   "port": 3001,
-  "origin": "http://localhost:3000"
+  "origin": "http://localhost:3000",
+
+  "accessTokenExpiresIn" : 15
 }
