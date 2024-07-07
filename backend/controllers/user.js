@@ -61,24 +61,18 @@ export const updateUserController = async (req, res) => {
   try {
     const { userId } = req.params
     const user = await getUserByUserIdService(userId)
-    const _id = user._id
-
-    //TODO: use data from frontend
-    //const updateData = req.body;
-    const updateData = {
-      canWorkRemote: false,
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
     }
 
-    const updatedUser = await updateUserService(_id, updateData)
-    return res.status(200).json({
-      message: 'User updated successfully',
-      data: updatedUser,
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    })
+    const updatedUser = await updateUserService(user._id, req.body)
+    res
+      .status(200)
+      .json({ message: 'User updated successfully', data: updatedUser })
+  } catch (err) {
+    return res.status(500).json({ message:'Failed to update user', error: err.message})
   }
+
 }
 
 export const deleteUserController = async (req, res) => {
