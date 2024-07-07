@@ -112,7 +112,7 @@ if (isSuccess) {
                   <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
+                        <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                         <Box sx={{ ml: 2 }}>
                           <Typography variant="body2">{employee.firstName + ' ' + employee.lastName}</Typography>
                           <Typography sx={{
@@ -177,7 +177,7 @@ if (isSuccess) {
       </Box>
       {selectedEmployee && (
         <EditProfile open={open} onClose={handleCloseEditDialog}
-          employee={{ userId: selectedEmployee._id, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar || AvatarBlue}} 
+          employee={{ userId: selectedEmployee._id, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email}} 
           source="Employees"
         />
       )}

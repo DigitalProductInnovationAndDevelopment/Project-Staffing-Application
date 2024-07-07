@@ -5,6 +5,7 @@ import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
 import '../style.scss';
 import { useGetUserByIdQuery } from '../state/api/userApi';
+import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 
 const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
@@ -88,7 +89,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={`${user.firstName} ${user.lastName}`} src={user.image || ''} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
+              <Avatar alt={`${user.firstName} ${user.lastName}`} src={AvatarBlue} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
                 <Typography
                   sx={{
