@@ -11,7 +11,14 @@ export const userApi = createApi({
                 credentials: 'include',
             }),
         }),
+        updateUser: builder.mutation({
+          query: ({ userId, patchData }) => ({
+            url: BackendRoutes.UPDATE_USER(userId),
+            method: 'PATCH',
+            body: patchData,
+          }),
+        }),
     }),
 });
 
-export const { useGetUserByIdQuery } = userApi;
+export const { useGetUserByIdQuery, useUpdateUserMutation} = userApi;
