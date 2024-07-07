@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { projectApi } from "../../state/api/projectApi.js";
 
 // const data = [
 //   { name: 'Unallocated/Free', value: 40, color: '#AA38C6' },
@@ -23,21 +24,21 @@ const Overview = ({ user }) => {
   const [skills, setSkills] = useState(initialSkills);
   const [projectData, setProjectData] = useState([]);
   const [locations, setLocations] = useState(["Munich", "Madrid", "Stockholm", "Tallin"]);
-
+  const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
+  
   const normalizeLocation = useCallback((location) => {
     return location.charAt(0).toUpperCase() + location.slice(1).toLowerCase();
   }, []);
 
   useEffect(() => {
-    const formatProjectData = (projectWorkingHours) => {
-      if (projectWorkingHours.length === 0) {
+    const formatProjectData = (projectWorkingHourDistributionInPercentage) => {
+      if (!projectWorkingHourDistributionInPercentage || Object.keys(projectWorkingHourDistributionInPercentage).length === 0) {
         return [{ name: 'Unallocated/Free', value: 100, color: '#AA38C6' }];
       }
   
-      const totalHours = 40;
-      const projectData = projectWorkingHours.map((project) => ({
-        name: project.projectName,
-        value: (project.hours / totalHours) * 100,
+      const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
+        name: getProjectName(projectId),
+        value: parseFloat(percentage),
         color: getRandomColor(),
       }));
   
@@ -47,6 +48,12 @@ const Overview = ({ user }) => {
       }
   
       return projectData;
+    };
+
+    const getProjectName = (projectId) => {
+      if (!Array.isArray(projects.projects)) return '';
+      const project = projects.projects.find((p) => p._id === projectId);
+      return project ? project.projectName : '';
     };
 
     const getRandomColor = () => {
@@ -65,9 +72,9 @@ const Overview = ({ user }) => {
       }
       setLocation(normalizedLocation);
       setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHours));
+      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
     }
-  }, [user, normalizeLocation, locations]);
+  }, [user, normalizeLocation, locations, projects]);
 
 
   const handleRemoteChange = (event) => {
