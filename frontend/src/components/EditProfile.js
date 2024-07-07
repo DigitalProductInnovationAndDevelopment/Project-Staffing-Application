@@ -10,7 +10,7 @@ import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const userId  = employee.userId;
-  const { data: user, error, isLoading } = useGetUserByIdQuery(userId);
+  const { data: user, error, isLoading, refetch } = useGetUserByIdQuery(userId);
   const [updateUser] = useUpdateUserMutation();
   const [formData, setFormData] = useState({});
 
@@ -26,7 +26,8 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const handleSaveAndClose = async () => {
    try {
-      await updateUser({ userId, ...formData });
+      await updateUser({ userId: userId, patchData: formData });
+      refetch();
       onClose();
     } catch (err) {
       console.error('Failed to update user:', err);
