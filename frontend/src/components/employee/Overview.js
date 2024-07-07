@@ -17,7 +17,7 @@ const initialSkills = [
   { name: 'Employee Leadership', value: 13,  min: 0, max: 18, },
 ];
 
-const Overview = ({ user }) => {
+const Overview = ({ user, onFormDataChange }) => {
   const [location, setLocation] = useState("");
   const [canWorkRemote, setCanWorkRemote] = useState(false);
   const [workingHours, setWorkingHours] = useState(40);
@@ -76,6 +76,14 @@ const Overview = ({ user }) => {
     }
   }, [user, normalizeLocation, locations, projects]);
 
+
+  useEffect(() => {
+    onFormDataChange({
+      officeLocation: location.toUpperCase(),
+      canWorkRemote,
+      //weeklyAvailability: workingHours,
+    });
+  }, [location, canWorkRemote, normalizeLocation, onFormDataChange]);
 
   const handleRemoteChange = (event) => {
     setCanWorkRemote(event.target.checked);
