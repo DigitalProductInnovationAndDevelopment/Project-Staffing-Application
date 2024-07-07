@@ -5,25 +5,27 @@ import {
   deleteUserService,
   createNewUserService,
 } from '../services/user.js'
+import { createNewSkillsService, addSkillsToUserService, deleteSkillsService } from '../services/skill.js'
 
 export const createNewUserController = async (req, res) => {
-  //TODO: use data from frontend
-  //const userData = req.body;
-  const userData = {
-    // userId: '001',
-    firstName: 'new',
-    lastName: 'user',
-    email: 'new@user.com',
-    password: '0000',
-    //"canWorkRemote": true,
-    officeLocation: 'MUNICH',
-    roles: ['ADMIN'],
-  }
+  const userData = req.body;
   try {
-    const newUser = await createNewUserService(userData)
+    const newUser = await createNewUserService({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      password: userData.password,
+      canWorkRemote: userData.canWorkRemote,
+      officeLocation: userData.officeLocation,
+      roles: userData.roles,
+    })
+    const newSkill = await createNewSkillsService(userData.skills);
+    const newSkillIds = newSkill.map((skill) => skill._id);
+    console.log(newSkillIds);
+    const newUserWithSkills = await addSkillsToUserService(newUser._id, newSkillIds)
     return res.status(201).json({
       message: 'User created successfully',
-      data: newUser,
+      data: newUserWithSkills,
     })
   } catch (error) {
     return res.status(500).json({
@@ -61,15 +63,21 @@ export const updateUserController = async (req, res) => {
   try {
     const { userId } = req.params
     const user = await getUserByUserIdService(userId)
-    const _id = user._id
-
-    //TODO: use data from frontend
-    //const updateData = req.body;
-    const updateData = {
-      canWorkRemote: false,
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      })
     }
 
-    const updatedUser = await updateUserService(_id, updateData)
+    let updateData = req.body;
+    if(updateData.skills){
+      const newSkill = await createNewSkillsService(updateData.skills);
+      const newSkillIds = newSkill.map((skill) => skill._id);
+      updateData.skills = [...user.skills, ...newSkillIds];
+    }
+
+
+    const updatedUser = await updateUserService(userId, updateData)
     return res.status(200).json({
       message: 'User updated successfully',
       data: updatedUser,
@@ -84,6 +92,9 @@ export const updateUserController = async (req, res) => {
 export const deleteUserController = async (req, res) => {
   const { userId } = req.params
   const user = await getUserByUserIdService(userId)
+  const skillIds = user.skills.map((skill) => skill._id);
+  console.log(skillIds);
+  await deleteSkillsService(skillIds);
   const _id = user._id
   try {
     const deletedUser = await deleteUserService(_id)
