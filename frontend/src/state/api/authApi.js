@@ -6,17 +6,16 @@ export const authApi = createApi({
   reducerPath: 'authApi',
   tagTypes: ['CSRF'],
   baseQuery: fetchBaseQuery({ baseUrl: BackendRoutes.BASE }),
-//   baseQuery: customFetchBase,
   endpoints: (builder) => ({
     login: builder.mutation({
-      query: (credentials) => ({
-        url: BackendRoutes.LOGIN,
-        method: 'POST',
-        body: credentials,
-        credentials: 'include',
-      }),
-    }),
-  }),
+      query: ({ email, password }) => ({
+          url: BackendRoutes.LOGIN,
+          method: "POST",
+          body: { email, password },
+          credentials: 'include'
+      })
+    })
+  })
 });
 
 // Export hooks for usage in functional components, which are

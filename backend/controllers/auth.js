@@ -1,19 +1,22 @@
 
 import User from '../models/User.js'
+import jwt from 'jsonwebtoken';
+import config from 'config'
 
+
+const accessTokenCookieOptions = {
+  expires: new Date(
+      Date.now() + config.get('accessTokenExpiresIn') * 60 * 1000
+  ),
+  maxAge: config.get('accessTokenExpiresIn') * 60 * 1000,
+  httpOnly: true,
+  sameSite: 'lax',
+};
 
 export const loginController = async (req, res) => {
   try {
-
-    console.log('loginController');
-
     // extract credentials from request body
-    const email = req.body.email;
-    const password = req.body.password;
-    // const { email, password } = req.body;
-
-    console.log('email:', email);
-    console.log('password:', password);
+    const { email, password } = req.body; 
 
     // check if user exists via email
     const user = await User.findOne({ email: email });
@@ -28,6 +31,11 @@ export const loginController = async (req, res) => {
 
     // create JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
+    // set response cookie
+    res.cookie("jwt_token", token, {
+      httpOnly: true,
+    });
 
     // send response
     delete user.password; // remove password before sending back response
