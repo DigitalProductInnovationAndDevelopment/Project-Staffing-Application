@@ -5,6 +5,7 @@ import { thunk } from 'redux-thunk';
 // import APIs
 import { authSlice } from './authSlice';
 import { projectApi } from './api/projectApi';
+import { employeeApi } from './api/employeeApi';
 import { authApi } from './api/authApi';
 
 // combine multiple reducers into one
@@ -41,7 +42,8 @@ export const store = configureStore({
     })
       .concat(thunk)
       .concat(authApi.middleware)
-      .concat(projectApi.middleware),
+      .concat(projectApi.middleware)
+      .concat(employeeApi.middleware),
 });
 
 export const persistor = persistStore(store);

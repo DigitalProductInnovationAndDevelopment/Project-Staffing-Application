@@ -6,84 +6,18 @@ import {
   Divider,
   LinearProgress,
   Grid,
-  IconButton
+  IconButton,
+  CircularProgress
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import AvatarEx from './../assets/images/icons/ex_avatar.svg';
-import AvatarEx2 from './../assets/images/icons/avatar_ex2.svg';
-import AvatarEx3 from './../assets/images/icons/avatar_ex3.svg';
-import AvatarEx4 from './../assets/images/icons/avatar_ex4.svg';
 import EditProfile from './../components/EditProfile';
+import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 
-const employees = [
-  {
-    name: "Esthera Jackson",
-    email: "esthera@itestra.com",
-    avatar: AvatarEx,
-    utilization: 60,
-    projects: 2,
-    technology: "5/20",
-    solutionEngineering: "11/15",
-    selfManagement: "9/15",
-    communicationSkills: "12/20",
-    employeeLeadership: "13/18",
-    location: "Munich"
-  },
-  {
-    name: "Paul Paulsen",
-    email: "paul@itestra.com",
-    avatar: AvatarEx2,
-    utilization: 50,
-    projects: 3,
-    technology: "5/20",
-    solutionEngineering: "11/15",
-    selfManagement: "9/15",
-    communicationSkills: "12/20",
-    employeeLeadership: "13/18",
-    location: "Madrid"
-  },
-  {
-    name: "Max Mustermann",
-    email: "mustern@itestra.com",
-    avatar: AvatarEx3,
-    utilization: 75,
-    projects: 3,
-    technology: "5/20",
-    solutionEngineering: "11/15",
-    selfManagement: "9/15",
-    communicationSkills: "12/20",
-    employeeLeadership: "13/18",
-    location: "Stockholm"
-  },
-  {
-    name: "Peter Drucker",
-    email: "drucker@itestra.com",
-    avatar: AvatarEx4,
-    utilization: 75,
-    projects: 2,
-    technology: "5/20",
-    solutionEngineering: "11/15",
-    selfManagement: "9/15",
-    communicationSkills: "12/20",
-    employeeLeadership: "13/18",
-    location: "Tallin"
-  },
-  {
-    name: "Andrew Ng",
-    email: "ng@itestra.com",
-    avatar: "",
-    utilization: 75,
-    projects: 3,
-    technology: "5/20",
-    solutionEngineering: "11/15",
-    selfManagement: "9/15",
-    communicationSkills: "12/20",
-    employeeLeadership: "13/18",
-    location: "Munich"
-  }
-];
 
 function EmployeeOverview() {
+
+  const { data: employeesData, error, isLoading, isSuccess } = useGetAllEmployeesQuery();
+
   const [open, setOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
@@ -96,8 +30,26 @@ function EmployeeOverview() {
     setSelectedEmployee(null);
   };
 
+  const capitalizeFirstLetter = (location) => {
+    const lowercased = location.toLowerCase();
+    return lowercased.charAt(0).toUpperCase() + lowercased.slice(1);
+  };
+
+  const concatName = (name, surname) => {
+    return name + ' ' + surname;
+  };
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">Error fetching employees: {error.message}</Typography>;
+  }
+
+if (isSuccess) {
   return (
-    <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none" }}>
+    <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none", }}>
       <Box sx={{ flexGrow: 1, p: 3 }}>
         <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)" }}>
           <Typography
@@ -115,7 +67,7 @@ function EmployeeOverview() {
             Employee Overview
           </Typography>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p:1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p:1, maxHeight: '80vh', overflowY: 'auto'}}>
             <Box sx={{ display: 'flex', color: '#A0AEC0', fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>
               <Grid container>
                 <Grid item xs={2}>
@@ -150,16 +102,16 @@ function EmployeeOverview() {
                 </Grid>
               </Grid>
             </Box>
-            {employees.map((employee, index) => (
+            {employeesData.map((employee, index) => (
               <React.Fragment key={index}>
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
                   <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar src={employee.avatar} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
+                        <Avatar src={employee.avatar || []} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
                         <Box sx={{ ml: 2 }}>
-                          <Typography variant="body2">{employee.name}</Typography>
+                          <Typography variant="body2">{employee.firstName + ' ' + employee.lastName}</Typography>
                           <Typography sx={{
                             fontFamily: 'Halvetica, sans-serif',
                             fontSize: '14px',
@@ -175,7 +127,7 @@ function EmployeeOverview() {
                         <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{employee.utilization}%</Typography>
                         <LinearProgress
                           variant="determinate"
-                          value={employee.utilization}
+                          value={employee.utilization || []}
                           sx={{
                             width: "60%",
                             height: '6px',
@@ -188,25 +140,25 @@ function EmployeeOverview() {
                       </Box>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography variant="body2">{employee.projects}</Typography>
+                      <Typography variant="body2">{employee.projects || 'n/a'}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.technology}</Typography>
+                      <Typography className="table-skillset-body">{employee.technology || 'n/a'}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.solutionEngineering}</Typography>
+                      <Typography className="table-skillset-body">{employee.solutionEngineering || 'n/a'}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.selfManagement}</Typography>
+                      <Typography className="table-skillset-body">{employee.selfManagement || 'n/a'}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.communicationSkills}</Typography>
+                      <Typography className="table-skillset-body">{employee.communicationSkills || 'n/a'}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.employeeLeadership}</Typography>
+                      <Typography className="table-skillset-body">{employee.employeeLeadership || 'n/a'}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography variant="body2">{employee.location}</Typography>
+                      <Typography variant="body2">{capitalizeFirstLetter(employee.officeLocation)}</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       <IconButton size="small" onClick={() => handleOpenEditDialog(employee)}>
@@ -222,12 +174,13 @@ function EmployeeOverview() {
       </Box>
       {selectedEmployee && (
         <EditProfile open={open} onClose={handleCloseEditDialog}
-          employee={{ name: selectedEmployee.name, email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+          employee={{ name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar }} 
           source="Employees"
         />
       )}
     </Box>
   );
+ }
 }
 
 export default EmployeeOverview;
