@@ -4,7 +4,6 @@ const BackendRoutes = {
     BASE: server,
 
     //authentication_api
-    REGISTER: "/auth/register",
     LOGIN: "/auth/login",
     LOGOUT: "/auth/logout",
 
