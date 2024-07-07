@@ -18,18 +18,18 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 dotenv.config()
 const app = express()
+
 app.use(express.json())
 app.use(helmet())
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }))
 app.use(morgan('common'))
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
-app.use(cors())
 app.use('/assets', express.static(path.join(__dirname, 'public/assets'))) // set directory of where to store our assets (i.e. images) (in this case locally)
 
 /* MIDDLEWARE */
 //cors set-up
-app.use(cors({ origin: await config.get('origin'), credentials: true }))
+app.use(cors({origin: await config.get('origin'), credentials: true,}));
 
 /* ROUTES */
 app.use('/auth', authRoutes)
