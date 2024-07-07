@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditProfile from './../components/EditProfile';
+import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 
 
@@ -18,6 +19,8 @@ function EmployeeOverview() {
 
   const { data: employeesData, error, isLoading, isSuccess } = useGetAllEmployeesQuery();
 
+  console.log('employees: ', employeesData)
+  
   const [open, setOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
@@ -109,7 +112,7 @@ if (isSuccess) {
                   <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar src={employee.avatar || []} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
+                        <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
                         <Box sx={{ ml: 2 }}>
                           <Typography variant="body2">{employee.firstName + ' ' + employee.lastName}</Typography>
                           <Typography sx={{
@@ -140,7 +143,7 @@ if (isSuccess) {
                       </Box>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography variant="body2">{employee.projects || 'n/a'}</Typography>
+                      <Typography variant="body2">{employee.numberOfProjectsLast3Months || 0}</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       <Typography className="table-skillset-body">{employee.technology || 'n/a'}</Typography>
@@ -174,7 +177,7 @@ if (isSuccess) {
       </Box>
       {selectedEmployee && (
         <EditProfile open={open} onClose={handleCloseEditDialog}
-          employee={{ userId: selectedEmployee.userId, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+          employee={{ userId: selectedEmployee._id, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar || AvatarBlue}} 
           source="Employees"
         />
       )}

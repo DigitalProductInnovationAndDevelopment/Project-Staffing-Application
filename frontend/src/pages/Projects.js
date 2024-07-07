@@ -218,7 +218,7 @@ function ProjectOverview() {
           </Box>
         </Box>
         {selectedProject && (
-          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject.projectId, name: selectedProject.projectName, company: selectedProject.company, image: selectedProject.icon }} />
+          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company, image: selectedProject.icon }} />
         )}
       </Box>
     );
