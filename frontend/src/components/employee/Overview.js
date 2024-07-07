@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 
-const data = [
-  { name: 'Unallocated/Free', value: 40, color: '#AA38C6' },
-  { name: 'Project A', value: 30, color: '#18A79F' },
-  { name: 'Project B', value: 30, color: '#159ED9' },
-];
+// const data = [
+//   { name: 'Unallocated/Free', value: 40, color: '#AA38C6' },
+//   { name: 'Project A', value: 30, color: '#18A79F' },
+//   { name: 'Project B', value: 30, color: '#159ED9' },
+// ];
 
 const initialSkills = [
   { name: 'Technology', value: 5, min: 0, max: 20,},
@@ -16,13 +16,62 @@ const initialSkills = [
   { name: 'Employee Leadership', value: 13,  min: 0, max: 18, },
 ];
 
-const Overview = () => {
+const Overview = ({ user }) => {
   const [location, setLocation] = useState("");
+  const [canWorkRemote, setCanWorkRemote] = useState(false);
   const [workingHours, setWorkingHours] = useState(40);
   const [skills, setSkills] = useState(initialSkills);
+  const [projectData, setProjectData] = useState([]);
+  const [locations, setLocations] = useState(["Munich", "Madrid", "Stockholm", "Tallin"]);
+
+  const normalizeLocation = useCallback((location) => {
+    return location.charAt(0).toUpperCase() + location.slice(1).toLowerCase();
+  }, []);
+
+  useEffect(() => {
+    const formatProjectData = (projectWorkingHours) => {
+      if (projectWorkingHours.length === 0) {
+        return [{ name: 'Unallocated/Free', value: 100, color: '#AA38C6' }];
+      }
+  
+      const totalHours = 40;
+      const projectData = projectWorkingHours.map((project) => ({
+        name: project.projectName,
+        value: (project.hours / totalHours) * 100,
+        color: getRandomColor(),
+      }));
+  
+      const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
+      if (allocatedHours < 100) {
+        projectData.push({ name: 'Unallocated/Free', value: 100 - allocatedHours, color: '#AA38C6' });
+      }
+  
+      return projectData;
+    };
+
+    const getRandomColor = () => {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    };
+
+    if (user) {
+      const normalizedLocation = normalizeLocation(user.officeLocation);
+      if (!locations.includes(normalizedLocation)) {
+        setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
+      }
+      setLocation(normalizedLocation);
+      setCanWorkRemote(user.canWorkRemote);
+      setProjectData(formatProjectData(user.projectWorkingHours));
+    }
+  }, [user, normalizeLocation, locations]);
+
 
   const handleRemoteChange = (event) => {
-    // handle remote work change
+    setCanWorkRemote(event.target.checked);
   };
 
   const handleHoursChange = (event) => {
@@ -33,6 +82,10 @@ const Overview = () => {
     const newSkills = [...skills];
     newSkills[index].value = newValue;
     setSkills(newSkills);
+  };
+
+  const handleLocationChange = (event) => {
+    setLocation(event.target.value);
   };
 
   return (
@@ -71,7 +124,7 @@ const Overview = () => {
                 <Select
                   variant="standard"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={handleLocationChange}
                   displayEmpty
                   fullWidth
                   inputProps={{ sx: { fontSize: "14px" } }}
@@ -80,13 +133,14 @@ const Overview = () => {
                   <MenuItem value="">
                     <em>City/Location</em>
                   </MenuItem>
-                  <MenuItem value="Munich">Munich</MenuItem>
-                  <MenuItem value="Madrid">Madrid</MenuItem>
-                  <MenuItem value="Stockholm">Stockholm</MenuItem>
-                  <MenuItem value="Tallin">Tallin</MenuItem>
+                  {locations.map((loc) => (
+                    <MenuItem key={loc} value={loc}>
+                      {loc}
+                    </MenuItem>
+                  ))}
                 </Select>
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 2,}}>
-                  <Checkbox color="profBlue" onChange={handleRemoteChange} />
+                  <Checkbox color="profBlue" checked={canWorkRemote} onChange={handleRemoteChange} />
                   <Typography className='text-regular'>Yes, I can work Remote</Typography>
                 </Box>
               </Box>
@@ -157,7 +211,7 @@ const Overview = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
                 <PieChart width={200} height={200}>
                 <Pie
-                    data={data}
+                    data={projectData}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
@@ -165,14 +219,14 @@ const Overview = () => {
                     outerRadius={80}
                     fill="#8884d8"
                 >
-                    {data.map((entry, index) => (
+                    {projectData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                 </Pie>
                 <Tooltip />
                 </PieChart>
                 <Box sx={{ display: 'flex', flexDirection: 'column', ml: 2 }}>
-                {data.map((entry, index) => (
+                {projectData.map((entry, index) => (
                     <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <Box
                         sx={{

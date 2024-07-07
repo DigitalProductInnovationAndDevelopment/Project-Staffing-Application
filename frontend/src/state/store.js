@@ -6,6 +6,7 @@ import { thunk } from 'redux-thunk';
 import { authSlice } from './authSlice';
 import { projectApi } from './api/projectApi';
 import { employeeApi } from './api/employeeApi';
+import { userApi } from './api/userApi';
 import { authApi } from './api/authApi';
 
 // combine multiple reducers into one
