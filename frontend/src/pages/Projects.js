@@ -5,10 +5,12 @@ import { projectApi } from "../state/api/projectApi.js";
 import EditProject from './../components/EditProject';
 
 function ProjectOverview() {
-  const { data: projectData, isError, isLoading, isSuccess } = projectApi.endpoints.getAllProjects.useQuery();
+  const { data: projectData, isError, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
 
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+
+  console.log('project', projectData)
 
   const handleAddProject = () => {
     // Add save logic here
@@ -21,6 +23,7 @@ function ProjectOverview() {
   };
 
   const handleCloseEditDialog = () => {
+    refetch();
     setOpen(false);
     setSelectedProject(null);
   };
@@ -173,7 +176,7 @@ function ProjectOverview() {
                       />
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.priority.toLowerCase()}</Typography>
+                      <Typography variant="body2">{project.priority ? project.priority.toLowerCase() : 'N/A'}</Typography>
                     </Box>
                     <Box sx={{ width: '10%' }}>
                       <Typography variant="body2">{calculateDaysLeft(project.kickoffDate)}</Typography>
@@ -190,7 +193,7 @@ function ProjectOverview() {
           </Box>
         </Box>
         {selectedProject && (
-          <EditProject open={open} onClose={handleCloseEditDialog} project={{ name: selectedProject.projectName, company: selectedProject.company, image: selectedProject.icon }} />
+          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject.projectId, name: selectedProject.projectName, company: selectedProject.company, image: selectedProject.icon }} />
         )}
       </Box>
     );
