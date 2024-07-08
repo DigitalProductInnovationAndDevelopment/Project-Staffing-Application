@@ -1,5 +1,9 @@
-export function getProjectWorkingHourDistributionByUserId(projectWorkingHours, userId, startDate, endDate) {
-    
+export function getProjectWorkingHourDistributionByUserId(
+  projectWorkingHours,
+  userId,
+  startDate,
+  endDate
+) {
   // Filter the data based on userId and date range
   const filteredData = projectWorkingHours.filter((entry) => {
     // note: to compare mongoDB objectIDs they need to be converted to strings
@@ -7,31 +11,31 @@ export function getProjectWorkingHourDistributionByUserId(projectWorkingHours, u
       entry.userId.toString() === userId.toString() &&
       entry.date >= startDate &&
       entry.date <= endDate
-    );
-  });
+    )
+  })
 
   // Create a distribution object
-  const distribution = {};
-  let totalHours = 0;
+  const distribution = {}
+  let totalHours = 0
 
   // Calculate the working hours per project and the total hours
   filteredData.forEach((entry) => {
     if (!distribution[entry.projectId]) {
-      distribution[entry.projectId] = 0;
+      distribution[entry.projectId] = 0
     }
-    distribution[entry.projectId] += entry.numberOfRealWorkingHours;
-    totalHours += entry.numberOfRealWorkingHours;
-  });
+    distribution[entry.projectId] += entry.numberOfRealWorkingHours
+    totalHours += entry.numberOfRealWorkingHours
+  })
 
   // Calculate the percentage distribution
-  const percentageDistribution = {};
+  const percentageDistribution = {}
   for (const projectId in distribution) {
     percentageDistribution[projectId] =
-      ((distribution[projectId] / totalHours) * 100).toFixed(2) + '%';
+      ((distribution[projectId] / totalHours) * 100).toFixed(2) + '%'
   }
 
   // Calculate the number of projects
-  const numberOfProjects = Object.keys(distribution).length;
+  const numberOfProjects = Object.keys(distribution).length
 
   return {
     userId,
@@ -41,5 +45,5 @@ export function getProjectWorkingHourDistributionByUserId(projectWorkingHours, u
     numberOfProjects,
     distribution,
     percentageDistribution,
-  };
+  }
 }
