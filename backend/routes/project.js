@@ -15,30 +15,31 @@ import {
   getAssignmentByProfileIdController,
   updateAssignmentController,
 } from '../controllers/profile.js'
+import { verifyToken } from '../middleware/auth.js'
 
 const router = express.Router()
 
 // CREATE
-router.post('/', createNewProjectController)
+router.post('/', verifyToken, createNewProjectController)
 
-router.post('/:projectId', createNewProfileController)
+router.post('/:projectId', verifyToken, createNewProfileController)
 
 // READ
-router.get('/', getAllProjectsController)
-router.get('/:projectId', getProjectByIdController)
-router.get('/:projectId/:profileId/assign', getAssignmentByProfileIdController)
+router.get('/', verifyToken, getAllProjectsController)
+router.get('/:projectId', verifyToken, getProjectByIdController)
+router.get('/:projectId/:profileId/assign', verifyToken, getAssignmentByProfileIdController)
 
-router.get('/:projectId/profiles', getAllProfilesByProjectIdController)
-router.get('/:projectId/:profileId', getProfileByIdController)
+router.get('/:projectId/profiles', verifyToken, getAllProfilesByProjectIdController)
+router.get('/:projectId/:profileId', verifyToken, getProfileByIdController)
 
 // UPDATE
-router.patch('/:projectId', updateProjectController)
-router.patch('/:projectId/:profileId/assign', updateAssignmentController)
+router.patch('/:projectId', verifyToken, updateProjectController)
+router.patch('/:projectId/:profileId/assign', verifyToken, updateAssignmentController)
 
-router.patch('/:projectId/:profileId', updateProfileController)
+router.patch('/:projectId/:profileId', verifyToken, updateProfileController)
 
 // DELETE
-router.delete('/:projectId', deleteProjectController)
-router.delete('/:projectId/:profileId', deleteProfileController)
+router.delete('/:projectId', verifyToken, deleteProjectController)
+router.delete('/:projectId/:profileId', verifyToken, deleteProfileController)
 
 export default router
