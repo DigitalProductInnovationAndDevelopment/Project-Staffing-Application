@@ -35,7 +35,8 @@ const Overview = ({ project, onFormDataChange }) => {
   });
 
   const capitalizeFirstLetter = useCallback((letter) => {
-    return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
+    if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
+    else return '';
   }, []);
 
   useEffect(() => {
@@ -57,13 +58,17 @@ const Overview = ({ project, onFormDataChange }) => {
   }, []);
 
   useEffect(() => {
-    onFormDataChange({
-      kickoffDate: startDate.toISOString(),
-      deadlineDate: endDate.toISOString(),
-      priority: priority.toUpperCase(),
-      projectLocation: location.toUpperCase(),
-    });
-  }, );
+    if (startDate instanceof Date && !isNaN(startDate) &&
+        endDate instanceof Date && !isNaN(endDate)) {
+      onFormDataChange({
+        kickoffDate: startDate.toISOString(),
+        deadlineDate: endDate.toISOString(),
+        priority: priority.toUpperCase(),
+        projectLocation: location.toUpperCase(),
+      });
+    }
+  }, [startDate, endDate, priority, location, onFormDataChange]);
+
 
   const fetchProfiles = async () => {
     // Fetch profiles from the backend

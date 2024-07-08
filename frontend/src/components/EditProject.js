@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button, CircularProgress} from '@mui/material';
+import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button, CircularProgress, TextField} from '@mui/material';
 import Overview from './Overview';
 import AssignTeam from './AssignTeam';
 import backgroundImage from './../assets/images/edit_background.svg';
@@ -15,6 +15,8 @@ const EditProject = ({ open, onClose, project }) => {
   const { data: projectData, error, isLoading, refetch } = useGetProjectByIdQuery(projectId);
   const [updateProject] = useUpdateProjectMutation();
   const [formData, setFormData] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [projectName, setProjectName] = useState(project.name);
 
   useEffect(() => {
     if (projectData) {
@@ -23,6 +25,7 @@ const EditProject = ({ open, onClose, project }) => {
         deadlineDate: projectData.endDates,
         priority: projectData.priority,
         projectLocation: projectData.location,
+        projectName: projectData.projectName, 
       });
     }
   }, [projectData]);
@@ -43,6 +46,19 @@ const EditProject = ({ open, onClose, project }) => {
     } catch (err) {
       console.error('Failed to update user:', err);
     }
+  };
+
+  const handleProjectNameClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleProjectNameChange = (event) => {
+    setProjectName(event.target.value);
+  };
+
+  const handleProjectNameBlur = () => {
+    setIsEditing(false);
+    setFormData((prevData) => ({ ...prevData, projectName: projectName }));
   };
 
   if (isLoading) {
@@ -114,18 +130,38 @@ const EditProject = ({ open, onClose, project }) => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar alt={project.name} src={AvatarGreen} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
-                <Typography
-                  sx={{
-                    fontFamily: 'Helvetica, sans-serif',
-                    fontSize: '18px',
-                    lineHeight: '140%',
-                    letterSpacing: '0',
-                    fontWeight: 'bold',
-                    color: '#2D3748',
-                  }}
-                >
-                  {project.name}
-                </Typography>
+                {isEditing ? (
+                  <TextField
+                    value={projectName}
+                    onChange={handleProjectNameChange}
+                    onBlur={handleProjectNameBlur}
+                    autoFocus
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontFamily: 'Helvetica, sans-serif',
+                        fontSize: '18px',
+                        lineHeight: '140%',
+                        fontWeight: 'bold',
+                        color: '#2D3748',
+                      },
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    onClick={handleProjectNameClick}
+                    sx={{
+                      fontFamily: 'Helvetica, sans-serif',
+                      fontSize: '18px',
+                      lineHeight: '140%',
+                      letterSpacing: '0',
+                      fontWeight: 'bold',
+                      color: '#2D3748',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {projectName}
+                  </Typography>
+                )}
                 <Typography
                   sx={{
                     fontFamily: 'Helvetica, sans-serif',
