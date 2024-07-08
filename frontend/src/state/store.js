@@ -5,6 +5,9 @@ import { thunk } from 'redux-thunk';
 // import APIs
 import { authSlice } from './authSlice';
 import { projectApi } from './api/projectApi';
+import { employeeApi } from './api/employeeApi';
+import { userApi } from './api/userApi';
+import { profileApi } from './api/profileApi';
 import { authApi } from './api/authApi';
 
 // combine multiple reducers into one
@@ -12,8 +15,10 @@ const rootReducer = combineReducers({
   // local state bzw. local storage
   authSlice: authSlice.reducer, // persistente local state veränderungen (wird nach browser-reload beibehalten), e.g.: remember-me, dark mode
   [authApi.reducerPath]: authApi.reducer, // nicht persistente local state veränderungen durch rtk.query / rtk.mutation (wird nach browser-reload gelöscht)
-  [projectApi.reducerPath]: projectApi.reducer,
-
+  [projectApi.reducerPath]: projectApi.reducer,  
+  [employeeApi.reducerPath]: employeeApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
+  [profileApi.reducerPath]: profileApi.reducer,
 });
 
 //Need to blacklist the RTK-Query APIs from the persistence store
@@ -25,7 +30,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: [authApi.reducerPath, projectApi.reducerPath],
+  blacklist: [authApi.reducerPath, projectApi.reducerPath, employeeApi.reducerPath, userApi.reducerPath, profileApi.reducerPath],
 };
 
 // wraps the root reducer with persistReducer using the persistConfig.
@@ -43,7 +48,10 @@ export const store = configureStore({
     })
       .concat(thunk)
       .concat(authApi.middleware)
-      .concat(projectApi.middleware),
+      .concat(projectApi.middleware)
+      .concat(employeeApi.middleware)
+      .concat(userApi.middleware)
+      .concat(profileApi.middleware)
 });
 
 export const persistor = persistStore(store);
