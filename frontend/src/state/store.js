@@ -14,7 +14,8 @@ import { authApi } from './api/authApi';
 const rootReducer = combineReducers({
   // local state bzw. local storage
   authSlice: authSlice.reducer, // persistente local state veränderungen (wird nach browser-reload beibehalten), e.g.: remember-me, dark mode
-  [projectApi.reducerPath]: projectApi.reducer, // nicht persistente local state veränderungen durch rtk.query / rtk.mutation (wird nach browser-reload gelöscht)
+  [authApi.reducerPath]: authApi.reducer, // nicht persistente local state veränderungen durch rtk.query / rtk.mutation (wird nach browser-reload gelöscht)
+  [projectApi.reducerPath]: projectApi.reducer,  
   [employeeApi.reducerPath]: employeeApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
