@@ -1,16 +1,28 @@
 import React from 'react';
-import { Dialog, DialogContent, Box, Avatar, Typography, Button} from '@mui/material';
+import { Dialog, DialogContent, Box, Avatar, Typography, Button, CircularProgress} from '@mui/material';
 import Overview from './employee/Overview';
 import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
 import '../style.scss';
+import { useGetUserByIdQuery } from '../state/api/userApi';
 
 const EditProfile = ({ open, onClose, employee, source, onBack}) => {
+
+  const userId  = employee.userId;
+  const { data: user, error, isLoading } = useGetUserByIdQuery(userId);
 
   const handleSaveAndClose = () => {
     // Add save logic here
     onClose();
   };
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">Error fetching user: {error.message}</Typography>;
+  }
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
@@ -76,7 +88,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={employee.name} src={employee.image} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
+              <Avatar alt={`${user.firstName} ${user.lastName}`} src={user.image || ''} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
                 <Typography
                   sx={{
@@ -88,7 +100,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                     color: '#2D3748',
                   }}
                 >
-                  {employee.name}
+                  {user.firstName} {user.lastName}
                 </Typography>
                 <Typography
                   sx={{
@@ -99,16 +111,16 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                     color: '#718096',
                   }}
                 >
-                  {employee.email}
+                  {user.email}
                 </Typography>
               </Box>
             </Box>
           </Box>
           <DialogContent>
             {source === 'Employees' ? (
-              <Overview />
+              <Overview user={user}/>
             ) : (
-              <DetailsOverview />
+              <DetailsOverview user={user} />
             )}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
