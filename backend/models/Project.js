@@ -3,7 +3,6 @@ import Priority from './enums/Priority.js'
 
 const ProjectSchema = new mongoose.Schema(
   {
-
     projectName: {
       type: String,
       required: true,

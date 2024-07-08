@@ -1,0 +1,8 @@
+const maxSkillPointsArray = {
+  TECHNOLOGY: 10,
+  SOLUTION_ENGINEERING: 10,
+  SELF_MANAGEMENT: 10,
+  COMMUNICATION_SKILLS: 10,
+  EMPLOYEE_LEADERSHIP: 10,
+}
+export default maxSkillPointsArray

@@ -4,7 +4,6 @@ import Role from './enums/Role.js'
 
 const UserSchema = new mongoose.Schema(
   {
-
     firstName: {
       type: String,
       required: true,
@@ -33,10 +32,12 @@ const UserSchema = new mongoose.Schema(
 
     contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' },
     leaveIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Leave' }],
-    skills: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Skill',
-    }],
+    skills: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Skill',
+      },
+    ],
 
     projectWorkingHours: [
       {
