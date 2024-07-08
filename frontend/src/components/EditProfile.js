@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, Box, Avatar, Typography, Button, CircularProgress} from '@mui/material';
+import { Dialog, DialogContent, Box, Avatar, Typography, Button, CircularProgress, TextField} from '@mui/material';
 import Overview from './employee/Overview';
 import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
@@ -15,6 +15,10 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [formData, setFormData] = useState({});
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -23,6 +27,8 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
         canWorkRemote: user.canWorkRemote,
         //weeklyAvailability: user.weeklyAvailability || 40,
       });
+      setFullName(`${user.firstName} ${user.lastName}`);
+      setEmail(user.email);
     }
   }, [user]);
 
@@ -47,6 +53,35 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const handleFormDataChange = (newData) => {
     setFormData((prevData) => ({ ...prevData, ...newData }));
+  };
+
+  const handleFullNameClick = () => {
+    setIsEditingName(true);
+  };
+
+  const handleFullNameChange = (event) => {
+    setFullName(event.target.value);
+  };
+
+  const handleFullNameBlur = () => {
+    setIsEditingName(false);
+    const nameParts = fullName.split(' ');
+    const lastName = nameParts.pop();
+    const firstName = nameParts.join(' ');
+    setFormData((prevData) => ({ ...prevData, firstName, lastName }));
+  };
+
+  const handleEmailClick = () => {
+    setIsEditingEmail(true);
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleEmailBlur = () => {
+    setIsEditingEmail(false);
+    setFormData((prevData) => ({ ...prevData, email }));
   };
 
   if (isLoading) {
@@ -123,29 +158,68 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar alt={`${user.firstName} ${user.lastName}`} src={AvatarBlue} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
-                <Typography
-                  sx={{
-                    fontFamily: 'Helvetica, sans-serif',
-                    fontSize: '18px',
-                    lineHeight: '140%',
-                    letterSpacing: '0',
-                    fontWeight: 'bold',
-                    color: '#2D3748',
-                  }}
-                >
-                  {user.firstName} {user.lastName}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: 'Helvetica, sans-serif',
-                    fontSize: '14px',
-                    lineHeight: '140%',
-                    letterSpacing: '0',
-                    color: '#718096',
-                  }}
-                >
-                  {user.email}
-                </Typography>
+              {isEditingName ? (
+                  <TextField
+                    value={fullName}
+                    onChange={handleFullNameChange}
+                    onBlur={handleFullNameBlur}
+                    autoFocus
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontFamily: 'Helvetica, sans-serif',
+                        fontSize: '18px',
+                        lineHeight: '140%',
+                        fontWeight: 'bold',
+                        color: '#2D3748',
+                      },
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    onClick={handleFullNameClick}
+                    sx={{
+                      fontFamily: 'Helvetica, sans-serif',
+                      fontSize: '18px',
+                      lineHeight: '140%',
+                      letterSpacing: '0',
+                      fontWeight: 'bold',
+                      color: '#2D3748',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {fullName}
+                  </Typography>
+                )}
+                {isEditingEmail ? (
+                  <TextField
+                    value={email}
+                    onChange={handleEmailChange}
+                    onBlur={handleEmailBlur}
+                    autoFocus
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontFamily: 'Helvetica, sans-serif',
+                        fontSize: '14px',
+                        lineHeight: '140%',
+                        color: '#718096',
+                      },
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    onClick={handleEmailClick}
+                    sx={{
+                      fontFamily: 'Helvetica, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '140%',
+                      letterSpacing: '0',
+                      color: '#718096',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {email}
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Box>
