@@ -7,10 +7,12 @@ import {
   LinearProgress,
   Grid,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Button
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditProfile from './../components/EditProfile';
+import CreateProfile from "../components/employee/create/CreateProfile";
 import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 
@@ -22,17 +24,33 @@ function EmployeeOverview() {
   console.log('employees: ', employeesData)
   
   const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const handleAddEmployee = () => {
+    setOpenCreate(true);
+  };
 
   const handleOpenEditDialog = (employee) => {
     setSelectedEmployee(employee);
     setOpen(true);
   };
+
   const handleCloseEditDialog = () => {
     refetch();
     setOpen(false);
     setSelectedEmployee(null);
   };
+
+  const handleCloseCreateDialog = () => {
+    refetch();
+    setOpenCreate(false);
+  };
+
+  const handleOnBack = () => {
+    setOpenCreate(false);
+  };
+  
 
   const capitalizeFirstLetter = (location) => {
     const lowercased = location.toLowerCase();
@@ -55,6 +73,29 @@ if (isSuccess) {
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none", }}>
       <Box sx={{ flexGrow: 1, p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+            <Button
+              variant="contained"
+              color="profBlue"
+              fullWidth
+              sx={{
+                textTransform: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                height: '40px',
+                fontFamily: 'Helvetica, sans-serif',
+                fontWeight: 'Bold',
+                fontSize: '14px',
+                lineHeight: '150%',
+                letterSpacing: '0',
+                width: '140px',
+                padding: 0,
+              }}
+              onClick={handleAddEmployee}
+            >
+              + Add Employee
+            </Button>
+          </Box>
         <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)" }}>
           <Typography
             sx={{
@@ -182,6 +223,7 @@ if (isSuccess) {
           source="Employees"
         />
       )}
+      <CreateProfile openCreate={openCreate} onCloseCreate={handleCloseCreateDialog} onBackCreate={handleOnBack}/>
     </Box>
   );
  }

@@ -9,18 +9,18 @@ import {
 export const createNewUserController = async (req, res) => {
   //TODO: use data from frontend
   //const userData = req.body;
-  const userData = {
-    // userId: '001',
-    firstName: 'new',
-    lastName: 'user',
-    email: 'new@user.com',
-    password: '0000',
-    //"canWorkRemote": true,
-    officeLocation: 'MUNICH',
-    roles: ['ADMIN'],
-  }
+//   const userData = {
+//     // userId: '001',
+//     firstName: 'new',
+//     lastName: 'user',
+//     email: 'new@user.com',
+//     password: '0000',
+//     //"canWorkRemote": true,
+//     officeLocation: 'MUNICH',
+//     roles: ['ADMIN'],
+//   }
   try {
-    const newUser = await createNewUserService(userData)
+    const newUser = await createNewUserService(req.body)
     return res.status(201).json({
       message: 'User created successfully',
       data: newUser,
