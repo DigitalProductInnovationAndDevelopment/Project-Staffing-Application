@@ -14,6 +14,10 @@ import {
   updateSkillPointsBySkillIdService,
 } from '../services/skill.js'
 import maxSkillPointsArray from '../utils/maxSkillPoints.js'
+import { updateContractService } from '../services/contract.js'
+import { updateLeaveService } from '../services/leave.js'
+import Contract from '../models/Contract.js'
+import Leave from '../models/Leave.js'
 
 export const createNewUserController = async (req, res) => {
   const userData = req.body
@@ -27,6 +31,20 @@ export const createNewUserController = async (req, res) => {
       officeLocation: userData.officeLocation,
       roles: userData.roles,
     })
+    if(userData.contract) {
+      const newContract = new Contract(userData.contract)
+      await newContract.save()
+      userData = await updateUserService(newUser._id, {contractId: newContract._id})
+    }
+    if(userData.leaves) { 
+      const leaveIds = []
+      for (const leave of userData.leaves) {
+        const newLeave = new Leave(leave)
+        await newLeave.save()
+        leaveIds.push(newLeave._id)
+      }
+      userData = await updateUserService(newUser._id, {leaveId: leaveIds})
+    }
     try {
       const newSkill = await createNewSkillsService(userData.skills)
       const newSkillIds = newSkill.map((skill) => skill._id)
@@ -88,6 +106,19 @@ export const updateUserController = async (req, res) => {
     }
 
     let updateData = req.body
+    if (updateData.contract) {
+      const contract = user.contractId
+      const updatedContract = await updateContractService(contract, updateData.contract)
+    }
+    if (updateData.leaves) {
+      const leaveIds = user.leaveIds
+      for (const id of leaveIds) {
+        const updatedLeave = updateData.leaves.find(
+          (updateLeave) => updateLeave._id === id
+        )
+        await updateLeaveService(id, updatedLeave)
+      }
+    }
     if (updateData.skills) {
       // get the user skills
       const userSkillsIds = user.skills
