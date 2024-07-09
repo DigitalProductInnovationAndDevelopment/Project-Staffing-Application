@@ -25,7 +25,7 @@ router.post('/', verifyToken, createNewProjectController)
 router.post('/:projectId', verifyToken, createNewProfileController)
 
 // READ
-router.get('/', verifyToken, getAllProjectsController)
+router.get('/', getAllProjectsController)
 router.get('/:projectId', verifyToken, getProjectByIdController)
 router.get('/:projectId/:profileId/assign', verifyToken, getAssignmentByProfileIdController)
 

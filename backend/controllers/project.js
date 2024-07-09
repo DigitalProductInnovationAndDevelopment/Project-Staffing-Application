@@ -1,4 +1,3 @@
-// import Project from "../models/Project.js";
 import {
   getAllProjectsService,
   getProjectByProjectIdService,
@@ -6,14 +5,26 @@ import {
   updateProjectService,
   deleteProjectService,
 } from '../services/project.js'
+import { getAllEmployeesByProfileIdsService } from '../services/assignment.js'
+import { getAllProfileIdsByProjectIdService } from '../services/projectDemandProfile.js'
 
 export const getAllProjectsController = async (req, res, next) => {
   try {
+    const completeListOfProjects = []
     const all_projects = await getAllProjectsService()
     if (!all_projects) {
       return res.status(404).json({ message: 'Projects not found' })
     }
-    res.status(200).json({ projects: all_projects })
+    // get all profiles of a project
+    for(let i = 0; i < all_projects.length; i++) {
+      const allProfileIds = await getAllProfileIdsByProjectIdService(all_projects[i]._id)
+      console.log(allProfileIds)
+      const allEmployees = await getAllEmployeesByProfileIdsService(allProfileIds)
+      completeListOfProjects.push({ ...all_projects[i]._doc, assignedEmployees: allEmployees })
+    }
+    // get the assigned employees to a profile
+    // add allEmployees to every project
+    res.status(200).json({ projects: completeListOfProjects })
   } catch (err) {
     res
       .status(500)

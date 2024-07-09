@@ -1,8 +1,30 @@
 import Assignment from '../models/Assignment.js'
+import { getUserByUserIdService } from './user.js'
 
 // Function to get assignments by profile ID
-export const getAssignmentByProfileIdService = async (userId) => {
-  return Assignment.findOne({ userId })
+export const getAssignmentByProfileIdService = async (profileId) => {
+  return Assignment.findOne({projectDemandProfileId: profileId})
+}
+
+export const getAllEmployeesByProfileIdsService = async (profileIds) => {
+  const assignmentIds = []
+  for (let i = 0; i < profileIds.length; i++) {
+    assignmentIds.push(await getAssignmentByProfileIdService(profileIds[i]))
+  }
+  console.log(assignmentIds)
+  //get people from assignment
+  const allEmployeesIds = []
+  for (let i = 0; i < assignmentIds.length; i++) {
+    allEmployeesIds.push(assignmentIds[i].userId)
+  }
+  console.log(allEmployeesIds)
+  // tranform ids to objects or there like
+  const allEmployees = []
+  for (let i = 0; i < allEmployeesIds.length; i++) {
+    allEmployees.push(await getUserByUserIdService(allEmployeesIds[i]))
+  }
+  console.log(allEmployees)
+  return allEmployees
 }
 
 // Function to update an assignment service
@@ -22,6 +44,7 @@ export const updateAssignmentService = async (assignmentId, updatedData) => {
   }
 }
 
+//TODO profile id
 export const createNewAssignmentService = async (assignmentData) => {
   try {
     const newAssignment = new Assignment({ userId: assignmentData })
