@@ -18,7 +18,6 @@ export const getAllProjectsController = async (req, res, next) => {
     // get all profiles of a project
     for(let i = 0; i < all_projects.length; i++) {
       const allProfileIds = await getAllProfileIdsByProjectIdService(all_projects[i]._id)
-      console.log(allProfileIds)
       const allEmployees = await getAllEmployeesByProfileIdsService(allProfileIds)
       completeListOfProjects.push({ ...all_projects[i]._doc, assignedEmployees: allEmployees })
     }
