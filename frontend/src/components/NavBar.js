@@ -7,21 +7,38 @@ import { Link, useNavigate } from 'react-router-dom';
 import SignOutIcon from '../assets/images/signout_icon.svg';
 import { useDispatch } from 'react-redux';
 import { setLogin } from '../state/authSlice';
+import { useLogoutMutation } from '../state/api/authApi';
+import FrontendRoutes from '../utils/FrontendRoutes';
+import SnackbarOptions from '../utils/SnackbarOptions';
+import { useSnackbar } from 'notistack';
+
 
 function Sidebar({ setActiveItem, activeItem }) {
 
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [logoutMutation] = useLogoutMutation();
+
 
   const handleItemClick = (itemKey) => {
     setActiveItem(itemKey); // Update activeItem in parent component
   };
 
-  const handleSignOut = () => {
-    // Handle sign out logic here (e.g., clear local storage, reset state, etc.)
-    dispatch(setLogin({ loggedIn: false }));
-    // Redirect to Login page
-    navigate('/login');
+  const handleSignOut = async () => {
+    logoutMutation()
+        .unwrap()
+        .then((payload) => {
+            dispatch(setLogin({loggedIn: false}))
+            enqueueSnackbar("You were logged out successfully", SnackbarOptions.SUCCESS);
+        })
+        .catch((error) => {
+            if (error.status === 'FETCH_ERROR') {
+                navigate(FrontendRoutes.LOGIN);
+                dispatch(setLogin({loggedIn: false}))
+                enqueueSnackbar("Logout failed. Server not reachable.", SnackbarOptions.ERROR);
+            }
+        });
   };
 
   const menuItems = [

@@ -1,15 +1,5 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
-import config from 'config';
-
-const accessTokenCookieOptions = {
-  expires: new Date(
-    Date.now() + config.get('accessTokenExpiresIn') * 60 * 1000
-  ),
-  maxAge: config.get('accessTokenExpiresIn') * 60 * 1000,
-  httpOnly: true,
-  sameSite: 'lax',
-};
 
 export const loginController = async (req, res) => {
   try {
@@ -46,9 +36,10 @@ export const loginController = async (req, res) => {
 
 export const logoutController = async (req, res, next) => {
   try {
-    // TODO
-    res.send('logoutController');
+      res.clearCookie("jwt_token");
+      res.status(200).json({ msg: "User logged out." });
+
   } catch (err) {
-    next(err);
+      next(err);
   }
 };
