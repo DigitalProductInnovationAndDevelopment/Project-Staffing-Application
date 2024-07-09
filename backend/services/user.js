@@ -12,7 +12,7 @@ export const createNewUserService = async (userData) => {
   }
 }
 
-// enriches each returned user object with 1 additional value: "numberOfProjectsLast3Months" <-> based on ProjectWorkingHours
+// enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
   // get all users
   const all_users = await User.find().select('-password').populate('skills') //exclude password from query response
@@ -35,6 +35,8 @@ export const getAllUsersService = async () => {
     )
     // enrich user object with additional value
     user.numberOfProjectsLast3Months = workingHourDistribution.numberOfProjects
+    user.projectWorkingHourDistributionInHours = workingHourDistribution.distribution
+    user.projectWorkingHourDistributionInPercentage = workingHourDistribution.percentageDistribution
     all_users[i] = user
   }
   console.log('all_users')
