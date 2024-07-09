@@ -1,10 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {createApi} from "@reduxjs/toolkit/query/react";
 import BackendRoutes from "../../utils/BackendRoutes";
+import customFetchBase from "./baseQuery";
 
 export const employeeApi = createApi({
   reducerPath: "employeeApi",
   tagTypes: ['Employees'],
-  baseQuery: fetchBaseQuery({ baseUrl: BackendRoutes.BASE }),
+  baseQuery: customFetchBase,
   endpoints: (builder) => ({
     getAllEmployees: builder.query({
       query: () => ({
