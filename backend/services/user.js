@@ -1,4 +1,5 @@
 import User from '../models/User.js'
+import Contract from '../models/Contract.js'
 import ProjectWorkingHours from '../models/ProjectWorkingHours.js'
 import { getProjectWorkingHourDistributionByUserId } from '../utils/projectWorkingHoursHelper.js'
 
@@ -15,8 +16,12 @@ export const createNewUserService = async (userData) => {
 // enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
   // get all users
-  const all_users = await User.find().select('-password').populate('skills') //exclude password from query response
-
+  const all_users = await User.find().select('-password') //exclude password from query response
+  .populate('skills')
+  .populate({
+    path: 'contractId',
+    select: 'weeklyWorkingHours' // selecting weeklyWorkingHours field from Contract
+  }); 
   // get all projectWorkingHours
   const all_projectWorkingHours = await ProjectWorkingHours.find()
 
@@ -50,6 +55,10 @@ export const getUserByUserIdService = async (userId) => {
     const user = await User.findById(userId)
       .select('-password')
       .populate('skills')
+      .populate({
+        path: 'contractId',
+        select: 'weeklyWorkingHours' // selecting weeklyWorkingHours field from Contract
+      });
     if (!user) {
       throw new Error('User not found')
     }
