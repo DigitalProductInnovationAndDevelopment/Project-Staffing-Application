@@ -22,7 +22,7 @@ import Leave from '../models/Leave.js'
 export const createNewUserController = async (req, res) => {
   const userData = req.body
   try {
-    const newUser = await createNewUserService({
+    let newUser = await createNewUserService({
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: userData.email,
@@ -34,7 +34,7 @@ export const createNewUserController = async (req, res) => {
     if(userData.contract) {
       const newContract = new Contract(userData.contract)
       await newContract.save()
-      userData = await updateUserService(newUser._id, {contractId: newContract._id})
+      newUser = await updateUserService(newUser._id, {contractId: newContract._id})
     }
     if(userData.leaves) { 
       const leaveIds = []
@@ -43,12 +43,11 @@ export const createNewUserController = async (req, res) => {
         await newLeave.save()
         leaveIds.push(newLeave._id)
       }
-      userData = await updateUserService(newUser._id, {leaveId: leaveIds})
+      newUser = await updateUserService(newUser._id, {leaveIds: leaveIds})
     }
     try {
       const newSkill = await createNewSkillsService(userData.skills)
       const newSkillIds = newSkill.map((skill) => skill._id)
-      console.log(newSkillIds)
       const newUserWithSkills = await addSkillsToUserService(
         newUser._id,
         newSkillIds
@@ -108,16 +107,20 @@ export const updateUserController = async (req, res) => {
     let updateData = req.body
     if (updateData.contract) {
       const contract = user.contractId
-      const updatedContract = await updateContractService(contract, updateData.contract)
+      await updateContractService(contract, updateData.contract)
     }
     if (updateData.leaves) {
       const leaveIds = user.leaveIds
       for (const id of leaveIds) {
-        const updatedLeave = updateData.leaves.find(
-          (updateLeave) => updateLeave._id === id
-        )
-        await updateLeaveService(id, updatedLeave)
+        await Leave.findByIdAndDelete(id)
       }
+      const newLeaveIds = []
+      for (const leave of updateData.leaves) {
+        const newLeave = new Leave(leave)
+        await newLeave.save()
+        newLeaveIds.push(newLeave._id)
+      }
+      await updateUserService(userId, { leaveIds: newLeaveIds })
     }
     if (updateData.skills) {
       // get the user skills
@@ -132,7 +135,6 @@ export const updateUserController = async (req, res) => {
           const updatedSkillPoints = updateData.skills.find(
             (updateSkill) => updateSkill.skillCategory === skill.skillCategory
           ).skillPoints
-          console.log(updatedSkillPoints)
           await updateSkillPointsBySkillIdService(skill._id, {
             skillPoints: updatedSkillPoints,
           })
@@ -158,8 +160,13 @@ export const deleteUserController = async (req, res) => {
   const { userId } = req.params
   const user = await getUserByUserIdService(userId)
   const skillIds = user.skills.map((skill) => skill._id)
-  console.log(skillIds)
   await deleteSkillsService(skillIds)
+  const contractId = user.contractId
+  await Contract.findByIdAndDelete(contractId)
+  const leaveIds = user.leaveIds
+  for (const id of leaveIds) {
+    await Leave.findByIdAndDelete(id)
+  }
   const _id = user._id
   try {
     const deletedUser = await deleteUserService(_id)
