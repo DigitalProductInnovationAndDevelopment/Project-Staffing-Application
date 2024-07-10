@@ -157,16 +157,16 @@ function ProjectOverview() {
                         flexDirection: 'row', 
                         ml: '14px'
                       }}>
-                        {(project.avatars || []).map((avatar, index) => (
+                        {(project.assignedEmployees).map((avatar, index) => (
                           <Avatar key={index} src={avatar} />
                         ))}
                       </AvatarGroup>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.demandProfiles.length || 0}</Typography>
+                      <Typography variant="body2">{project.demandProfiles.length || 0} FTE</Typography>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.status || 'N/A'}</Typography>
+                      <Typography variant="body2">{project.assignedEmployees.length ? 'Started' : 'Not Started'}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '20%' }}>
                       <Typography sx={{ mr: 1, color: {
