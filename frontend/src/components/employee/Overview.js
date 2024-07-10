@@ -1,43 +1,38 @@
 import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-
-// const data = [
-//   { name: 'Unallocated/Free', value: 40, color: '#AA38C6' },
-//   { name: 'Project A', value: 30, color: '#18A79F' },
-//   { name: 'Project B', value: 30, color: '#159ED9' },
-// ];
+import { projectApi } from "../../state/api/projectApi.js";
 
 const initialSkills = [
-  { name: 'Technology', value: 5, min: 0, max: 20,},
-  { name: 'Solution Engineering', value: 11 , min: 0, max: 15,},
-  { name: 'Self Management', value: 9,  min: 0, max: 15, },
-  { name: 'Communication Skills', value: 12,  min: 0, max: 20, },
-  { name: 'Employee Leadership', value: 13,  min: 0, max: 18, },
+  { name: 'Technology', skillPoints: 0, maxSkillPoints: 0,},
+  { name: 'Solution Engineering', skillPoints: 0,  maxSkillPoints: 0,},
+  { name: 'Self Management', skillPoints: 0,  maxSkillPoints: 0,},
+  { name: 'Communication Skills', skillPoints: 0,  maxSkillPoints: 0,},
+  { name: 'Employee Leadership', skillPoints: 0,  maxSkillPoints: 0,},
 ];
 
-const Overview = ({ user }) => {
+const Overview = ({ user, onFormDataChange }) => {
   const [location, setLocation] = useState("");
   const [canWorkRemote, setCanWorkRemote] = useState(false);
   const [workingHours, setWorkingHours] = useState(40);
-  const [skills, setSkills] = useState(initialSkills);
+  const [skills, setSkills] = useState([]);
   const [projectData, setProjectData] = useState([]);
-  const [locations, setLocations] = useState(["Munich", "Madrid", "Stockholm", "Tallin"]);
-
+  const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
+  const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
+  
   const normalizeLocation = useCallback((location) => {
     return location.charAt(0).toUpperCase() + location.slice(1).toLowerCase();
   }, []);
 
   useEffect(() => {
-    const formatProjectData = (projectWorkingHours) => {
-      if (projectWorkingHours.length === 0) {
+    const formatProjectData = (projectWorkingHourDistributionInPercentage) => {
+      if (!projectWorkingHourDistributionInPercentage || Object.keys(projectWorkingHourDistributionInPercentage).length === 0) {
         return [{ name: 'Unallocated/Free', value: 100, color: '#AA38C6' }];
       }
   
-      const totalHours = 40;
-      const projectData = projectWorkingHours.map((project) => ({
-        name: project.projectName,
-        value: (project.hours / totalHours) * 100,
+      const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
+        name: getProjectName(projectId),
+        value: parseFloat(percentage),
         color: getRandomColor(),
       }));
   
@@ -47,6 +42,12 @@ const Overview = ({ user }) => {
       }
   
       return projectData;
+    };
+
+    const getProjectName = (projectId) => {
+      if (!Array.isArray(projects.projects)) return '';
+      const project = projects.projects.find((p) => p._id === projectId);
+      return project ? project.projectName : '';
     };
 
     const getRandomColor = () => {
@@ -65,10 +66,35 @@ const Overview = ({ user }) => {
       }
       setLocation(normalizedLocation);
       setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHours));
-    }
-  }, [user, normalizeLocation, locations]);
+      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
+      setWorkingHours(user.contractId ? user.contractId.weeklyWorkingHours : 40);
 
+      if(user.skills.length > 0) {
+        setSkills(user.skills);
+      }
+      else {
+        setSkills(initialSkills); 
+      }
+    }
+  }, [user, normalizeLocation, locations, projects]);
+
+
+  useEffect(() => {
+    onFormDataChange({
+    officeLocation: location.toUpperCase(),
+    canWorkRemote,
+    contractId: user.contractId
+      ? {
+          _id: user.contractId._id,
+          weeklyWorkingHours: workingHours,
+        }
+      : null,
+    skills: skills.map(skill => ({
+      ...skill,
+      skillPoints: skill.skillPoints,
+    })),
+  });
+  }, [location, canWorkRemote, workingHours, normalizeLocation, onFormDataChange, skills, user.contractId]);
 
   const handleRemoteChange = (event) => {
     setCanWorkRemote(event.target.checked);
@@ -79,13 +105,38 @@ const Overview = ({ user }) => {
   };
 
   const handleSkillChange = (index) => (event, newValue) => {
-    const newSkills = [...skills];
-    newSkills[index].value = newValue;
-    setSkills(newSkills);
+    setSkills((prevSkills) => {
+      const updatedSkills = prevSkills.map((skill, i) => 
+        i === index ? { ...skill, skillPoints: newValue } : skill
+      );
+      return updatedSkills;
+    });
   };
 
   const handleLocationChange = (event) => {
     setLocation(event.target.value);
+  };
+
+  const getCategory = (category) => {
+    if(category  === 'TECHNOLOGY') return 'Technology';
+    else if (category  === 'SOLUTION_ENGINEERING') return 'Solution Engineering';
+    else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
+    else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
+    else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
+    else return ''
+  };
+ 
+//   const getCategoryName = (category) => {
+//     if(category  === 'Technology') return 'TECHNOLOGY';
+//     else if (category  === 'Solution Engineering') return 'SOLUTION_ENGINEERING';
+//     else if (category  === 'Communication Skills') return 'COMMUNICATION_SKILLS';
+//     else if (category  === 'Self Management') return 'SELF_MANAGEMENT';
+//     else if (category  === 'Employee Leadership') return 'EMPLOYEE_LEADERSHIP';
+//     else return ''
+//   };
+
+  const getDefaultCategory = (index) => {
+    return initialSkills[index].name;
   };
 
   return (
@@ -286,14 +337,14 @@ const Overview = ({ user }) => {
                     lineHeight: "150%",
                     letterSpacing: "0%",
                   }}>
-                  {skill.name}
+                  {skill.skillCategory ? getCategory(skill.skillCategory) : getDefaultCategory(index)}
                 </Typography>
                 <Slider
-                  value={skill.value}
+                  value={skill.skillPoints}
                   step={1}
                   marks
-                  min={skill.min}
-                  max={skill.max}
+                  min={0}
+                  max={skill.maxSkillPoints}
                   valueLabelDisplay="auto"
                   onChange={handleSkillChange(index)}
                   aria-labelledby={`slider-${index}`}
