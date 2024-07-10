@@ -61,6 +61,17 @@ function EmployeeOverview() {
     return name + ' ' + surname;
   };
 
+  const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
+    const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
+      value: parseFloat(percentage),
+    }));
+  
+    const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
+
+    return allocatedHours;
+  };
+
+
   if (isLoading) {
     return <CircularProgress />;
   }
@@ -169,10 +180,10 @@ if (isSuccess) {
                     </Grid>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', flexDirection: 'column'}}>
-                        <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{employee.utilization}%</Typography>
+                        <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}%</Typography>
                         <LinearProgress
                           variant="determinate"
-                          value={employee.utilization || []}
+                          value={calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}
                           sx={{
                             width: "60%",
                             height: '6px',
