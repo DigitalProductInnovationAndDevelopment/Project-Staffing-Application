@@ -17,11 +17,18 @@ export const getAllProjectsController = async (req, res, next) => {
       return res.status(404).json({ message: 'Projects not found' })
     }
     // get all profiles of a project
-    for(let i = 0; i < all_projects.length; i++) {
-      const allProfileIds = await getAllProfileIdsByProjectIdService(all_projects[i]._id)
-      const allEmployees = await getAllEmployeesByProfileIdsService(allProfileIds)
-      const demand = await getDemandByProfileIdsService(allProfileIds) 
-      completeListOfProjects.push({ ...all_projects[i]._doc, assignedEmployees: allEmployees, numberOfDemandedEmployees: demand})
+    for (let i = 0; i < all_projects.length; i++) {
+      const allProfileIds = await getAllProfileIdsByProjectIdService(
+        all_projects[i]._id
+      )
+      const allEmployees =
+        await getAllEmployeesByProfileIdsService(allProfileIds)
+      const demand = await getDemandByProfileIdsService(allProfileIds)
+      completeListOfProjects.push({
+        ...all_projects[i]._doc,
+        assignedEmployees: allEmployees,
+        numberOfDemandedEmployees: demand,
+      })
     }
     // get number of employees required for a project depending on all profiles demand
     // get the assigned employees to a profile

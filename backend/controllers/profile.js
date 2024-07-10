@@ -14,7 +14,12 @@ import {
   getAssignmentByProfileIdService,
   updateAssignmentService,
 } from '../services/assignment.js'
-import { deleteSkillsService, updateSkillsService, createNewSkillsService, addSkillsToProfileService } from '../services/skill.js'
+import {
+  deleteSkillsService,
+  updateSkillsService,
+  createNewSkillsService,
+  addSkillsToProfileService,
+} from '../services/skill.js'
 
 export const getAllProfilesByProjectIdController = async (req, res, next) => {
   try {
@@ -74,7 +79,9 @@ export const createNewProfileController = async (req, res, next) => {
     addProfileIdToProjectService(projectId, profile._id)
     createNewAssignmentService(profile._id)
     try {
-      const newSkill = await createNewSkillsService(data.targetSkills? data.targetSkills : [])
+      const newSkill = await createNewSkillsService(
+        data.targetSkills ? data.targetSkills : []
+      )
       const newSkillIds = newSkill.map((skill) => skill._id)
       console.log(newSkillIds)
       const profileWithSkills = await addSkillsToProfileService(

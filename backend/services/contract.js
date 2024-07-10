@@ -9,8 +9,7 @@ export const updateContractService = async (contractId, updateData) => {
       throw new Error('Contract not found')
     }
     return contract
-  }
-  catch (error) {
+  } catch (error) {
     throw new Error(`Failed to update contract: ${error.message}`)
   }
 }

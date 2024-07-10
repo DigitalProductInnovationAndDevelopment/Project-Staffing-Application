@@ -128,9 +128,7 @@ export const updateSkillsService = async (skillData, existingIds) => {
   try {
     // get the skills
     const SkillsIds = existingIds
-    const updateSkillsCategories = skillData.map(
-      (skill) => skill.skillCategory
-    )
+    const updateSkillsCategories = skillData.map((skill) => skill.skillCategory)
 
     for (const ids of SkillsIds) {
       const skill = await getSkillBySkillIdService(ids)
@@ -143,7 +141,7 @@ export const updateSkillsService = async (skillData, existingIds) => {
           skillPoints: updatedSkillPoints,
         })
       }
-    } 
+    }
   } catch (error) {
     throw new Error(`Failed to update the skills: ${error.message}`)
   }

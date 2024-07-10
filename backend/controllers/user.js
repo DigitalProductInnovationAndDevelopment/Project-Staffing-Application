@@ -32,19 +32,21 @@ export const createNewUserController = async (req, res) => {
       officeLocation: userData.officeLocation,
       roles: userData.roles,
     })
-    if(userData.contract) {
+    if (userData.contract) {
       const newContract = new Contract(userData.contract)
       await newContract.save()
-      newUser = await updateUserService(newUser._id, {contractId: newContract._id})
+      newUser = await updateUserService(newUser._id, {
+        contractId: newContract._id,
+      })
     }
-    if(userData.leaves) { 
+    if (userData.leaves) {
       const leaveIds = []
       for (const leave of userData.leaves) {
         const newLeave = new Leave(leave)
         await newLeave.save()
         leaveIds.push(newLeave._id)
       }
-      newUser = await updateUserService(newUser._id, {leaveIds: leaveIds})
+      newUser = await updateUserService(newUser._id, { leaveIds: leaveIds })
     }
     try {
       const newSkill = await createNewSkillsService(userData.skills)

@@ -153,9 +153,9 @@ export const getDemandByProfileIdsService = async (profileIds) => {
       const d = await Demand.findById(profile.targetDemandId)
       demand += d.now
     }
-    return demand;
+    return demand
   } catch (error) {
-    console.error(error);
-    throw new Error(`Failed to get demands by profile IDs: ${error.message}`);
+    console.error(error)
+    throw new Error(`Failed to get demands by profile IDs: ${error.message}`)
   }
 }

@@ -11,16 +11,16 @@ import { verifyToken } from '../middleware/auth.js'
 const router = express.Router()
 
 // CREATE
-router.post('/', createNewUserController)
+router.post('/', verifyToken, createNewUserController)
 
 // READ
 router.get('/', verifyToken, getAllUsersController)
 router.get('/:userId', verifyToken, getUserByIdController)
 
 // UPDATE
-router.patch('/:userId', updateUserController)
+router.patch('/:userId', verifyToken, updateUserController)
 
 // DELETE
-router.delete('/:userId', deleteUserController)
+router.delete('/:userId', verifyToken, deleteUserController)
 
 export default router
