@@ -19,7 +19,13 @@ export const userApi = createApi({
             body: patchData,
           }),
         }),
+        deleteUser: builder.mutation({
+            query: (userId) => ({
+                url: BackendRoutes.DELETE_USER(userId),
+                method: 'DELETE',
+            }),
+        }),
     }),
 });
 
-export const { useGetUserByIdQuery, useUpdateUserMutation} = userApi;
+export const { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation} = userApi;

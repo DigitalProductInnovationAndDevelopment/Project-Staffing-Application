@@ -4,14 +4,16 @@ import Overview from './employee/Overview';
 import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
 import '../style.scss';
-import { useGetUserByIdQuery, useUpdateUserMutation} from '../state/api/userApi';
+import { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation} from '../state/api/userApi';
 import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
+import deleteIcon from './../assets/images/delete-icon.svg';
 
 const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const userId  = employee.userId;
   const { data: user, error, isLoading, refetch } = useGetUserByIdQuery(userId);
   const [updateUser] = useUpdateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -31,6 +33,15 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
       onClose();
     } catch (err) {
       console.error('Failed to update user:', err);
+    }
+  };
+
+  const handleDelete = async () => {
+   try {
+      await deleteUser(userId);
+      onClose();
+    } catch (err) {
+      console.error('Failed to delete user:', err);
     }
   };
 
@@ -145,8 +156,9 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
               <DetailsOverview user={user} />
             )}
           </DialogContent>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 1 }}>
           {source === 'Employees' ? (
+             <>
               <Button
                 variant="contained"
                 color="profBlue"
@@ -163,11 +175,34 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                   letterSpacing: '0',
                   width: '120px',
                   padding: 0,
+                  marginRight: 2,
                 }}
                 onClick={handleSaveAndClose}
               >
                 Save & Close
               </Button>
+              <Button
+                variant="contained"
+                color="error"
+                fullWidth
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '8px',
+                  color: 'white',
+                  height: '40px',
+                  fontFamily: 'Halvetica, sans-serif',
+                  fontWeight: 'Bold',
+                  fontSize: '14px',
+                  lineHeight: '150%',
+                  letterSpacing: '0',
+                  width: '120px',
+                  padding: 0,
+                }}
+                onClick={handleDelete}
+              >
+               <img src={deleteIcon} alt="Delete" style={{ marginLeft: '2px', marginRight: '4px' }} /> Delete Profile
+              </Button>
+            </>
             ) : (
               <Button
                 variant="contained"
