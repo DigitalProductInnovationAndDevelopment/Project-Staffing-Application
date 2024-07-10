@@ -14,6 +14,7 @@ import {
   getAssignmentByProfileIdService,
   updateAssignmentService,
 } from '../services/assignment.js'
+import { deleteSkillsService, updateSkillsService, createNewSkillsService, addSkillsToProfileService } from '../services/skill.js'
 
 export const getAllProfilesByProjectIdController = async (req, res, next) => {
   try {
@@ -65,15 +66,31 @@ export const getProfileByIdController = async (req, res) => {
 export const createNewProfileController = async (req, res, next) => {
   try {
     const { projectId } = req.params
-    const profile = await createNewProfileService(req.body)
+    const data = req.body
+    const profile = await createNewProfileService(data)
     if (!profile) {
       return res.status(404).json({ error: 'Profile not found' })
     }
     addProfileIdToProjectService(projectId, profile._id)
     createNewAssignmentService(profile._id)
-    res
-      .status(201)
-      .json({ message: 'Profile created successfully', data: profile })
+    try {
+      const newSkill = await createNewSkillsService(data.targetSkills? data.targetSkills : [])
+      const newSkillIds = newSkill.map((skill) => skill._id)
+      console.log(newSkillIds)
+      const profileWithSkills = await addSkillsToProfileService(
+        profile._id,
+        newSkillIds
+      )
+      return res.status(201).json({
+        message: 'User created successfully',
+        data: profileWithSkills,
+      })
+    } catch (error) {
+      deleteProfileService(profile._id)
+      return res.status(500).json({
+        message: error.message + ' skill could not be created',
+      })
+    }
   } catch (err) {
     res
       .status(500)
@@ -88,7 +105,14 @@ export const updateProfileController = async (req, res, next) => {
     if (!profile) {
       return res.status(404).json({ message: 'Profile not found' })
     }
-    const updatedProfile = await updateProfileService(profile._id, req.body)
+    let updateData = req.body
+    if (updateData.targetSkills) {
+      await updateSkillsService(updateData.targetSkills, profile.targetSkills)
+    }
+
+    const { targetSkills, ...rest } = updateData
+
+    const updatedProfile = await updateProfileService(profile._id, rest)
     res
       .status(200)
       .json({ message: 'Profile updated successfully', data: updatedProfile })
@@ -114,6 +138,7 @@ export const deleteProfileController = async (req, res, next) => {
         error: err.message,
       })
     }
+    await deleteSkillsService(profile.targetSkills)
     const assignment = await getAssignmentByProfileIdService(profileId)
     deleteAssignmentService(assignment._id)
     const deletedProfile = await deleteProfileService(profileId)

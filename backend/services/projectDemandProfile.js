@@ -36,18 +36,18 @@ export const createNewProfileService = async (profileData) => {
     await newTargetDemand.save()
     const newTargetDemandId = newTargetDemand._id
     // create target skills objects
-    const newTargetSkillsIds = await Promise.all(
-      profileData.targetSkills.map(async (skill) => {
-        const newSkill = new Skill(skill) // no profileId yet
-        await newSkill.save()
-        return newSkill._id
-      })
-    )
+    // const newTargetSkillsIds = await Promise.all(
+    //   profileData.targetSkills.map(async (skill) => {
+    //     const newSkill = new Skill(skill) // no profileId yet
+    //     await newSkill.save()
+    //     return newSkill._id
+    //   })
+    // )
     const newProfile = new ProjectDemandProfile({
       name: profileData.name,
       // minimalDemandId: newMinimalDemandId,
       targetDemandId: newTargetDemandId,
-      targetSkills: newTargetSkillsIds,
+      // targetSkills: newTargetSkillsIds,
     })
     await newProfile.save()
     return newProfile

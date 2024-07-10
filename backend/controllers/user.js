@@ -12,6 +12,7 @@ import {
   getSkillBySkillIdService,
   deleteSkillsService,
   updateSkillPointsBySkillIdService,
+  updateSkillsService,
 } from '../services/skill.js'
 import maxSkillPointsArray from '../utils/maxSkillPoints.js'
 
@@ -89,24 +90,7 @@ export const updateUserController = async (req, res) => {
 
     let updateData = req.body
     if (updateData.skills) {
-      // get the user skills
-      const userSkillsIds = user.skills
-      const updateSkillsCategories = updateData.skills.map(
-        (skill) => skill.skillCategory
-      )
-
-      for (const ids of userSkillsIds) {
-        const skill = await getSkillBySkillIdService(ids)
-        if (updateSkillsCategories.includes(skill.skillCategory)) {
-          const updatedSkillPoints = updateData.skills.find(
-            (updateSkill) => updateSkill.skillCategory === skill.skillCategory
-          ).skillPoints
-          console.log(updatedSkillPoints)
-          await updateSkillPointsBySkillIdService(skill._id, {
-            skillPoints: updatedSkillPoints,
-          })
-        }
-      }
+      await updateSkillsService(updateData.skills, user.skills)
     }
 
     const { skills, ...rest } = updateData

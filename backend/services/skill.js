@@ -4,6 +4,7 @@ import User from '../models/User.js'
 import SkillCategory from '../models/enums/SkillCategory.js'
 import maxSkillPointsArray from '../utils/maxSkillPoints.js'
 import { deleteUserService } from './user.js'
+import ProjectDemandProfile from '../models/ProjectDemandProfile.js'
 
 export const createNewSkillService = async (skillData) => {
   try {
@@ -70,6 +71,20 @@ export const addSkillsToUserService = async (userId, skillIds) => {
   }
 }
 
+export const addSkillsToProfileService = async (profileId, skillIds) => {
+  try {
+    const profile = await ProjectDemandProfile.findByIdAndUpdate(
+      profileId,
+      { $push: { targetSkills: skillIds } },
+      { new: true, useFindAndModify: false }
+    )
+    console.log(profile)
+    return profile
+  } catch (error) {
+    throw new Error(`Failed to add skills to the profile: ${error.message}`)
+  }
+}
+
 export const getSkillBySkillIdService = async (skillId) => {
   try {
     const skill = await Skill.findById(skillId)
@@ -106,5 +121,30 @@ export const deleteSkillsService = async (skillId) => {
     }
   } catch (error) {
     throw new Error(`Failed to delete the skill: ${error.message}`)
+  }
+}
+
+export const updateSkillsService = async (skillData, existingIds) => {
+  try {
+    // get the skills
+    const SkillsIds = existingIds
+    const updateSkillsCategories = skillData.map(
+      (skill) => skill.skillCategory
+    )
+
+    for (const ids of SkillsIds) {
+      const skill = await getSkillBySkillIdService(ids)
+      if (updateSkillsCategories.includes(skill.skillCategory)) {
+        const updatedSkillPoints = skillData.find(
+          (updateSkill) => updateSkill.skillCategory === skill.skillCategory
+        ).skillPoints
+        // console.log(updatedSkillPoints)
+        await updateSkillPointsBySkillIdService(skill._id, {
+          skillPoints: updatedSkillPoints,
+        })
+      }
+    } 
+  } catch (error) {
+    throw new Error(`Failed to update the skills: ${error.message}`)
   }
 }

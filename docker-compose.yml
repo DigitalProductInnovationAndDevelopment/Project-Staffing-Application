@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  backend:
+    image: lucatum/great-staff-backend:latest
+    ports:
+      - '3001:3001'
+    environment:
+      MONGO_URI: 'mongodb+srv://greatstaff-database-admin:BG2g9sZtAwuqHOan@great-staff-cluster.swbpgja.mongodb.net/great-staff-database'
+    depends_on:
+      - mongo
+
+  frontend:
+    image: lucatum/great-staff-frontend:latest
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
