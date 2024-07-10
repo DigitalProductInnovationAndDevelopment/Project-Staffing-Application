@@ -4,7 +4,7 @@ import { getUserByUserIdService } from './user.js'
 
 // Function to get assignments by profile ID
 export const getAssignmentByProfileIdService = async (profileId) => {
-  return Assignment.findOne({projectDemandProfileId: profileId})
+  return Assignment.findOne({ projectDemandProfileId: profileId })
 }
 
 export const getAllEmployeesByProfileIdsService = async (profileIds) => {
@@ -22,7 +22,7 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
     allEmployeesIds.push(...assignmentIds[i].userId)
   }
   // tranform ids to objects or there like
-  
+
   //no duplicates in allemployeeids
   const uniqueAllEmployeesIds = await removeDuplicateObjectIDs(allEmployeesIds)
 

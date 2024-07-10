@@ -12,6 +12,7 @@ import {
   getSkillBySkillIdService,
   deleteSkillsService,
   updateSkillPointsBySkillIdService,
+  updateSkillsService,
 } from '../services/skill.js'
 import maxSkillPointsArray from '../utils/maxSkillPoints.js'
 import { updateContractService } from '../services/contract.js'
@@ -31,19 +32,21 @@ export const createNewUserController = async (req, res) => {
       officeLocation: userData.officeLocation,
       roles: userData.roles,
     })
-    if(userData.contract) {
+    if (userData.contract) {
       const newContract = new Contract(userData.contract)
       await newContract.save()
-      newUser = await updateUserService(newUser._id, {contractId: newContract._id})
+      newUser = await updateUserService(newUser._id, {
+        contractId: newContract._id,
+      })
     }
-    if(userData.leaves) { 
+    if (userData.leaves) {
       const leaveIds = []
       for (const leave of userData.leaves) {
         const newLeave = new Leave(leave)
         await newLeave.save()
         leaveIds.push(newLeave._id)
       }
-      newUser = await updateUserService(newUser._id, {leaveIds: leaveIds})
+      newUser = await updateUserService(newUser._id, { leaveIds: leaveIds })
     }
     try {
       const newSkill = await createNewSkillsService(userData.skills)
@@ -123,23 +126,7 @@ export const updateUserController = async (req, res) => {
       await updateUserService(userId, { leaveIds: newLeaveIds })
     }
     if (updateData.skills) {
-      // get the user skills
-      const userSkillsIds = user.skills
-      const updateSkillsCategories = updateData.skills.map(
-        (skill) => skill.skillCategory
-      )
-
-      for (const ids of userSkillsIds) {
-        const skill = await getSkillBySkillIdService(ids)
-        if (updateSkillsCategories.includes(skill.skillCategory)) {
-          const updatedSkillPoints = updateData.skills.find(
-            (updateSkill) => updateSkill.skillCategory === skill.skillCategory
-          ).skillPoints
-          await updateSkillPointsBySkillIdService(skill._id, {
-            skillPoints: updatedSkillPoints,
-          })
-        }
-      }
+      await updateSkillsService(updateData.skills, user.skills)
     }
 
     const { skills, ...rest } = updateData

@@ -27,14 +27,26 @@ router.post('/:projectId', verifyToken, createNewProfileController)
 // READ
 router.get('/', verifyToken, getAllProjectsController)
 router.get('/:projectId', verifyToken, getProjectByIdController)
-router.get('/:projectId/:profileId/assign', verifyToken, getAssignmentByProfileIdController)
+router.get(
+  '/:projectId/:profileId/assign',
+  verifyToken,
+  getAssignmentByProfileIdController
+)
 
-router.get('/:projectId/profiles', verifyToken, getAllProfilesByProjectIdController)
+router.get(
+  '/:projectId/profiles',
+  verifyToken,
+  getAllProfilesByProjectIdController
+)
 router.get('/:projectId/:profileId', verifyToken, getProfileByIdController)
 
 // UPDATE
 router.patch('/:projectId', verifyToken, updateProjectController)
-router.patch('/:projectId/:profileId/assign', verifyToken, updateAssignmentController)
+router.patch(
+  '/:projectId/:profileId/assign',
+  verifyToken,
+  updateAssignmentController
+)
 
 router.patch('/:projectId/:profileId', verifyToken, updateProfileController)
 

@@ -16,12 +16,13 @@ export const createNewUserService = async (userData) => {
 // enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
   // get all users
-  const all_users = await User.find().select('-password') //exclude password from query response
-  .populate('skills')
-  .populate({
-    path: 'contractId',
-    select: 'weeklyWorkingHours' // selecting weeklyWorkingHours field from Contract
-  }); 
+  const all_users = await User.find()
+    .select('-password') //exclude password from query response
+    .populate('skills')
+    .populate({
+      path: 'contractId',
+      select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
+    })
   // get all projectWorkingHours
   const all_projectWorkingHours = await ProjectWorkingHours.find()
 
@@ -40,8 +41,10 @@ export const getAllUsersService = async () => {
     )
     // enrich user object with additional value
     user.numberOfProjectsLast3Months = workingHourDistribution.numberOfProjects
-    user.projectWorkingHourDistributionInHours = workingHourDistribution.distribution
-    user.projectWorkingHourDistributionInPercentage = workingHourDistribution.percentageDistribution
+    user.projectWorkingHourDistributionInHours =
+      workingHourDistribution.distribution
+    user.projectWorkingHourDistributionInPercentage =
+      workingHourDistribution.percentageDistribution
     all_users[i] = user
   }
   console.log('all_users')
@@ -57,8 +60,8 @@ export const getUserByUserIdService = async (userId) => {
       .populate('skills')
       .populate({
         path: 'contractId',
-        select: 'weeklyWorkingHours' // selecting weeklyWorkingHours field from Contract
-      });
+        select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
+      })
     if (!user) {
       throw new Error('User not found')
     }
