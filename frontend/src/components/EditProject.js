@@ -1,25 +1,57 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button} from '@mui/material';
+import React, { useState, useEffect} from 'react';
+import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button, CircularProgress} from '@mui/material';
 import Overview from './Overview';
 import AssignTeam from './AssignTeam';
 import backgroundImage from './../assets/images/edit_background.svg';
 import OverviewIcon from './../assets/images/overview-icon.svg';
 import AssignTeamIcon from './../assets/images/assign-icon.svg';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
+import { useGetProjectByIdQuery, useUpdateProjectMutation} from '../state/api/projectApi';
 import '../style.scss';
 
 const EditProject = ({ open, onClose, project }) => {
+  const projectId  = project.projectId;
   const [activeTab, setActiveTab] = useState(0);
+  const { data: projectData, error, isLoading, refetch } = useGetProjectByIdQuery(projectId);
+  const [updateProject] = useUpdateProjectMutation();
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (projectData) {
+      setFormData({
+        kickoffDate: projectData.startDate,
+        deadlineDate: projectData.endDates,
+        priority: projectData.priority,
+        projectLocation: projectData.location,
+      });
+    }
+  }, [projectData]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  const handleSaveAndClose = () => {
-    // Add save logic here
-    onClose();
+  const handleFormDataChange = (newData) => {
+    setFormData((prevData) => ({ ...prevData, ...newData }));
   };
 
+  const handleSaveAndClose = async () => {
+    try {
+      await updateProject({ projectId: projectId, patchData: formData });
+      refetch();
+      onClose();
+    } catch (err) {
+      console.error('Failed to update user:', err);
+    }
+  };
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">Error fetching user: {error.message}</Typography>;
+  }
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
       <Box sx={{ backgroundColor: '#F8F9FA', padding: 2}}>
@@ -157,7 +189,7 @@ const EditProject = ({ open, onClose, project }) => {
             </Tabs>
           </Box>
           <DialogContent>
-            {activeTab === 0 && <Overview />}
+            {activeTab === 0 && <Overview project={projectData} onFormDataChange={handleFormDataChange}/>}
             {activeTab === 1 && <AssignTeam />}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>

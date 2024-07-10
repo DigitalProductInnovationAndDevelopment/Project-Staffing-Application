@@ -17,7 +17,7 @@ import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 
 function EmployeeOverview() {
 
-  const { data: employeesData, error, isLoading, isSuccess } = useGetAllEmployeesQuery();
+  const { data: employeesData, error, isLoading, isSuccess, refetch} = useGetAllEmployeesQuery();
 
   console.log('employees: ', employeesData)
   
@@ -29,6 +29,7 @@ function EmployeeOverview() {
     setOpen(true);
   };
   const handleCloseEditDialog = () => {
+    refetch();
     setOpen(false);
     setSelectedEmployee(null);
   };

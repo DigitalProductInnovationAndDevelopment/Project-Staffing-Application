@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -16,11 +16,12 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import deleteIcon from './../assets/images/delete-icon.svg';
 
-const Overview = () => {
+const Overview = ({ project, onFormDataChange }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [priority, setPriority] = useState("High");
   const [location, setLocation] = useState("");
+  const [locations, setLocations] = useState(["Munich", "Madrid", "Stockholm", "Tallin"]);
   const [profileName, setProfileName] = useState("");
   const [fteNumber, setFteNumber] = useState("");
   const [profiles, setProfiles] = useState([]);
@@ -33,10 +34,36 @@ const Overview = () => {
     employeeLeadership: 0,
   });
 
+  const capitalizeFirstLetter = useCallback((letter) => {
+    return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
+  }, []);
+
+  useEffect(() => {
+    if (project) {
+      const normalizedLocation = capitalizeFirstLetter(project.projectLocation);
+      if (!locations.includes(normalizedLocation)) {
+        setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
+      }
+      setLocation(normalizedLocation);
+      setPriority(capitalizeFirstLetter(project.priority));
+      setStartDate(new Date(project.kickoffDate));
+      setEndDate(new Date(project.deadlineDate));
+    }
+  }, [project, capitalizeFirstLetter, locations]);
+
   useEffect(() => {
     // Fetch profiles from the backend
     fetchProfiles();
   }, []);
+
+  useEffect(() => {
+    onFormDataChange({
+      kickoffDate: startDate.toISOString(),
+      deadlineDate: endDate.toISOString(),
+      priority: priority.toUpperCase(),
+      projectLocation: location.toUpperCase(),
+    });
+  }, );
 
   const fetchProfiles = async () => {
     // Fetch profiles from the backend
