@@ -7,6 +7,7 @@ import {
 } from '../services/project.js'
 import { getAllEmployeesByProfileIdsService } from '../services/assignment.js'
 import { getAllProfileIdsByProjectIdService } from '../services/projectDemandProfile.js'
+import { getDemandByProfileIdsService } from '../services/projectDemandProfile.js'
 
 export const getAllProjectsController = async (req, res, next) => {
   try {
@@ -19,8 +20,10 @@ export const getAllProjectsController = async (req, res, next) => {
     for(let i = 0; i < all_projects.length; i++) {
       const allProfileIds = await getAllProfileIdsByProjectIdService(all_projects[i]._id)
       const allEmployees = await getAllEmployeesByProfileIdsService(allProfileIds)
-      completeListOfProjects.push({ ...all_projects[i]._doc, assignedEmployees: allEmployees })
+      const demand = await getDemandByProfileIdsService(allProfileIds) 
+      completeListOfProjects.push({ ...all_projects[i]._doc, assignedEmployees: allEmployees, numberOfDemandedEmployees: demand})
     }
+    // get number of employees required for a project depending on all profiles demand
     // get the assigned employees to a profile
     // add allEmployees to every project
     res.status(200).json({ projects: completeListOfProjects })
