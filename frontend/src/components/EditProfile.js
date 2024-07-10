@@ -1,20 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, Box, Avatar, Typography, Button, CircularProgress} from '@mui/material';
 import Overview from './employee/Overview';
 import DetailsOverview from './employee/DetailsOverview'
 import backgroundImage from './../assets/images/employee_edit_bg.svg';
 import '../style.scss';
-import { useGetUserByIdQuery } from '../state/api/userApi';
+import { useGetUserByIdQuery, useUpdateUserMutation} from '../state/api/userApi';
 import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 
 const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const userId  = employee.userId;
   const { data: user, error, isLoading } = useGetUserByIdQuery(userId);
+  const [updateUser] = useUpdateUserMutation();
+  const [formData, setFormData] = useState({});
 
-  const handleSaveAndClose = () => {
-    // Add save logic here
-    onClose();
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        officeLocation: user.officeLocation,
+        canWorkRemote: user.canWorkRemote,
+        //weeklyAvailability: user.weeklyAvailability || 40,
+      });
+    }
+  }, [user]);
+
+  const handleSaveAndClose = async () => {
+   try {
+      await updateUser({ userId, ...formData });
+      onClose();
+    } catch (err) {
+      console.error('Failed to update user:', err);
+    }
+  };
+
+  const handleFormDataChange = (newData) => {
+    setFormData((prevData) => ({ ...prevData, ...newData }));
   };
 
   if (isLoading) {
@@ -119,7 +139,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
           </Box>
           <DialogContent>
             {source === 'Employees' ? (
-              <Overview user={user}/>
+              <Overview user={user} onFormDataChange={handleFormDataChange}/>
             ) : (
               <DetailsOverview user={user} />
             )}
