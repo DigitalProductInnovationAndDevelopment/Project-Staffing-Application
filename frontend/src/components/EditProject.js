@@ -5,6 +5,7 @@ import AssignTeam from './AssignTeam';
 import backgroundImage from './../assets/images/edit_background.svg';
 import OverviewIcon from './../assets/images/overview-icon.svg';
 import AssignTeamIcon from './../assets/images/assign-icon.svg';
+import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
 import '../style.scss';
 
 const EditProject = ({ open, onClose, project }) => {
@@ -79,7 +80,7 @@ const EditProject = ({ open, onClose, project }) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={project.name} src={project.image} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
+              <Avatar alt={project.name} src={AvatarGreen} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
                 <Typography
                   sx={{
