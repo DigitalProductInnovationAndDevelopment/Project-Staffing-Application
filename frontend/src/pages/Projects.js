@@ -40,6 +40,10 @@ function ProjectOverview() {
     else return `${diffDays} Days left`;
   };
 
+  const calculateStaffingRate = (demand, allocatedFtes) => {
+    if (demand > 0) return Math.ceil((allocatedFtes / demand) * 100);
+    else return 0;
+  };
 
   if (isError) {
     return (
@@ -163,7 +167,7 @@ function ProjectOverview() {
                       </AvatarGroup>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.demandProfiles.length || 0} FTE</Typography>
+                      <Typography variant="body2">{project.numberOfDemandedEmployees || 0} FTE</Typography>
                     </Box>
                     <Box sx={{ width: '10%' }}>
                       <Typography variant="body2">{project.assignedEmployees.length ? 'Started' : 'Not Started'}</Typography>
@@ -171,25 +175,25 @@ function ProjectOverview() {
                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '20%' }}>
                       <Typography sx={{ mr: 1, color: {
                         color:
-                        project.capacity >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
-                        project.capacity > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
+                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
+                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
                         "#DC395F", // Rot bei 20% oder weniger
                       },
                         fontFamily: 'Helvetica, sans-serif',
                         fontWeight: 'bold',
-                      }}>{project.capacity || '0%'}</Typography>
+                      }}>{calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) || 0}%</Typography>
                       <LinearProgress
                         variant="determinate"
-                        value={parseInt(project.capacity) || 0}
+                        value={calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) || 0}
                         sx={{
                           width: '60%',
                           height: '6px',
                           borderRadius: 5,
                           '& .MuiLinearProgress-bar': {
                             backgroundColor:
-                              project.capacity >= '80%'
+                            calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= '80%'
                                 ? '#4FD1C5' // Türkis bei 80% oder höher
-                                : project.capacity > '20%'
+                                : calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > '20%'
                                 ? '#ECB22E' // Gelb zwischen 20% und 80%
                                 : '#DC395F', // Rot bei 20% oder weniger
                           },
