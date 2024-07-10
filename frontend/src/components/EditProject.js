@@ -1,24 +1,73 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button} from '@mui/material';
+import React, { useState, useEffect} from 'react';
+import { Dialog, DialogContent, Tabs, Tab, Box, Avatar, Typography, Button, CircularProgress, TextField} from '@mui/material';
 import Overview from './Overview';
 import AssignTeam from './AssignTeam';
 import backgroundImage from './../assets/images/edit_background.svg';
 import OverviewIcon from './../assets/images/overview-icon.svg';
 import AssignTeamIcon from './../assets/images/assign-icon.svg';
+import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
+import { useGetProjectByIdQuery, useUpdateProjectMutation} from '../state/api/projectApi';
 import '../style.scss';
 
 const EditProject = ({ open, onClose, project }) => {
+  const projectId  = project.projectId;
   const [activeTab, setActiveTab] = useState(0);
+  const { data: projectData, error, isLoading, refetch } = useGetProjectByIdQuery(projectId);
+  const [updateProject] = useUpdateProjectMutation();
+  const [formData, setFormData] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [projectName, setProjectName] = useState(project.name);
+
+  useEffect(() => {
+    if (projectData) {
+      setFormData({
+        kickoffDate: projectData.startDate,
+        deadlineDate: projectData.endDates,
+        priority: projectData.priority,
+        projectLocation: projectData.location,
+        projectName: projectData.projectName, 
+      });
+    }
+  }, [projectData]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  const handleSaveAndClose = () => {
-    // Add save logic here
-    onClose();
+  const handleFormDataChange = (newData) => {
+    setFormData((prevData) => ({ ...prevData, ...newData }));
   };
 
+  const handleSaveAndClose = async () => {
+    try {
+      await updateProject({ projectId: projectId, patchData: formData });
+      refetch();
+      onClose();
+    } catch (err) {
+      console.error('Failed to update user:', err);
+    }
+  };
+
+  const handleProjectNameClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleProjectNameChange = (event) => {
+    setProjectName(event.target.value);
+  };
+
+  const handleProjectNameBlur = () => {
+    setIsEditing(false);
+    setFormData((prevData) => ({ ...prevData, projectName: projectName }));
+  };
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">Error fetching user: {error.message}</Typography>;
+  }
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
       <Box sx={{ backgroundColor: '#F8F9FA', padding: 2}}>
@@ -79,20 +128,40 @@ const EditProject = ({ open, onClose, project }) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={project.name} src={project.image} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
+              <Avatar alt={project.name} src={AvatarGreen} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
-                <Typography
-                  sx={{
-                    fontFamily: 'Helvetica, sans-serif',
-                    fontSize: '18px',
-                    lineHeight: '140%',
-                    letterSpacing: '0',
-                    fontWeight: 'bold',
-                    color: '#2D3748',
-                  }}
-                >
-                  {project.name}
-                </Typography>
+                {isEditing ? (
+                  <TextField
+                    value={projectName}
+                    onChange={handleProjectNameChange}
+                    onBlur={handleProjectNameBlur}
+                    autoFocus
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontFamily: 'Helvetica, sans-serif',
+                        fontSize: '18px',
+                        lineHeight: '140%',
+                        fontWeight: 'bold',
+                        color: '#2D3748',
+                      },
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    onClick={handleProjectNameClick}
+                    sx={{
+                      fontFamily: 'Helvetica, sans-serif',
+                      fontSize: '18px',
+                      lineHeight: '140%',
+                      letterSpacing: '0',
+                      fontWeight: 'bold',
+                      color: '#2D3748',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {projectName}
+                  </Typography>
+                )}
                 <Typography
                   sx={{
                     fontFamily: 'Helvetica, sans-serif',
@@ -156,7 +225,7 @@ const EditProject = ({ open, onClose, project }) => {
             </Tabs>
           </Box>
           <DialogContent>
-            {activeTab === 0 && <Overview />}
+            {activeTab === 0 && <Overview project={projectData} onFormDataChange={handleFormDataChange}/>}
             {activeTab === 1 && <AssignTeam />}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>

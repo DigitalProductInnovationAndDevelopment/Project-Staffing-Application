@@ -7,31 +7,50 @@ import {
   LinearProgress,
   Grid,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Button
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditProfile from './../components/EditProfile';
+import CreateProfile from "../components/employee/create/CreateProfile";
 import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 
 
 function EmployeeOverview() {
 
-  const { data: employeesData, error, isLoading, isSuccess } = useGetAllEmployeesQuery();
+  const { data: employeesData, error, isLoading, isSuccess, refetch} = useGetAllEmployeesQuery();
 
   console.log('employees: ', employeesData)
   
   const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const handleAddEmployee = () => {
+    setOpenCreate(true);
+  };
 
   const handleOpenEditDialog = (employee) => {
     setSelectedEmployee(employee);
     setOpen(true);
   };
+
   const handleCloseEditDialog = () => {
+    refetch();
     setOpen(false);
     setSelectedEmployee(null);
   };
+
+  const handleCloseCreateDialog = () => {
+    refetch();
+    setOpenCreate(false);
+  };
+
+  const handleOnBack = () => {
+    setOpenCreate(false);
+  };
+  
 
   const capitalizeFirstLetter = (location) => {
     const lowercased = location.toLowerCase();
@@ -41,6 +60,17 @@ function EmployeeOverview() {
   const concatName = (name, surname) => {
     return name + ' ' + surname;
   };
+
+  const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
+    const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
+      value: parseFloat(percentage),
+    }));
+  
+    const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
+
+    return allocatedHours;
+  };
+
 
   if (isLoading) {
     return <CircularProgress />;
@@ -54,6 +84,29 @@ if (isSuccess) {
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none", }}>
       <Box sx={{ flexGrow: 1, p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+            <Button
+              variant="contained"
+              color="profBlue"
+              fullWidth
+              sx={{
+                textTransform: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                height: '40px',
+                fontFamily: 'Helvetica, sans-serif',
+                fontWeight: 'Bold',
+                fontSize: '14px',
+                lineHeight: '150%',
+                letterSpacing: '0',
+                width: '140px',
+                padding: 0,
+              }}
+              onClick={handleAddEmployee}
+            >
+              + Add Employee
+            </Button>
+          </Box>
         <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)" }}>
           <Typography
             sx={{
@@ -112,7 +165,7 @@ if (isSuccess) {
                   <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '15px', overflow: 'hidden' }} />
+                        <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                         <Box sx={{ ml: 2 }}>
                           <Typography variant="body2">{employee.firstName + ' ' + employee.lastName}</Typography>
                           <Typography sx={{
@@ -127,10 +180,10 @@ if (isSuccess) {
                     </Grid>
                     <Grid item xs={2}>
                       <Box sx={{ display: 'flex', flexDirection: 'column'}}>
-                        <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{employee.utilization}%</Typography>
+                        <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}%</Typography>
                         <LinearProgress
                           variant="determinate"
-                          value={employee.utilization || []}
+                          value={calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}
                           sx={{
                             width: "60%",
                             height: '6px',
@@ -177,10 +230,11 @@ if (isSuccess) {
       </Box>
       {selectedEmployee && (
         <EditProfile open={open} onClose={handleCloseEditDialog}
-          employee={{ userId: selectedEmployee._id, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email, image: selectedEmployee.avatar || AvatarBlue}} 
+          employee={{ userId: selectedEmployee._id, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email}} 
           source="Employees"
         />
       )}
+      <CreateProfile openCreate={openCreate} onCloseCreate={handleCloseCreateDialog} onBackCreate={handleOnBack}/>
     </Box>
   );
  }

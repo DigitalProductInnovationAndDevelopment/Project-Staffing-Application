@@ -148,8 +148,7 @@ function ProjectOverview() {
                   <Divider />
                   <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1 }}>
-                      <Avatar src={project.icon || AvatarGreen} sx={{ "& .MuiAvatar-img": {borderRadius: '15px', overflow: 'hidden'}, 
-                        "& .MuiAvatar-root": {width: 24, height: 24 } }} />
+                      <Avatar src={project.icon || AvatarGreen} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                       <Typography sx={{ ml: '8px' }} variant="body2">{project.projectName}</Typography>
                     </Box>
                     <Box sx={{ width: '15%' }}>
@@ -158,16 +157,16 @@ function ProjectOverview() {
                         flexDirection: 'row', 
                         ml: '14px'
                       }}>
-                        {(project.avatars || []).map((avatar, index) => (
+                        {(project.assignedEmployees).map((avatar, index) => (
                           <Avatar key={index} src={avatar} />
                         ))}
                       </AvatarGroup>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.demandProfiles.length || 0}</Typography>
+                      <Typography variant="body2">{project.demandProfiles.length || 0} FTE</Typography>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.status || 'N/A'}</Typography>
+                      <Typography variant="body2">{project.assignedEmployees.length ? 'Started' : 'Not Started'}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '20%' }}>
                       <Typography sx={{ mr: 1, color: {
@@ -218,7 +217,7 @@ function ProjectOverview() {
           </Box>
         </Box>
         {selectedProject && (
-          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company, image: selectedProject.icon }} />
+          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company }} />
         )}
       </Box>
     );

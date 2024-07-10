@@ -154,6 +154,7 @@ export const updateUserController = async (req, res) => {
       message: error.message,
     })
   }
+
 }
 
 export const deleteUserController = async (req, res) => {
