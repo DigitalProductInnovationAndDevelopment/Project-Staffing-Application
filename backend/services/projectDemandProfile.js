@@ -141,3 +141,21 @@ export const removeProfileIdFromProjectService = async (
     )
   }
 }
+
+export const getDemandByProfileIdsService = async (profileIds) => {
+  try {
+    let demand = 0
+    for (const profileId of profileIds) {
+      const profile = await getProfileByIdService(profileId)
+      if (!profile) {
+        throw new Error('Profile not found')
+      }
+      const d = await Demand.findById(profile.targetDemandId)
+      demand += d.now
+    }
+    return demand;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Failed to get demands by profile IDs: ${error.message}`);
+  }
+}
