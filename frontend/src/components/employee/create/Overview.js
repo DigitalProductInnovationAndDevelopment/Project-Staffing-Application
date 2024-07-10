@@ -1,80 +1,31 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { projectApi } from "../../state/api/projectApi.js";
-
-// const data = [
-//   { name: 'Unallocated/Free', value: 40, color: '#AA38C6' },
-//   { name: 'Project A', value: 30, color: '#18A79F' },
-//   { name: 'Project B', value: 30, color: '#159ED9' },
-// ];
+import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper} from '@mui/material';
 
 const initialSkills = [
-  { name: 'Technology', value: 5, min: 0, max: 20,},
-  { name: 'Solution Engineering', value: 11 , min: 0, max: 15,},
-  { name: 'Self Management', value: 9,  min: 0, max: 15, },
-  { name: 'Communication Skills', value: 12,  min: 0, max: 20, },
-  { name: 'Employee Leadership', value: 13,  min: 0, max: 18, },
+  { name: 'Technology', value: 0, min: 0, max: 20,},
+  { name: 'Solution Engineering', value: 0 , min: 0, max: 15,},
+  { name: 'Self Management', value: 0,  min: 0, max: 15, },
+  { name: 'Communication Skills', value: 0,  min: 0, max: 20, },
+  { name: 'Employee Leadership', value: 0,  min: 0, max: 18, },
 ];
 
-const Overview = ({ user, onFormDataChange }) => {
+const Overview = ({ onFormDataChange }) => {
   const [location, setLocation] = useState("");
   const [canWorkRemote, setCanWorkRemote] = useState(false);
-  const [workingHours, setWorkingHours] = useState(40);
+  const [workingHours, setWorkingHours] = useState(0);
   const [skills, setSkills] = useState(initialSkills);
-  const [projectData, setProjectData] = useState([]);
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
-  const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
   
   const normalizeLocation = useCallback((location) => {
     return location.charAt(0).toUpperCase() + location.slice(1).toLowerCase();
   }, []);
 
   useEffect(() => {
-    const formatProjectData = (projectWorkingHourDistributionInPercentage) => {
-      if (!projectWorkingHourDistributionInPercentage || Object.keys(projectWorkingHourDistributionInPercentage).length === 0) {
-        return [{ name: 'Unallocated/Free', value: 100, color: '#AA38C6' }];
-      }
-  
-      const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
-        name: getProjectName(projectId),
-        value: parseFloat(percentage),
-        color: getRandomColor(),
-      }));
-  
-      const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
-      if (allocatedHours < 100) {
-        projectData.push({ name: 'Unallocated/Free', value: 100 - allocatedHours, color: '#AA38C6' });
-      }
-  
-      return projectData;
-    };
-
-    const getProjectName = (projectId) => {
-      if (!Array.isArray(projects.projects)) return '';
-      const project = projects.projects.find((p) => p._id === projectId);
-      return project ? project.projectName : '';
-    };
-
-    const getRandomColor = () => {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    };
-
-    if (user) {
-      const normalizedLocation = normalizeLocation(user.officeLocation);
-      if (!locations.includes(normalizedLocation)) {
-        setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
-      }
-      setLocation(normalizedLocation);
-      setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
+    const normalizedLocation = normalizeLocation(location);
+    if (!locations.includes(normalizedLocation)) {
+      setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
     }
-  }, [user, normalizeLocation, locations, projects]);
+  }, [normalizeLocation, location, locations]);
 
 
   useEffect(() => {
@@ -200,65 +151,6 @@ const Overview = ({ user, onFormDataChange }) => {
                   />
               </Box>
             </Box>
-
-          {/* Allocated Projects Section */}
-          <Paper
-            sx={{
-              padding: 4,
-              backgroundColor: "white",
-              boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
-              borderRadius: "15px",
-            }}
-          >
-            <Typography
-              sx={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                lineHeight: "150%",
-                letterSpacing: "0",
-                fontWeight: "medium",
-                color: "black",
-                pb: 1,
-              }}
-            >
-              Allocated Projects
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                <PieChart width={200} height={200}>
-                <Pie
-                    data={projectData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                >
-                    {projectData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                </Pie>
-                <Tooltip />
-                </PieChart>
-                <Box sx={{ display: 'flex', flexDirection: 'column', ml: 2 }}>
-                {projectData.map((entry, index) => (
-                    <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Box
-                        sx={{
-                        width: 14,
-                        height: 14,
-                        backgroundColor: entry.color,
-                        mr: 1,
-                        }}
-                    />
-                    <Typography className='text-regular'>
-                        {entry.name}: {entry.value}%
-                    </Typography>
-                    </Box>
-                ))}
-                </Box>
-            </Box>
-          </Paper>
         </Box>
 
         {/* Define Skill Point Categories Section */}

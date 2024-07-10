@@ -21,7 +21,7 @@ const Overview = ({ project, onFormDataChange }) => {
   const [endDate, setEndDate] = useState(new Date());
   const [priority, setPriority] = useState("High");
   const [location, setLocation] = useState("");
-  const [locations, setLocations] = useState(["Munich", "Madrid", "Stockholm", "Tallin"]);
+  const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   const [profileName, setProfileName] = useState("");
   const [fteNumber, setFteNumber] = useState("");
   const [profiles, setProfiles] = useState([]);
