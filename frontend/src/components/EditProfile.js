@@ -22,13 +22,22 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   useEffect(() => {
     if (user) {
-      setFormData({
-        officeLocation: user.officeLocation,
-        canWorkRemote: user.canWorkRemote,
-        //weeklyAvailability: user.weeklyAvailability || 40,
-      });
-      setFullName(`${user.firstName} ${user.lastName}`);
-      setEmail(user.email);
+      const newFormData = {
+      officeLocation: user.officeLocation,
+      canWorkRemote: user.canWorkRemote,
+      skills: user.skills,
+    };
+
+    if (user.contractId) {
+      newFormData.contractId = {
+        _id: user.contractId._id,
+        weeklyWorkingHours: user.contractId.weeklyWorkingHours,
+      };
+    }
+
+    setFormData(newFormData);
+    setFullName(`${user.firstName} ${user.lastName}`);
+    setEmail(user.email);
     }
   }, [user]);
 

@@ -199,19 +199,39 @@ if (isSuccess) {
                       <Typography variant="body2">{employee.numberOfProjectsLast3Months || 0}</Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.technology || 'n/a'}</Typography>
+                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
+                        employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY').skillPoints : 0}/
+                        {employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
+                        employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY').maxSkillPoints : 0}
+                      </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.solutionEngineering || 'n/a'}</Typography>
+                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING') ?
+                        employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING').skillPoints : 0}/
+                        {employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING') ?
+                        employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING').maxSkillPoints : 0}
+                      </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.selfManagement || 'n/a'}</Typography>
+                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT') ?
+                        employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT').skillPoints : 0}/
+                        {employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT') ?
+                        employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT').maxSkillPoints : 0}
+                      </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.communicationSkills || 'n/a'}</Typography>
+                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS') ?
+                        employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS').skillPoints : 0}/
+                        {employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS') ?
+                        employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS').maxSkillPoints : 0}
+                      </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography className="table-skillset-body">{employee.employeeLeadership || 'n/a'}</Typography>
+                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP') ?
+                        employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP').skillPoints : 0}/
+                        {employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP') ?
+                        employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP').maxSkillPoints : 0}
+                      </Typography>
                     </Grid>
                     <Grid item xs={1}>
                       <Typography variant="body2">{capitalizeFirstLetter(employee.officeLocation)}</Typography>

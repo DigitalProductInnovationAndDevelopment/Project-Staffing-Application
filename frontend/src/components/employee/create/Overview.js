@@ -27,14 +27,16 @@ const Overview = ({ onFormDataChange }) => {
     }
   }, [normalizeLocation, location, locations]);
 
-
   useEffect(() => {
     onFormDataChange({
       officeLocation: location.toUpperCase(),
       canWorkRemote,
-      //weeklyAvailability: workingHours,
+      contract: {
+        startDate: new Date(),
+        weeklyWorkingHours: workingHours
+      }
     });
-  }, [location, canWorkRemote, normalizeLocation, onFormDataChange]);
+  }, [location, canWorkRemote, normalizeLocation, onFormDataChange, workingHours]);
 
   const handleRemoteChange = (event) => {
     setCanWorkRemote(event.target.checked);
