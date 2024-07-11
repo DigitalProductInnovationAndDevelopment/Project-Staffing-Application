@@ -1,100 +1,45 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { projectApi } from "../../state/api/projectApi.js";
+import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper} from '@mui/material';
 
 const initialSkills = [
-    { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
-    { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
-    { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
-    { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
-    { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
+  { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
+  { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
+  { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
+  { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
+  { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
 ];
-
-const Overview = ({ user, onFormDataChange }) => {
+const Overview = ({ onFormDataChange }) => {
   const [location, setLocation] = useState("");
   const [canWorkRemote, setCanWorkRemote] = useState(false);
-  const [workingHours, setWorkingHours] = useState(40);
-  const [skills, setSkills] = useState([]);
-  const [projectData, setProjectData] = useState([]);
+  const [workingHours, setWorkingHours] = useState(0);
+  const [skills, setSkills] = useState(initialSkills);
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
-  const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
   
   const normalizeLocation = useCallback((location) => {
     return location.charAt(0).toUpperCase() + location.slice(1).toLowerCase();
   }, []);
 
   useEffect(() => {
-    const formatProjectData = (projectWorkingHourDistributionInPercentage) => {
-      if (!projectWorkingHourDistributionInPercentage || Object.keys(projectWorkingHourDistributionInPercentage).length === 0) {
-        return [{ name: 'Unallocated/Free', value: 100, color: '#AA38C6' }];
-      }
-  
-      const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
-        name: getProjectName(projectId),
-        value: parseFloat(percentage),
-        color: getRandomColor(),
-      }));
-  
-      const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
-      if (allocatedHours < 100) {
-        projectData.push({ name: 'Unallocated/Free', value: 100 - allocatedHours, color: '#AA38C6' });
-      }
-  
-      return projectData;
-    };
-
-    const getProjectName = (projectId) => {
-      if (!Array.isArray(projects.projects)) return '';
-      const project = projects.projects.find((p) => p._id === projectId);
-      return project ? project.projectName : '';
-    };
-
-    const getRandomColor = () => {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    };
-
-    if (user) {
-      const normalizedLocation = normalizeLocation(user.officeLocation);
-      if (!locations.includes(normalizedLocation)) {
-        setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
-      }
-      setLocation(normalizedLocation);
-      setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
-      setWorkingHours(user.contractId ? user.contractId.weeklyWorkingHours : 40);
-
-      if(user.skills.length > 0) {
-        setSkills(user.skills);
-      }
-      else {
-        setSkills(initialSkills); 
-      }
+    const normalizedLocation = normalizeLocation(location);
+    if (!locations.includes(normalizedLocation)) {
+      setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
     }
-  }, [user, normalizeLocation, locations, projects]);
-
+  }, [normalizeLocation, location, locations]);
 
   useEffect(() => {
     onFormDataChange({
-    officeLocation: location.toUpperCase(),
-    canWorkRemote,
-    contractId: user.contractId
-      ? {
-          _id: user.contractId._id,
-          weeklyWorkingHours: workingHours,
-        }
-      : null,
-    skills: skills.map(skill => ({
-      ...skill,
-      skillPoints: skill.skillPoints,
-    })),
-  });
-  }, [location, canWorkRemote, workingHours, normalizeLocation, onFormDataChange, skills, user.contractId]);
+      officeLocation: location.toUpperCase(),
+      canWorkRemote,
+      contract: {
+        startDate: new Date(),
+        weeklyWorkingHours: workingHours
+      },
+      skills: skills.map(skill => ({
+        ...skill,
+        skillPoints: skill.skillPoints,
+      })),
+    });
+  }, [location, canWorkRemote, normalizeLocation, onFormDataChange, workingHours, skills]);
 
   const handleRemoteChange = (event) => {
     setCanWorkRemote(event.target.checked);
@@ -123,15 +68,6 @@ const Overview = ({ user, onFormDataChange }) => {
     else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
     else return ''
   };
- 
-//   const getCategoryName = (category) => {
-//     if(category  === 'Technology') return 'TECHNOLOGY';
-//     else if (category  === 'Solution Engineering') return 'SOLUTION_ENGINEERING';
-//     else if (category  === 'Communication Skills') return 'COMMUNICATION_SKILLS';
-//     else if (category  === 'Self Management') return 'SELF_MANAGEMENT';
-//     else if (category  === 'Employee Leadership') return 'EMPLOYEE_LEADERSHIP';
-//     else return ''
-//   };
 
   return (
     <Box sx={{ display: "flex", gap: 5, padding: 0, mt: 2 }}>
@@ -230,65 +166,6 @@ const Overview = ({ user, onFormDataChange }) => {
                   />
               </Box>
             </Box>
-
-          {/* Allocated Projects Section */}
-          <Paper
-            sx={{
-              padding: 4,
-              backgroundColor: "white",
-              boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
-              borderRadius: "15px",
-            }}
-          >
-            <Typography
-              sx={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                lineHeight: "150%",
-                letterSpacing: "0",
-                fontWeight: "medium",
-                color: "black",
-                pb: 1,
-              }}
-            >
-              Allocated Projects
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                <PieChart width={200} height={200}>
-                <Pie
-                    data={projectData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                >
-                    {projectData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                </Pie>
-                <Tooltip />
-                </PieChart>
-                <Box sx={{ display: 'flex', flexDirection: 'column', ml: 2 }}>
-                {projectData.map((entry, index) => (
-                    <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Box
-                        sx={{
-                        width: 14,
-                        height: 14,
-                        backgroundColor: entry.color,
-                        mr: 1,
-                        }}
-                    />
-                    <Typography className='text-regular'>
-                        {entry.name}: {entry.value}%
-                    </Typography>
-                    </Box>
-                ))}
-                </Box>
-            </Box>
-          </Paper>
         </Box>
 
         {/* Define Skill Point Categories Section */}
@@ -340,7 +217,7 @@ const Overview = ({ user, onFormDataChange }) => {
                   min={0}
                   max={skill.maxSkillPoints}
                   valueLabelDisplay="auto"
-                  onChange={handleSkillChange(index)}
+                  onChange={(event, newValue) => handleSkillChange(index)(event, newValue)}
                   aria-labelledby={`slider-${index}`}
                   sx={{ color: "#36C5F0", flex: 1 }}
                 />

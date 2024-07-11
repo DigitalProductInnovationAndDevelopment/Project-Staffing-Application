@@ -40,6 +40,10 @@ function ProjectOverview() {
     else return `${diffDays} Days left`;
   };
 
+  const calculateStaffingRate = (demand, allocatedFtes) => {
+    if (demand > 0) return Math.ceil((allocatedFtes / demand) * 100);
+    else return 0;
+  };
 
   if (isError) {
     return (
@@ -148,8 +152,7 @@ function ProjectOverview() {
                   <Divider />
                   <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1 }}>
-                      <Avatar src={project.icon || AvatarGreen} sx={{ "& .MuiAvatar-img": {borderRadius: '15px', overflow: 'hidden'}, 
-                        "& .MuiAvatar-root": {width: 24, height: 24 } }} />
+                      <Avatar src={project.icon || AvatarGreen} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                       <Typography sx={{ ml: '8px' }} variant="body2">{project.projectName}</Typography>
                     </Box>
                     <Box sx={{ width: '15%' }}>
@@ -158,39 +161,39 @@ function ProjectOverview() {
                         flexDirection: 'row', 
                         ml: '14px'
                       }}>
-                        {(project.avatars || []).map((avatar, index) => (
+                        {(project.assignedEmployees).map((avatar, index) => (
                           <Avatar key={index} src={avatar} />
                         ))}
                       </AvatarGroup>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.demandProfiles.length || 0}</Typography>
+                      <Typography variant="body2">{project.numberOfDemandedEmployees || 0} FTE</Typography>
                     </Box>
                     <Box sx={{ width: '10%' }}>
-                      <Typography variant="body2">{project.status || 'N/A'}</Typography>
+                      <Typography variant="body2">{project.assignedEmployees.length ? 'Started' : 'Not Started'}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '20%' }}>
                       <Typography sx={{ mr: 1, color: {
                         color:
-                        project.capacity >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
-                        project.capacity > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
+                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
+                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
                         "#DC395F", // Rot bei 20% oder weniger
                       },
                         fontFamily: 'Helvetica, sans-serif',
                         fontWeight: 'bold',
-                      }}>{project.capacity || '0%'}</Typography>
+                      }}>{calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) || 0}%</Typography>
                       <LinearProgress
                         variant="determinate"
-                        value={parseInt(project.capacity) || 0}
+                        value={calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) || 0}
                         sx={{
                           width: '60%',
                           height: '6px',
                           borderRadius: 5,
                           '& .MuiLinearProgress-bar': {
                             backgroundColor:
-                              project.capacity >= '80%'
+                            calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= '80%'
                                 ? '#4FD1C5' // Türkis bei 80% oder höher
-                                : project.capacity > '20%'
+                                : calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > '20%'
                                 ? '#ECB22E' // Gelb zwischen 20% und 80%
                                 : '#DC395F', // Rot bei 20% oder weniger
                           },
@@ -218,7 +221,7 @@ function ProjectOverview() {
           </Box>
         </Box>
         {selectedProject && (
-          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company, image: selectedProject.icon }} />
+          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company }} />
         )}
       </Box>
     );
