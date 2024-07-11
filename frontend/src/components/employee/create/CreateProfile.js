@@ -20,6 +20,7 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
         password: '0000',
         officeLocation: '',
         canWorkRemote: false,
+        skills: [],
         //weeklyAvailability: user.weeklyAvailability || 40,
       });
   }, []);
@@ -28,6 +29,8 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
     console.log('formdata: ', formData)
    try {
       await createUser(formData);
+      setFullName('Click & Enter Employee Name');
+      setEmail('Click & Enter email');
       onCloseCreate();
     } catch (err) {
       console.error('Failed to create user:', err);

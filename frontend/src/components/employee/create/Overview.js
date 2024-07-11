@@ -2,13 +2,12 @@ import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper} from '@mui/material';
 
 const initialSkills = [
-  { name: 'Technology', value: 0, min: 0, max: 20,},
-  { name: 'Solution Engineering', value: 0 , min: 0, max: 15,},
-  { name: 'Self Management', value: 0,  min: 0, max: 15, },
-  { name: 'Communication Skills', value: 0,  min: 0, max: 20, },
-  { name: 'Employee Leadership', value: 0,  min: 0, max: 18, },
+  { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
+  { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
+  { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
+  { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
+  { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
 ];
-
 const Overview = ({ onFormDataChange }) => {
   const [location, setLocation] = useState("");
   const [canWorkRemote, setCanWorkRemote] = useState(false);
@@ -34,9 +33,13 @@ const Overview = ({ onFormDataChange }) => {
       contract: {
         startDate: new Date(),
         weeklyWorkingHours: workingHours
-      }
+      },
+      skills: skills.map(skill => ({
+        ...skill,
+        skillPoints: skill.skillPoints,
+      })),
     });
-  }, [location, canWorkRemote, normalizeLocation, onFormDataChange, workingHours]);
+  }, [location, canWorkRemote, normalizeLocation, onFormDataChange, workingHours, skills]);
 
   const handleRemoteChange = (event) => {
     setCanWorkRemote(event.target.checked);
@@ -47,13 +50,23 @@ const Overview = ({ onFormDataChange }) => {
   };
 
   const handleSkillChange = (index) => (event, newValue) => {
-    const newSkills = [...skills];
-    newSkills[index].value = newValue;
-    setSkills(newSkills);
+    const updatedSkills = skills.map((skill, i) =>
+      i === index ? { ...skill, skillPoints: newValue } : skill
+    );
+    setSkills(updatedSkills);
   };
 
   const handleLocationChange = (event) => {
     setLocation(event.target.value);
+  };
+
+  const getCategory = (category) => {
+    if(category  === 'TECHNOLOGY') return 'Technology';
+    else if (category  === 'SOLUTION_ENGINEERING') return 'Solution Engineering';
+    else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
+    else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
+    else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
+    else return ''
   };
 
   return (
@@ -195,16 +208,16 @@ const Overview = ({ onFormDataChange }) => {
                     lineHeight: "150%",
                     letterSpacing: "0%",
                   }}>
-                  {skill.name}
+                  {getCategory(skill.skillCategory)}
                 </Typography>
                 <Slider
-                  value={skill.value}
+                  value={skill.skillPoints}
                   step={1}
                   marks
-                  min={skill.min}
-                  max={skill.max}
+                  min={0}
+                  max={skill.maxSkillPoints}
                   valueLabelDisplay="auto"
-                  onChange={handleSkillChange(index)}
+                  onChange={(event, newValue) => handleSkillChange(index)(event, newValue)}
                   aria-labelledby={`slider-${index}`}
                   sx={{ color: "#36C5F0", flex: 1 }}
                 />

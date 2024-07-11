@@ -4,11 +4,11 @@ import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { projectApi } from "../../state/api/projectApi.js";
 
 const initialSkills = [
-  { name: 'Technology', skillPoints: 0, maxSkillPoints: 0,},
-  { name: 'Solution Engineering', skillPoints: 0,  maxSkillPoints: 0,},
-  { name: 'Self Management', skillPoints: 0,  maxSkillPoints: 0,},
-  { name: 'Communication Skills', skillPoints: 0,  maxSkillPoints: 0,},
-  { name: 'Employee Leadership', skillPoints: 0,  maxSkillPoints: 0,},
+    { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
+    { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
+    { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
+    { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
+    { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
 ];
 
 const Overview = ({ user, onFormDataChange }) => {
@@ -105,12 +105,10 @@ const Overview = ({ user, onFormDataChange }) => {
   };
 
   const handleSkillChange = (index) => (event, newValue) => {
-    setSkills((prevSkills) => {
-      const updatedSkills = prevSkills.map((skill, i) => 
-        i === index ? { ...skill, skillPoints: newValue } : skill
-      );
-      return updatedSkills;
-    });
+    const updatedSkills = skills.map((skill, i) =>
+      i === index ? { ...skill, skillPoints: newValue } : skill
+    );
+    setSkills(updatedSkills);
   };
 
   const handleLocationChange = (event) => {
@@ -134,10 +132,6 @@ const Overview = ({ user, onFormDataChange }) => {
 //     else if (category  === 'Employee Leadership') return 'EMPLOYEE_LEADERSHIP';
 //     else return ''
 //   };
-
-  const getDefaultCategory = (index) => {
-    return initialSkills[index].name;
-  };
 
   return (
     <Box sx={{ display: "flex", gap: 5, padding: 0, mt: 2 }}>
@@ -337,7 +331,7 @@ const Overview = ({ user, onFormDataChange }) => {
                     lineHeight: "150%",
                     letterSpacing: "0%",
                   }}>
-                  {skill.skillCategory ? getCategory(skill.skillCategory) : getDefaultCategory(index)}
+                  {getCategory(skill.skillCategory)}
                 </Typography>
                 <Slider
                   value={skill.skillPoints}
