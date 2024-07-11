@@ -57,7 +57,7 @@ export const updateAssignmentService = async (assignmentId, updatedData) => {
 //TODO profile id
 export const createNewAssignmentService = async (assignmentData) => {
   try {
-    const newAssignment = new Assignment({ userId: assignmentData })
+    const newAssignment = new Assignment({ projectDemandProfileId: assignmentData })
     await newAssignment.save()
     return newAssignment
   } catch (error) {

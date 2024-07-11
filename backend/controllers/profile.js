@@ -137,18 +137,8 @@ export const deleteProfileController = async (req, res, next) => {
     if (!profile) {
       return res.status(404).json({ message: 'Profile not found' })
     }
-    try {
-      await removeProfileIdFromProjectService(projectId, profileId)
-    } catch (err) {
-      res.status(500).json({
-        message: 'Failed to remove profile id from project',
-        error: err.message,
-      })
-    }
-    await deleteSkillsService(profile.targetSkills)
-    const assignment = await getAssignmentByProfileIdService(profileId)
-    deleteAssignmentService(assignment._id)
-    const deletedProfile = await deleteProfileService(profileId)
+    
+    const deletedProfile = await deleteProfileService(profileId, projectId)
     res
       .status(200)
       .json({ message: 'Profile deleted successfully', data: deletedProfile })

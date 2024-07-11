@@ -3,6 +3,7 @@ import Project from '../models/Project.js'
 import Demand from '../models/Demand.js'
 import Skill from '../models/Skill.js'
 import { getProjectByProjectIdService } from './project.js'
+import { getAssignmentByProfileIdService, deleteAssignmentService } from './assignment.js'
 
 export const getAllProfileIdsByProjectIdService = async (projectId) => {
   try {
@@ -74,16 +75,16 @@ export const updateProfileService = async (profileId, updatedData) => {
   }
 }
 
-export const deleteProfileService = async (profileId) => {
+export const deleteProfileService = async (profileId, projectId) => {
   try {
     // get the minimal demand, target demand, and skills
     const profile = await ProjectDemandProfile.findById(profileId)
-    const minimalDemandId = profile.minimalDemandId
+    // const minimalDemandId = profile.minimalDemandId
     const targetDemandId = profile.targetDemandId
     const targetSkillsIds = profile.targetSkills
 
     // delete the minimal demand
-    await Demand.findByIdAndDelete(minimalDemandId)
+    // await Demand.findByIdAndDelete(minimalDemandId)
 
     // delete the target demand
     await Demand.findByIdAndDelete(targetDemandId)
@@ -94,6 +95,17 @@ export const deleteProfileService = async (profileId) => {
         await Skill.findByIdAndDelete(skillId)
       })
     )
+    try {
+      await removeProfileIdFromProjectService(projectId, profileId)
+    } catch (err) {
+      res.status(500).json({
+        message: 'Failed to remove profile id from project',
+        error: err.message,
+      })
+    }
+    // await deleteSkillsService(profile.targetSkills)
+    const assignment = await getAssignmentByProfileIdService(profileId)
+    await deleteAssignmentService(assignment._id)
 
     const deletedProfile =
       await ProjectDemandProfile.findByIdAndDelete(profileId)
