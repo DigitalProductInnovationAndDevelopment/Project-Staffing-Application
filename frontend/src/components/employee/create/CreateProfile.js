@@ -1,62 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, Box, Avatar, Typography, Button, CircularProgress, TextField} from '@mui/material';
-import Overview from './employee/Overview';
-import DetailsOverview from './employee/DetailsOverview'
-import backgroundImage from './../assets/images/employee_edit_bg.svg';
-import '../style.scss';
-import { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation} from '../state/api/userApi';
-import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
-import deleteIcon from './../assets/images/delete-icon.svg';
+import { Dialog, DialogContent, Box, Avatar, Typography, Button, TextField} from '@mui/material';
+import Overview from './Overview';
+import backgroundImage from './../../../assets/images/employee_edit_bg.svg';
+import '../../../style.scss';
+import {useCreateNewUserMutation} from '../../../state/api/userApi';
+import AvatarBlue from "./../../../assets/images/icons/blue_avatar.svg";
 
-const EditProfile = ({ open, onClose, employee, source, onBack}) => {
+const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
 
-  const userId  = employee.userId;
-  const { data: user, error, isLoading, refetch } = useGetUserByIdQuery(userId);
-  const [updateUser] = useUpdateUserMutation();
-  const [deleteUser] = useDeleteUserMutation();
+  const [createUser] = useCreateNewUserMutation();
   const [formData, setFormData] = useState({});
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('Click & Enter Employee Name');
+  const [email, setEmail] = useState('Click & Enter email');
 
   useEffect(() => {
-    if (user) {
-      const newFormData = {
-      officeLocation: user.officeLocation,
-      canWorkRemote: user.canWorkRemote,
-      skills: user.skills,
-    };
+      setFormData({
+        password: '0000',
+        officeLocation: '',
+        canWorkRemote: false,
+        skills: [],
+        //weeklyAvailability: user.weeklyAvailability || 40,
+      });
+  }, []);
 
-    if (user.contractId) {
-      newFormData.contractId = {
-        _id: user.contractId._id,
-        weeklyWorkingHours: user.contractId.weeklyWorkingHours,
-      };
-    }
-
-    setFormData(newFormData);
-    setFullName(`${user.firstName} ${user.lastName}`);
-    setEmail(user.email);
-    }
-  }, [user]);
-
-  const handleSaveAndClose = async () => {
+  const handleCreateAndClose = async () => {
+    console.log('formdata: ', formData)
    try {
-      await updateUser({ userId: userId, patchData: formData });
-      refetch();
-      onClose();
+      await createUser(formData);
+      setFullName('Click & Enter Employee Name');
+      setEmail('Click & Enter email');
+      onCloseCreate();
     } catch (err) {
-      console.error('Failed to update user:', err);
-    }
-  };
-
-  const handleDelete = async () => {
-   try {
-      await deleteUser(userId);
-      onClose();
-    } catch (err) {
-      console.error('Failed to delete user:', err);
+      console.error('Failed to create user:', err);
     }
   };
 
@@ -65,6 +42,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
   };
 
   const handleFullNameClick = () => {
+    setFullName('')
     setIsEditingName(true);
   };
 
@@ -74,13 +52,17 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const handleFullNameBlur = () => {
     setIsEditingName(false);
-    const nameParts = fullName.split(' ');
-    const lastName = nameParts.pop();
-    const firstName = nameParts.join(' ');
-    setFormData((prevData) => ({ ...prevData, firstName, lastName }));
+    if(!fullName) setFullName('Click & Enter Employee Name')
+    else{
+      const nameParts = fullName.split(' ');
+      const lastName = nameParts.pop();
+      const firstName = nameParts.join(' ');
+      setFormData((prevData) => ({ ...prevData, firstName, lastName }));
+    }
   };
 
   const handleEmailClick = () => {
+    setEmail('')
     setIsEditingEmail(true);
   };
 
@@ -90,19 +72,12 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
 
   const handleEmailBlur = () => {
     setIsEditingEmail(false);
-    setFormData((prevData) => ({ ...prevData, email }));
+    if(!email) setEmail('Click & Enter email')
+    else setFormData((prevData) => ({ ...prevData, email }));
   };
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
-  if (error) {
-    return <Typography color="error">Error fetching user: {error.message}</Typography>;
-  }
-
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
+    <Dialog open={openCreate} onClose={onCloseCreate} fullWidth maxWidth="lg">
       <Box sx={{ backgroundColor: '#F8F9FA', padding: 2}}>
         <Box
           sx={{
@@ -132,7 +107,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                 mb: 1, mt: 2, ml: 2,
               }}
             >
-              {source === 'Employees' ?  ' Start / Employees / Edit Profile' : ( 'Start / Projects / Assign Team / See Profile' )}
+               Start / Employees / Create Profile
             </Typography>
             <Typography
               sx={{
@@ -144,11 +119,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                 mb: 15, ml: 2,
               }}
             >
-            {source === 'Employees' ? 
-              'Edit Profile'
-             : (
-              'See Profile'
-            )}
+              Create Profile
             </Typography>
           </Box>
           <Box
@@ -165,7 +136,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={`${user.firstName} ${user.lastName}`} src={AvatarBlue} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
+              <Avatar alt={fullName} src={AvatarBlue} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
               {isEditingName ? (
                   <TextField
@@ -233,15 +204,31 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
             </Box>
           </Box>
           <DialogContent>
-            {source === 'Employees' ? (
-              <Overview user={user} onFormDataChange={handleFormDataChange}/>
-            ) : (
-              <DetailsOverview user={user} />
-            )}
+            <Overview onFormDataChange={handleFormDataChange}/>
           </DialogContent>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 1 }}>
-          {source === 'Employees' ? (
-             <>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
+              <Button
+                variant="contained"
+                color="profBlue"
+                fullWidth
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '8px',
+                  color: 'white',
+                  height: '40px',
+                  fontFamily: 'Halvetica, sans-serif',
+                  fontWeight: 'Bold',
+                  fontSize: '14px',
+                  lineHeight: '150%',
+                  letterSpacing: '0',
+                  width: '120px',
+                  padding: 0,
+                  marginRight: 2
+                }}
+                onClick={onBackCreate}
+              >
+                Back
+              </Button>
               <Button
                 variant="contained"
                 color="profBlue"
@@ -260,55 +247,10 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                   padding: 0,
                   marginRight: 2,
                 }}
-                onClick={handleSaveAndClose}
+                onClick={handleCreateAndClose}
               >
-                Save & Close
+                Create & Close
               </Button>
-              <Button
-                variant="contained"
-                color="error"
-                fullWidth
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '8px',
-                  color: 'white',
-                  height: '40px',
-                  fontFamily: 'Halvetica, sans-serif',
-                  fontWeight: 'Bold',
-                  fontSize: '14px',
-                  lineHeight: '150%',
-                  letterSpacing: '0',
-                  width: '120px',
-                  padding: 0,
-                }}
-                onClick={handleDelete}
-              >
-               <img src={deleteIcon} alt="Delete" style={{ marginLeft: '2px', marginRight: '4px' }} /> Delete Profile
-              </Button>
-            </>
-            ) : (
-              <Button
-                variant="contained"
-                color="profBlue"
-                fullWidth
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '8px',
-                  color: 'white',
-                  height: '40px',
-                  fontFamily: 'Halvetica, sans-serif',
-                  fontWeight: 'Bold',
-                  fontSize: '14px',
-                  lineHeight: '150%',
-                  letterSpacing: '0',
-                  width: '120px',
-                  padding: 0,
-                }}
-                onClick={onBack}
-              >
-                Back
-              </Button>
-            )}
           </Box>
         </Box>
       </Box>
@@ -316,4 +258,4 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
   );
 };
 
-export default EditProfile;
+export default CreateProfile;
