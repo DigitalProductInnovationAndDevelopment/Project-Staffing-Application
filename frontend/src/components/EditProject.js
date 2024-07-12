@@ -6,7 +6,8 @@ import backgroundImage from './../assets/images/edit_background.svg';
 import OverviewIcon from './../assets/images/overview-icon.svg';
 import AssignTeamIcon from './../assets/images/assign-icon.svg';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
-import { useGetProjectByIdQuery, useUpdateProjectMutation} from '../state/api/projectApi';
+import deleteIcon from './../assets/images/delete-icon.svg';
+import { useGetProjectByIdQuery, useUpdateProjectMutation, useDeleteProjectMutation} from '../state/api/projectApi';
 import '../style.scss';
 
 const EditProject = ({ open, onClose, project }) => {
@@ -14,6 +15,7 @@ const EditProject = ({ open, onClose, project }) => {
   const [activeTab, setActiveTab] = useState(0);
   const { data: projectData, error, isLoading, refetch } = useGetProjectByIdQuery(projectId);
   const [updateProject] = useUpdateProjectMutation();
+  const [deleteProject] = useDeleteProjectMutation();
   const [formData, setFormData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [projectName, setProjectName] = useState(project.name);
@@ -59,6 +61,15 @@ const EditProject = ({ open, onClose, project }) => {
   const handleProjectNameBlur = () => {
     setIsEditing(false);
     setFormData((prevData) => ({ ...prevData, projectName: projectName }));
+  };
+
+  const handleDelete = async () => {
+   try {
+      await deleteProject(projectId);
+      onClose();
+    } catch (err) {
+      console.error('Failed to delete user:', err);
+    }
   };
 
   if (isLoading) {
@@ -228,7 +239,7 @@ const EditProject = ({ open, onClose, project }) => {
             {activeTab === 0 && <Overview project={projectData} onFormDataChange={handleFormDataChange}/>}
             {activeTab === 1 && <AssignTeam />}
           </DialogContent>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 1 }}>
             <Button 
               variant="contained"
               color="secondary"
@@ -244,11 +255,34 @@ const EditProject = ({ open, onClose, project }) => {
                 lineHeight: '150%',
                 letterSpacing: '0',
                 width: '120px',
-                padding: 0
+                padding: 0,
+                marginRight: 2,
               }}
               onClick={handleSaveAndClose}
             >
               Save & Close
+            </Button>
+            <Button
+                variant="contained"
+                color="error"
+                fullWidth
+                sx={{
+                  textTransform: 'none',
+                  bgcolor: '#E10050',
+                  borderRadius: '8px',
+                  color: 'white',
+                  height: '40px',
+                  fontFamily: 'Halvetica, sans-serif',
+                  fontWeight: 'Bold',
+                  fontSize: '14px',
+                  lineHeight: '150%',
+                  letterSpacing: '0',
+                  width: '124px',
+                  padding: 0,
+                }}
+                onClick={handleDelete}
+              >
+               <img src={deleteIcon} alt="Delete" style={{ marginLeft: '2px', marginRight: '4px' }} /> Delete Project
             </Button>
           </Box>
         </Box>

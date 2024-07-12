@@ -271,6 +271,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
                 sx={{
                   textTransform: 'none',
                   borderRadius: '8px',
+                  bgcolor: '#E10050',
                   color: 'white',
                   height: '40px',
                   fontFamily: 'Halvetica, sans-serif',
