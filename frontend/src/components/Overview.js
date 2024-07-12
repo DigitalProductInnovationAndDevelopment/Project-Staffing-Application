@@ -63,7 +63,6 @@ const Overview = ({ project, onFormDataChange }) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
     else return '';
   }, []);
-
   const getSkillFieldName = (skillCategory) => {
     switch (skillCategory) {
       case 'TECHNOLOGY':
