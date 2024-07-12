@@ -14,13 +14,12 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { useGetProfilesByProjectIdQuery } from '../state/api/profileApi';
-import deleteIcon from './../assets/images/delete-icon.svg';
+import deleteIcon from './../../../assets/images/delete-icon.svg';
 
-const Overview = ({ project, onFormDataChange }) => {
+const Overview = ({ onFormDataChange }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [priority, setPriority] = useState("High");
+  const [priority, setPriority] = useState("");
   const [location, setLocation] = useState("");
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   const [profileName, setProfileName] = useState("");
@@ -35,26 +34,17 @@ const Overview = ({ project, onFormDataChange }) => {
     employeeLeadership: 0,
   });
 
-  const { data: profilesData } = useGetProfilesByProjectIdQuery(project._id);
-  //console.log('profilesdata: ', profilesData)
-
   const capitalizeFirstLetter = useCallback((letter) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
     else return '';
   }, []);
 
   useEffect(() => {
-    if (project) {
-      const normalizedLocation = capitalizeFirstLetter(project.projectLocation);
+      const normalizedLocation = capitalizeFirstLetter(location);
       if (!locations.includes(normalizedLocation)) {
         setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
       }
-      setLocation(normalizedLocation);
-      setPriority(capitalizeFirstLetter(project.priority));
-      setStartDate(new Date(project.kickoffDate));
-      setEndDate(new Date(project.deadlineDate));
-    }
-  }, [project, capitalizeFirstLetter, locations]);
+  }, [capitalizeFirstLetter, locations, location]);
 
   useEffect(() => {
     // Fetch profiles from the backend
@@ -83,42 +73,42 @@ const Overview = ({ project, onFormDataChange }) => {
 
     // For now, let's use dummy data
     const data = [
-      {
-        id: 1,
-        title: "Project Lead",
-        instances: 1,
-        sliders: {
-          technology: 10,
-          solutionEngineering: 5,
-          selfManagement: 8,
-          communicationSkills: 7,
-          employeeLeadership: 6,
-        },
-      },
-      {
-        id: 2,
-        title: "Full-Stack Developer",
-        instances: 2,
-        sliders: {
-          technology: 15,
-          solutionEngineering: 8,
-          selfManagement: 10,
-          communicationSkills: 6,
-          employeeLeadership: 4,
-        },
-      },
-      {
-        id: 3,
-        title: "Cloud Expert",
-        instances: 1,
-        sliders: {
-          technology: 8,
-          solutionEngineering: 7,
-          selfManagement: 9,
-          communicationSkills: 8,
-          employeeLeadership: 5,
-        },
-      },
+    // {
+    //     id: 1,
+    //     title: "Project Lead",
+    //     instances: 1,
+    //     sliders: {
+    //       technology: 10,
+    //       solutionEngineering: 5,
+    //       selfManagement: 8,
+    //       communicationSkills: 7,
+    //       employeeLeadership: 6,
+    //     },
+    //   },
+    //   {
+    //     id: 2,
+    //     title: "Full-Stack Developer",
+    //     instances: 2,
+    //     sliders: {
+    //       technology: 15,
+    //       solutionEngineering: 8,
+    //       selfManagement: 10,
+    //       communicationSkills: 6,
+    //       employeeLeadership: 4,
+    //     },
+    //   },
+    //   {
+    //     id: 3,
+    //     title: "Cloud Expert",
+    //     instances: 1,
+    //     sliders: {
+    //       technology: 8,
+    //       solutionEngineering: 7,
+    //       selfManagement: 9,
+    //       communicationSkills: 8,
+    //       employeeLeadership: 5,
+    //     },
+    //   },
     ];
     setProfiles(data);
   };
