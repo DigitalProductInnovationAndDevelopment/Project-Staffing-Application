@@ -5,18 +5,28 @@ import { projectApi } from "../state/api/projectApi.js";
 import EditProject from './../components/EditProject';
 import FullScreenLoader from './FullScreenLoader.js';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
+import CreateProject from "../components/projects/create/CreateProjects.js";
 
 function ProjectOverview() {
   const { data: projectData, isError, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
 
   const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
   console.log('project', projectData)
 
   const handleAddProject = () => {
-    // Add save logic here
-    //onClose();
+    setOpenCreate(true);
+  };
+  
+  const handleCloseCreateDialog = () => {
+    refetch();
+    setOpenCreate(false);
+  };
+
+  const handleOnBack = () => {
+    setOpenCreate(false);
   };
 
   const handleOpenEditDialog = (project) => {
@@ -223,6 +233,7 @@ function ProjectOverview() {
         {selectedProject && (
           <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company }} />
         )}
+        <CreateProject openCreate={openCreate} onCloseCreate={handleCloseCreateDialog} onBackCreate={handleOnBack}/>
       </Box>
     );
   }
