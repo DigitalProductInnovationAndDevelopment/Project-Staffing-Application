@@ -14,8 +14,27 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { useGetProfilesByProjectIdQuery } from '../state/api/profileApi';
+import { useGetProfilesByProjectIdQuery,
+        useCreateProfileForProjectMutation, 
+        useUpdateProfileByIdMutation,
+        useDeleteProfileByIdMutation } from '../state/api/profileApi';
 import deleteIcon from './../assets/images/delete-icon.svg';
+
+const initialSkills = [
+    { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
+    { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
+    { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
+    { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
+    { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
+];
+
+const skillCategoryMap = {
+    TECHNOLOGY: "technology",
+    SOLUTION_ENGINEERING: "solutionEngineering",
+    SELF_MANAGEMENT: "selfManagement",
+    COMMUNICATION_SKILLS: "communicationSkills",
+    EMPLOYEE_LEADERSHIP: "employeeLeadership"
+};
 
 const Overview = ({ project, onFormDataChange }) => {
   const [startDate, setStartDate] = useState(new Date());
@@ -25,7 +44,8 @@ const Overview = ({ project, onFormDataChange }) => {
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   const [profileName, setProfileName] = useState("");
   const [fteNumber, setFteNumber] = useState("");
-  const [profiles, setProfiles] = useState([]);
+  const { data: profilesData, refetch } = useGetProfilesByProjectIdQuery(project._id);
+  const [profiles, setProfiles] = useState();
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [sliders, setSliders] = useState({
     technology: 0,
@@ -34,15 +54,33 @@ const Overview = ({ project, onFormDataChange }) => {
     communicationSkills: 0,
     employeeLeadership: 0,
   });
-
-  const { data: profilesData } = useGetProfilesByProjectIdQuery(project._id);
-  //console.log('profilesdata: ', profilesData)
+  const [skills, setSkills] = useState(initialSkills);
+  const [updateProfile] = useUpdateProfileByIdMutation();
+  const [createProfile] = useCreateProfileForProjectMutation();
+  const [deleteProfile] = useDeleteProfileByIdMutation();
 
   const capitalizeFirstLetter = useCallback((letter) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
     else return '';
   }, []);
 
+  const getSkillFieldName = (skillCategory) => {
+    switch (skillCategory) {
+      case 'TECHNOLOGY':
+        return 'technology';
+      case 'SOLUTION_ENGINEERING':
+        return 'solutionEngineering';
+      case 'SELF_MANAGEMENT':
+        return 'selfManagement';
+      case 'COMMUNICATION_SKILLS':
+        return 'communicationSkills';
+      case 'EMPLOYEE_LEADERSHIP':
+        return 'employeeLeadership';
+      default:
+        return '';
+    }
+  };
+  
   useEffect(() => {
     if (project) {
       const normalizedLocation = capitalizeFirstLetter(project.projectLocation);
@@ -57,9 +95,11 @@ const Overview = ({ project, onFormDataChange }) => {
   }, [project, capitalizeFirstLetter, locations]);
 
   useEffect(() => {
-    // Fetch profiles from the backend
-    fetchProfiles();
-  }, []);
+    if (profilesData) {
+      console.log("profilesData: ", profilesData);
+      setProfiles(profilesData.profiles);
+    }
+  }, [profilesData]);
 
   useEffect(() => {
     if (startDate instanceof Date && !isNaN(startDate) &&
@@ -73,61 +113,22 @@ const Overview = ({ project, onFormDataChange }) => {
     }
   }, [startDate, endDate, priority, location, onFormDataChange]);
 
-
-  const fetchProfiles = async () => {
-    // Fetch profiles from the backend
-    // Example:
-    // const response = await fetch('/api/profiles');
-    // const data = await response.json();
-    // setProfiles(data);
-
-    // For now, let's use dummy data
-    const data = [
-      {
-        id: 1,
-        title: "Project Lead",
-        instances: 1,
-        sliders: {
-          technology: 10,
-          solutionEngineering: 5,
-          selfManagement: 8,
-          communicationSkills: 7,
-          employeeLeadership: 6,
-        },
-      },
-      {
-        id: 2,
-        title: "Full-Stack Developer",
-        instances: 2,
-        sliders: {
-          technology: 15,
-          solutionEngineering: 8,
-          selfManagement: 10,
-          communicationSkills: 6,
-          employeeLeadership: 4,
-        },
-      },
-      {
-        id: 3,
-        title: "Cloud Expert",
-        instances: 1,
-        sliders: {
-          technology: 8,
-          solutionEngineering: 7,
-          selfManagement: 9,
-          communicationSkills: 8,
-          employeeLeadership: 5,
-        },
-      },
-    ];
-    setProfiles(data);
-  };
-
   const handleEditProfile = (profile) => {
     setSelectedProfile(profile);
-    setProfileName(profile.title);
-    setFteNumber(profile.instances);
-    setSliders(profile.sliders);
+    setProfileName(profile.name);
+    setFteNumber(profile.targetDemandId.now);
+    setSkills(profile.targetSkills);
+
+    //set sliders according to targetSkills from backend, set the value from skillPoints
+    const newSliders = profile.targetSkills.reduce((acc, skill) => {
+        const field = skillCategoryMap[skill.skillCategory];
+        if (field) {
+          acc[field] = skill.skillPoints;
+        }
+        return acc;
+      }, {});
+    
+    setSliders(newSliders);
   };
 
   const handleSliderChange = (field, newValue) => {
@@ -138,63 +139,85 @@ const Overview = ({ project, onFormDataChange }) => {
     // Save the updated profile to the backend
     const updatedProfile = {
       ...selectedProfile,
-      title: profileName,
-      instances: fteNumber,
-      sliders,
+      name: profileName,
+      targetDemandId: { _id: selectedProfile.targetDemandId._id, now: fteNumber },
+      targetSkills: skills.map(skill => ({
+        ...skill,
+        skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
+      }))
     };
 
-    // Example:
-    // await fetch(`/api/profiles/${selectedProfile.id}`, {
-    //   method: 'PUT',
-    //   body: JSON.stringify(updatedProfile),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
+    try {
+        await updateProfile({projectId: project._id, profileId: selectedProfile._id, patchData: updatedProfile});
 
-    // Update the profiles state with the new data
-    setProfiles(
-      profiles.map((profile) =>
-        profile.id === updatedProfile.id ? updatedProfile : profile
-      )
-    );
-
-    // Clear the selected profile after saving
-    setSelectedProfile(null);
-    setProfileName("");
-    setFteNumber("");
-    setSliders({
-      technology: 0,
-      solutionEngineering: 0,
-      selfManagement: 0,
-      communicationSkills: 0,
-      employeeLeadership: 0,
-    });
+        refetch();
+        // Update the profiles state with the new data
+        //setProfiles(profilesData);
+    
+        // Clear the selected profile after saving
+        setSelectedProfile(null);
+        setProfileName("");
+        setFteNumber("");
+        setSliders({
+          technology: 0,
+          solutionEngineering: 0,
+          selfManagement: 0,
+          communicationSkills: 0,
+          employeeLeadership: 0,
+        });
+      } catch (error) {
+        console.error("Failed to update profile:", error);
+    }
   };
 
-  const handleAddProfile = () => {
+  const handleAddProfile = async() => {
     const newProfile = {
-      id: profiles.length + 1,
-      title: profileName,
-      instances: fteNumber,
-      sliders,
+      name: profileName,
+      targetDemandId: { now: fteNumber },
+      targetSkills: skills.map(skill => ({
+        ...skill,
+        skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
+      }))
     };
 
-    setProfiles([...profiles, newProfile]);
+    try {
+        await createProfile({projectId: project._id, payload: newProfile});
 
-    setProfileName("");
-    setFteNumber("");
-    setSliders({
-      technology: 0,
-      solutionEngineering: 0,
-      selfManagement: 0,
-      communicationSkills: 0,
-      employeeLeadership: 0,
-    });
+        refetch();
+        // Update the profiles state with the new data
+        //setProfiles(profilesData);
+    
+        // Clear the selected profile after saving
+        setSelectedProfile(null);
+        setProfileName("");
+        setFteNumber("");
+        setSliders({
+          technology: 0,
+          solutionEngineering: 0,
+          selfManagement: 0,
+          communicationSkills: 0,
+          employeeLeadership: 0,
+        });
+      } catch (error) {
+        console.error("Failed to update profile:", error);
+    }
   };
 
-  const handleDeleteProfile = (profileId) => {
-    setProfiles(profiles.filter(profile => profile.id !== profileId));
+  const handleDeleteProfile = async (profile) => { 
+    console.log('profileId: ', profile._id)
+    console.log('projectId: ', project._id)
+    try {
+        if (!!profile) {
+          await deleteProfile({ projectId: project._id, profileId: profile._id });
+          refetch();
+
+        // Update the profiles state with the new data
+        //setProfiles(profilesData);
+        }
+
+      } catch (error) {
+        console.error("Failed to delete profile:", error);
+    }
   };
 
   return (
@@ -369,9 +392,10 @@ const Overview = ({ project, onFormDataChange }) => {
               Profiles on this Project
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
-              {profiles.map((profile) => (
+              {profiles && profiles.length > 0 ? (
+              profiles.map((profile) => (
                 <Box
-                  key={profile.id}
+                  key={profile._id}
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -392,13 +416,13 @@ const Overview = ({ project, onFormDataChange }) => {
                         color: 'black',
                       }}
                     >
-                      {profile.title}
+                      {profile.name}
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         className="instances-text"
                       >
-                        {profile.instances} Instances
+                        {profile.targetDemandId.now} Instances
                       </Typography>
                     </Typography>
                   </Box>
@@ -438,13 +462,17 @@ const Overview = ({ project, onFormDataChange }) => {
                           bgcolor: '#CB074D',
                         },
                       }}
-                      onClick={() => handleDeleteProfile(profile.id)}
+                      onClick={() => handleDeleteProfile(profile)}
                     >
                       Delete <img src={deleteIcon} alt="Delete" style={{ marginLeft: '10px' }} />
                     </Button>
                   </Box>
                 </Box>
-              ))}
+              ))) : (
+                <Typography variant="body2" color="textSecondary">
+                  No profiles available.
+                </Typography>
+              )}
             </Box>
           </Paper>
         </Box>
@@ -540,30 +568,30 @@ const Overview = ({ project, onFormDataChange }) => {
                 </Button>
               </Box>
             {[
-            { title: "Technology", field: "technology", min: 0, max: 15 },
+            { title: "Technology", field: "technology", min: 0, max: 20 },
             {
                 title: "Solution Engineering",
                 field: "solutionEngineering",
                 min: 0,
-                max: 8,
+                max: 15,
             },
             {
                 title: "Self Management",
                 field: "selfManagement",
                 min: 0,
-                max: 25,
+                max: 15,
             },
             {
                 title: "Communication Skills",
                 field: "communicationSkills",
                 min: 0,
-                max: 18,
+                max: 20,
             },
             {
                 title: "Employee Leadership",
                 field: "employeeLeadership",
                 min: 0,
-                max: 30,
+                max: 18,
             },
             ].map((skill, index) => (
             <Box
