@@ -175,8 +175,8 @@ function ProjectOverview() {
                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '20%' }}>
                       <Typography sx={{ mr: 1, color: {
                         color:
-                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= '80%' ? "#4FD1C5" : // Türkis bei 80% oder höher
-                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > '20%' ? "#ECB22E" : // Gelb zwischen 20% und 80%
+                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= 80 ? "#4FD1C5" : // Türkis bei 80% oder höher
+                        calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > 20 ? "#ECB22E" : // Gelb zwischen 20% und 80%
                         "#DC395F", // Rot bei 20% oder weniger
                       },
                         fontFamily: 'Helvetica, sans-serif',
@@ -191,9 +191,9 @@ function ProjectOverview() {
                           borderRadius: 5,
                           '& .MuiLinearProgress-bar': {
                             backgroundColor:
-                            calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= '80%'
+                            calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) >= 80
                                 ? '#4FD1C5' // Türkis bei 80% oder höher
-                                : calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > '20%'
+                                : calculateStaffingRate(project.numberOfDemandedEmployees, project.assignedEmployees.length) > 20
                                 ? '#ECB22E' // Gelb zwischen 20% und 80%
                                 : '#DC395F', // Rot bei 20% oder weniger
                           },
