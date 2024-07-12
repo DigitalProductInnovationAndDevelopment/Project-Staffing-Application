@@ -18,7 +18,10 @@ export const getAllProfileIdsByProjectIdService = async (projectId) => {
 
 export const getProfileByIdService = async (profileId) => {
   try {
-    const profile = await ProjectDemandProfile.findById(profileId)
+    const profile = await ProjectDemandProfile.findById(profileId).populate([
+      { path: "targetDemandId", select: "now" },
+      { path: "targetSkills" }
+    ])
     return profile
   } catch (error) {
     console.error(error)
