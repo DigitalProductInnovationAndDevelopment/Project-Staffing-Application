@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
+import { useGetProfilesByProjectIdQuery } from '../state/api/profileApi';
 import deleteIcon from './../assets/images/delete-icon.svg';
 
 const Overview = ({ project, onFormDataChange }) => {
@@ -33,6 +34,9 @@ const Overview = ({ project, onFormDataChange }) => {
     communicationSkills: 0,
     employeeLeadership: 0,
   });
+
+  const { data: profilesData } = useGetProfilesByProjectIdQuery(project._id);
+  //console.log('profilesdata: ', profilesData)
 
   const capitalizeFirstLetter = useCallback((letter) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
