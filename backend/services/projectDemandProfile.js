@@ -36,7 +36,7 @@ export const createNewProfileService = async (profileData) => {
     // await newMinimalDemand.save()
     // const newMinimalDemandId = newMinimalDemand._id
     // create a target demand object
-    const newTargetDemand = new Demand(profileData.targetDemand)
+    const newTargetDemand = new Demand(profileData.targetDemandId)
     await newTargetDemand.save()
     const newTargetDemandId = newTargetDemand._id
     // create target skills objects
@@ -63,6 +63,22 @@ export const createNewProfileService = async (profileData) => {
 
 export const updateProfileService = async (profileId, updatedData) => {
   try {
+    // Find the existing profile to get the current targetDemandId
+    const existingProfile = await ProjectDemandProfile.findById(profileId);
+    if (!existingProfile) {
+      throw new Error('Profile not found');
+    }
+
+    // Update the Demand object if targetDemandId is part of the update
+    if (updatedData.targetDemandId && updatedData.targetDemandId.now !== undefined) {
+      await Demand.findByIdAndUpdate(existingProfile.targetDemandId, {
+        now: updatedData.targetDemandId.now
+      }, { new: true });
+    }
+
+    // Remove targetDemandId from updatedData as it is already updated
+    delete updatedData.targetDemandId;
+
     const updatedProfile = await ProjectDemandProfile.findOneAndUpdate(
       profileId,
       updatedData,
@@ -88,10 +104,13 @@ export const deleteProfileService = async (profileId, projectId) => {
 
     // delete the minimal demand
     // await Demand.findByIdAndDelete(minimalDemandId)
+    const deletedProfile = await ProjectDemandProfile.findByIdAndDelete(profileId)
+    if (!deletedProfile) {
+      throw new Error('Profile not found')
+    }
 
     // delete the target demand
-    await Demand.findByIdAndDelete(targetDemandId)
-
+    await Demand.findByIdAndDelete(targetDemandId._id)
     // delete the target skills
     await Promise.all(
       targetSkillsIds.map(async (skillId) => {
@@ -101,20 +120,12 @@ export const deleteProfileService = async (profileId, projectId) => {
     try {
       await removeProfileIdFromProjectService(projectId, profileId)
     } catch (err) {
-      res.status(500).json({
-        message: 'Failed to remove profile id from project',
-        error: err.message,
-      })
+      throw new Error(`Failed to remove profile id from project: ${err.message}`)
     }
     // await deleteSkillsService(profile.targetSkills)
     const assignment = await getAssignmentByProfileIdService(profileId)
     await deleteAssignmentService(assignment._id)
 
-    const deletedProfile =
-      await ProjectDemandProfile.findByIdAndDelete(profileId)
-    if (!deletedProfile) {
-      throw new Error('Profile not found')
-    }
     // delete demands adn skills
     return deletedProfile
   } catch (error) {

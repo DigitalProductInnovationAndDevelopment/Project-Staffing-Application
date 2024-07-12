@@ -38,7 +38,13 @@ export const projectApi = createApi({
             body: payload,
           })
         }),
+        deleteProject: builder.mutation({
+            query: (projectId) => ({
+                url: BackendRoutes.DELETE_PROJECT(projectId),
+                method: 'DELETE',
+            }),
+        }),
     }),
 });
 
-export const {useGetProjectByIdQuery, useUpdateProjectMutation, useCreateProjectMutation} = projectApi;
+export const {useGetProjectByIdQuery, useUpdateProjectMutation, useCreateProjectMutation, useDeleteProjectMutation} = projectApi;
