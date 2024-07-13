@@ -4,7 +4,7 @@ import {
   Typography,
   Avatar,
   Divider,
-  LinearProgress,
+ //LinearProgress,
   Grid,
   IconButton,
   CircularProgress,
@@ -61,15 +61,15 @@ function EmployeeOverview() {
     return name + ' ' + surname;
   };
 
-  const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
-    const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
-      value: parseFloat(percentage),
-    }));
+//   const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
+//     const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
+//       value: parseFloat(percentage),
+//     }));
   
-    const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
+//     const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
 
-    return allocatedHours;
-  };
+//     return allocatedHours;
+//   };
 
 
   if (isLoading) {
@@ -129,9 +129,9 @@ if (isSuccess) {
                 <Grid item xs={2}>
                   <Typography className="table-title">PERSON</Typography>
                 </Grid>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                   <Typography className="table-title">CURRENT UTILIZATION</Typography>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={1}>
                   <Typography className="table-title"># PROJECTS</Typography>
                 </Grid>
@@ -178,7 +178,7 @@ if (isSuccess) {
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item xs={2}>
+                    {/* <Grid item xs={2}>
                       <Box sx={{ display: 'flex', flexDirection: 'column'}}>
                         <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}%</Typography>
                         <LinearProgress
@@ -194,9 +194,9 @@ if (isSuccess) {
                           }}
                         />
                       </Box>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={1}>
-                      <Typography variant="body2">{employee.numberOfProjectsLast3Months || 0}</Typography>
+                        <Typography variant="body2" sx={{ ml: 4 }} >{employee.numberOfProjectsLast3Months || 0}</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
