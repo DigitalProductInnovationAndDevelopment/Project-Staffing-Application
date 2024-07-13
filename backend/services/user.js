@@ -47,8 +47,8 @@ export const getAllUsersService = async () => {
       workingHourDistribution.percentageDistribution
     all_users[i] = user
   }
-  console.log('all_users')
-  console.log(all_users)
+  // console.log('all_users')
+  // console.log(all_users)
   return all_users
 }
 

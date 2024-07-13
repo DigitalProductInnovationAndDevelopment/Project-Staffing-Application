@@ -20,6 +20,7 @@ import {
   createNewSkillsService,
   addSkillsToProfileService,
 } from '../services/skill.js'
+import { getAllUsersService, getUserByUserIdService } from '../services/user.js'
 
 export const getAllProfilesByProjectIdController = async (req, res, next) => {
   try {
@@ -83,7 +84,7 @@ export const createNewProfileController = async (req, res, next) => {
         data.targetSkills ? data.targetSkills : []
       )
       const newSkillIds = newSkill.map((skill) => skill._id)
-      console.log(newSkillIds)
+      // console.log(newSkillIds)
       const profileWithSkills = await addSkillsToProfileService(
         profile._id,
         newSkillIds
@@ -137,7 +138,7 @@ export const deleteProfileController = async (req, res, next) => {
     if (!profile) {
       return res.status(404).json({ message: 'Profile not found' })
     }
-    
+
     const deletedProfile = await deleteProfileService(profileId, projectId)
     res
       .status(200)
@@ -149,18 +150,49 @@ export const deleteProfileController = async (req, res, next) => {
   }
 }
 
-export const getAssignmentByProfileIdController = async (req, res, next) => {
+export const getAssignmentsByProjectIdController = async (req, res, next) => {
   try {
-    const { projectId, profileId } = req.params
+    const { projectId } = req.params
 
-    const assignment = await getAssignmentByProfileIdService(profileId)
-    if (!assignment) {
-      return res.status(404).json({ message: 'Assignment not found' })
+    let payload = []
+
+    // console.log(projectId)
+    const profileIds = await getAllProfileIdsByProjectIdService(projectId)
+    if (!profileIds) {
+      return res.status(404).json({ message: 'Profile ids not found' })
+    }
+    // console.log(profileIds)
+
+    for (const profileId of profileIds) {
+      const profile = await getProfileByIdService(profileId)
+      const assignment = await getAssignmentByProfileIdService(profileId)
+      if (!assignment) {
+        return res.status(404).json({ message: 'Assignment not found' })
+      }
+      const assignedEmployees = assignment.userId
+      // console.log(assignedEmployees)
+      const assignedEmployeesData = await Promise.all(
+        assignedEmployees.map(async (userId) => {
+          const user = await getUserByUserIdService(userId)
+          return user
+        })
+      )
+      // console.log(assignedEmployeesData)
+      const suitableEmployees = await getAllUsersService()
+      const suitableEmployeesFilteredByAssigned = suitableEmployees.filter(
+        (user) => !assignedEmployees.includes(user._id)
+      )
+
+      payload.push({
+        profile: profile,
+        assignedEmployees: assignedEmployeesData,
+        suitableEmployees: suitableEmployeesFilteredByAssigned,
+      })
     }
 
     res.status(200).json({
       message: 'Assignment by profile id successfully retrieved',
-      data: assignment,
+      data: payload,
     })
   } catch (err) {
     res.status(500).json({
@@ -172,7 +204,8 @@ export const getAssignmentByProfileIdController = async (req, res, next) => {
 
 export const updateAssignmentController = async (req, res, next) => {
   try {
-    const { projectId, profileId } = req.params
+    const { projectId } = req.params
+    const { profileId, assignedEmployees } = req.body
 
     const assignment = await getAssignmentByProfileIdService(profileId)
     if (!assignment) {
@@ -181,10 +214,9 @@ export const updateAssignmentController = async (req, res, next) => {
 
     console.log(assignment._id)
 
-    const updatedAssignment = await updateAssignmentService(
-      assignment._id,
-      req.body
-    )
+    const updatedAssignment = await updateAssignmentService(assignment._id, {
+      userId: assignedEmployees,
+    })
     res.status(200).json({
       message: 'Assignment successfully updated',
       data: updatedAssignment,
