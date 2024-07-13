@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Tabs, Tab, Slider, Avatar, Button } from '@mui/material';
 import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
@@ -8,120 +8,170 @@ import AvatarGreen from './../assets/images/icons/green_avatar.svg';
 import AvatarBlue from './../assets/images/icons/blue_avatar.svg';
 import AvatarDB from './../assets/images/icons/dblue_avatar.svg';
 import AvatarPurple from './../assets/images/icons/purple_avatar.svg';
-
+import { useGetProfilesByProjectIdQuery,
+    useGetProjectAssignmentByProfileIdQuery,
+    useUpdateProjectAssignmentByProfileIdMutation } from '../state/api/profileApi';
+import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 const skillsets = {
-  'PROJECT LEAD': [
-    { skill: 'Technology', points: '5/20' },
-    { skill: 'Solution Engineering', points: '7/15' },
-    { skill: 'Self-Management', points: '5/12' },
-    { skill: 'Communication Skills', points: '10/13' },
-    { skill: 'Employee Leadership', points: '9/10' },
-  ],
-  'FULL-STACK DEVELOPER': [
-    { skill: 'Technology', points: '18/20' },
-    { skill: 'Solution Engineering', points: '12/15' },
-    { skill: 'Self-Management', points: '8/12' },
-    { skill: 'Communication Skills', points: '5/13' },
-    { skill: 'Employee Leadership', points: '3/10' },
-  ],
-  'CLOUD EXPERT': [
-    { skill: 'Technology', points: '19/20' },
-    { skill: 'Solution Engineering', points: '9/15' },
-    { skill: 'Self-Management', points: '8/12' },
-    { skill: 'Communication Skills', points: '7/13' },
-    { skill: 'Employee Leadership', points: '3/10' },
-  ],
-  'SOFTWARE TESTER': [
-    { skill: 'Technology', points: '17/20' },
-    { skill: 'Solution Engineering', points: '14/15' },
-    { skill: 'Self-Management', points: '5/12' },
-    { skill: 'Communication Skills', points: '2/13' },
-    { skill: 'Employee Leadership', points: '2/10' },
-  ],
-};
-
-const employees = [
-  {
-    name: 'Peter Drucker',
-    email: 'drucker@itestra.com',
-    avatar: AvatarEx4,
-    skills: [
-      { skill: 'Technology', points: '9/10' },
-      { skill: 'Solution Engineering', points: '10/10' },
-      { skill: 'Self-Management', points: '9/10' },
-      { skill: 'Communication Skills', points: '6/10' },
+    'PROJECT LEAD': [
+      { skill: 'Technology', points: '5/20' },
+      { skill: 'Solution Engineering', points: '7/15' },
+      { skill: 'Self-Management', points: '5/12' },
+      { skill: 'Communication Skills', points: '10/13' },
       { skill: 'Employee Leadership', points: '9/10' },
     ],
-  },
-  {
-    name: 'Andrej Karpathy',
-    email: 'karpathy@itestra.com',
-    avatar: AvatarDB,
-    skills: [
-      { skill: 'Technology', points: '8/10' },
-      { skill: 'Solution Engineering', points: '10/10' },
-      { skill: 'Self-Management', points: '7/10' },
-      { skill: 'Communication Skills', points: '2/10' },
-      { skill: 'Employee Leadership', points: '5/10' },
+    'FULL-STACK DEVELOPER': [
+      { skill: 'Technology', points: '18/20' },
+      { skill: 'Solution Engineering', points: '12/15' },
+      { skill: 'Self-Management', points: '8/12' },
+      { skill: 'Communication Skills', points: '5/13' },
+      { skill: 'Employee Leadership', points: '3/10' },
     ],
-  },
-  {
-    name: 'Kales Urany',
-    email: 'kurany@itestra.com',
-    avatar: AvatarPurple,
-    skills: [
-      { skill: 'Technology', points: '5/10' },
-      { skill: 'Solution Engineering', points: '4/10' },
-      { skill: 'Self-Management', points: '6/10' },
-      { skill: 'Communication Skills', points: '6/10' },
-      { skill: 'Employee Leadership', points: '8/10' },
+    'CLOUD EXPERT': [
+      { skill: 'Technology', points: '19/20' },
+      { skill: 'Solution Engineering', points: '9/15' },
+      { skill: 'Self-Management', points: '8/12' },
+      { skill: 'Communication Skills', points: '7/13' },
+      { skill: 'Employee Leadership', points: '3/10' },
     ],
-  },
-  {
-    name: 'Andrew Ng',
-    email: 'andrew@itestra.com',
-    avatar: AvatarBlue,
-    skills: [
-      { skill: 'Technology', points: '1/10' },
-      { skill: 'Solution Engineering', points: '10/10' },
-      { skill: 'Self-Management', points: '2/10' },
-      { skill: 'Communication Skills', points: '5/10' },
-      { skill: 'Employee Leadership', points: '6/10' },
+    'SOFTWARE TESTER': [
+      { skill: 'Technology', points: '17/20' },
+      { skill: 'Solution Engineering', points: '14/15' },
+      { skill: 'Self-Management', points: '5/12' },
+      { skill: 'Communication Skills', points: '2/13' },
+      { skill: 'Employee Leadership', points: '2/10' },
     ],
-  },
-  {
-    name: 'Paul Paulsen',
-    email: 'paulsen@itestra.com',
-    avatar: AvatarGreen,
-    skills: [
-      { skill: 'Technology', points: '6/10' },
-      { skill: 'Solution Engineering', points: '1/10' },
-      { skill: 'Self-Management', points: '6/10' },
-      { skill: 'Communication Skills', points: '9/10' },
-      { skill: 'Employee Leadership', points: '4/10' },
-    ],
-  },
-];
+  };
+  
+  const employees = [
+    {
+      name: 'Peter Drucker',
+      email: 'drucker@itestra.com',
+      avatar: AvatarEx4,
+      skills: [
+        { skill: 'Technology', points: '9/10' },
+        { skill: 'Solution Engineering', points: '10/10' },
+        { skill: 'Self-Management', points: '9/10' },
+        { skill: 'Communication Skills', points: '6/10' },
+        { skill: 'Employee Leadership', points: '9/10' },
+      ],
+    },
+    {
+      name: 'Andrej Karpathy',
+      email: 'karpathy@itestra.com',
+      avatar: AvatarDB,
+      skills: [
+        { skill: 'Technology', points: '8/10' },
+        { skill: 'Solution Engineering', points: '10/10' },
+        { skill: 'Self-Management', points: '7/10' },
+        { skill: 'Communication Skills', points: '2/10' },
+        { skill: 'Employee Leadership', points: '5/10' },
+      ],
+    },
+    {
+      name: 'Kales Urany',
+      email: 'kurany@itestra.com',
+      avatar: AvatarPurple,
+      skills: [
+        { skill: 'Technology', points: '5/10' },
+        { skill: 'Solution Engineering', points: '4/10' },
+        { skill: 'Self-Management', points: '6/10' },
+        { skill: 'Communication Skills', points: '6/10' },
+        { skill: 'Employee Leadership', points: '8/10' },
+      ],
+    },
+    {
+      name: 'Andrew Ng',
+      email: 'andrew@itestra.com',
+      avatar: AvatarBlue,
+      skills: [
+        { skill: 'Technology', points: '1/10' },
+        { skill: 'Solution Engineering', points: '10/10' },
+        { skill: 'Self-Management', points: '2/10' },
+        { skill: 'Communication Skills', points: '5/10' },
+        { skill: 'Employee Leadership', points: '6/10' },
+      ],
+    },
+    {
+      name: 'Paul Paulsen',
+      email: 'paulsen@itestra.com',
+      avatar: AvatarGreen,
+      skills: [
+        { skill: 'Technology', points: '6/10' },
+        { skill: 'Solution Engineering', points: '1/10' },
+        { skill: 'Self-Management', points: '6/10' },
+        { skill: 'Communication Skills', points: '9/10' },
+        { skill: 'Employee Leadership', points: '4/10' },
+      ],
+    },
+  ];
 
-const AssignTeam = () => {
+const AssignTeam = ({ project, onFormDataChange }) => {
+  
+  const { data: profilesData } = useGetProfilesByProjectIdQuery(project._id);
+  const { data: employeesData } = useGetAllEmployeesQuery();
+
+ // const [tabLabels, setTabLabels] = useState([]);
+  //const [currentSkillsets, setCurrentSkillsets] = useState([]);
+ //const [assigned, setAssigned] = useState({});
+
   const [activeTab, setActiveTab] = useState(0);
   const [open, setOpen] = useState(false);
-
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [assignedEmployees, setAssignedEmployees] = useState([]);
+  const [totalSlots, setTotalSlots] = useState({
+      'PROJECT LEAD': 1,
+      'FULL-STACK DEVELOPER': 3,
+      'CLOUD EXPERT': 1,
+      'SOFTWARE TESTER': 0,
+  });
   const [assigned, setAssigned] = useState({
     'PROJECT LEAD': [],
     'FULL-STACK DEVELOPER': [],
     'CLOUD EXPERT': [],
     'SOFTWARE TESTER': [],
   });
- 
-  const totalSlots = {
-    'PROJECT LEAD': 1,
-    'FULL-STACK DEVELOPER': 3,
-    'CLOUD EXPERT': 1,
-    'SOFTWARE TESTER': 0,
-  };
 
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  //const assignedCount = assigned[tabLabels[activeTab]]?.length || 0;
+  //const totalSlotsForRole = totalSlots[tabLabels[activeTab]] || 0;
+  //const sliderValue = totalSlotsForRole ? (assignedCount / totalSlotsForRole) * 100 : 0;
+
+//   useEffect(() => {
+//     if (profilesData) {
+//         const labels = profilesData.profiles.map(profile => profile.name);
+//         setTabLabels(labels);
+
+//         const initialAssigned = labels.reduce((acc, label) => {
+//             acc[label] = [];
+//             return acc;
+//         }, {});
+//         console.log('initialAssigned: ', initialAssigned)
+//         setAssigned(initialAssigned);
+
+//         if (labels.length > 0) {
+//             const initialSkillsets = profilesData.profiles[0].targetSkills.map(skill => ({
+//                 skill: skill.skillCategory,
+//                 points: `${skill.skillPoints}/${skill.maxSkillPoints}`
+//             }));
+//             setCurrentSkillsets(initialSkillsets);
+//         }
+//     }
+//   }, [profilesData]);
+
+//   const profileId = profilesData.profiles[activeTab]._id;
+//   const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery(profileId);
+
+//   useEffect(() => {
+//     if (assignedData) {
+//         console.log('assigned data: ', assignedData)
+
+//       setAssignedEmployees(assignedData.profiles);
+//       setAssigned(prevAssigned => ({
+//         ...prevAssigned,
+//         [tabLabels[activeTab]]: assignedData.profiles
+//       }));
+//     }
+//   }, [activeTab, tabLabels, profilesData, assignedData]);
 
   const handleOpenEmployeeDialog = (employee) => {
     setSelectedEmployee(employee);
@@ -174,7 +224,16 @@ const AssignTeam = () => {
     }
   };
 
+   const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery({projectId: project._id, profileId: profilesData.profiles[1]._id});
+   console.log('assignedData data: ', assignedData)
+
   const getFilteredEmployees = () => {
+    console.log('profilesData data: ', profilesData)
+    console.log('employeesData data: ', employeesData)
+    //const profileId = profilesData.profiles[activeTab]._id;
+   // const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery(profileId);
+    // console.log('assignedData data: ', assignedData)
+
     const role = tabLabels[activeTab];
     const assignedEmails = assigned[role].map(e => e.email);
   
@@ -190,9 +249,7 @@ const AssignTeam = () => {
   const currentSkillsets = skillsets[tabLabels[activeTab]];
   const assignedCount = assigned[tabLabels[activeTab]].length;
   const totalSlotsForRole = totalSlots[tabLabels[activeTab]];
-  const sliderValue = (assignedCount / totalSlotsForRole) * 100;
-
-  return (
+  const sliderValue = (assignedCount / totalSlotsForRole) * 100;  return (
     <Box>
     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
       <Box>
@@ -566,7 +623,7 @@ const AssignTeam = () => {
     </Box>
     {selectedEmployee && (
       <EditProfile open={open} onClose={handleCloseEditDialog} onBack={handleOnBack}
-        employee={{ name: selectedEmployee.name, email: selectedEmployee.email, image: selectedEmployee.avatar }} 
+        employee={{ userId: selectedEmployee._id }} 
         source="AssignTeam"
       />
     )}

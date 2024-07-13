@@ -40,7 +40,7 @@ export const profileApi = createApi({
             }),
         }),
         getProjectAssignmentByProfileId: builder.query({
-            query: (projectId, profileId) => ({
+            query: ({projectId, profileId}) => ({
                 url: BackendRoutes.GET_PROJECT_ASSIGNMENT_BY_PROJECT_ID(projectId, profileId),
                 credentials: 'include',
             }),
