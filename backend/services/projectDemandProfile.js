@@ -39,7 +39,7 @@ export const createNewProfileService = async (profileData) => {
     // await newMinimalDemand.save()
     // const newMinimalDemandId = newMinimalDemand._id
     // create a target demand object
-    const newTargetDemand = new Demand(profileData.targetDemandId)
+    const newTargetDemand = new Demand(profileData.targetDemand)
     await newTargetDemand.save()
     const newTargetDemandId = newTargetDemand._id
     // create target skills objects

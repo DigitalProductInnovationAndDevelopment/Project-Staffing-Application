@@ -7,7 +7,7 @@ import {
   deleteProjectController,
 } from '../controllers/project.js'
 import {
-  createNewProfileController,
+  createNewProfilesController,
   getAllProfilesByProjectIdController,
   getProfileByIdController,
   updateProfileController,
@@ -22,7 +22,7 @@ const router = express.Router()
 // CREATE
 router.post('/', verifyToken, createNewProjectController)
 
-router.post('/:projectId', verifyToken, createNewProfileController)
+router.post('/:projectId', verifyToken, createNewProfilesController)
 
 // READ
 router.get('/', verifyToken, getAllProjectsController)

@@ -78,7 +78,7 @@ export const addSkillsToProfileService = async (profileId, skillIds) => {
       { $push: { targetSkills: skillIds } },
       { new: true, useFindAndModify: false }
     )
-    console.log(profile)
+    // console.log(profile)
     return profile
   } catch (error) {
     throw new Error(`Failed to add skills to the profile: ${error.message}`)

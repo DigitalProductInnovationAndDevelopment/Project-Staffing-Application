@@ -69,40 +69,53 @@ export const getProfileByIdController = async (req, res) => {
   }
 }
 
-export const createNewProfileController = async (req, res, next) => {
+export const createNewProfilesController = async (req, res, next) => {
   try {
     const { projectId } = req.params
     const data = req.body
-    const profile = await createNewProfileService(data)
-    if (!profile) {
-      return res.status(404).json({ error: 'Profile not found' })
+
+    const profiles = []
+
+    for (const p of data) {
+      // console.log(p)
+      const profile = await createNewProfileService(p)
+      if (!profile) {
+        return res.status(404).json({ error: 'Profile not found' })
+      }
+      addProfileIdToProjectService(projectId, profile._id)
+      createNewAssignmentService(profile._id)
+      try {
+        const newSkill = await createNewSkillsService(
+          p.targetSkills ? p.targetSkills : []
+        )
+        const newSkillIds = newSkill.map((skill) => skill._id)
+        // console.log(newSkillIds)
+        const profileWithSkills = await addSkillsToProfileService(
+          profile._id,
+          newSkillIds
+        )
+        // return res.status(201).json({
+        //   message: 'User created successfully',
+        //   profile: profileWithSkills,
+        // })
+        // console.log(profileWithSkills)
+        profiles.push(profileWithSkills)
+      } catch (error) {
+        deleteProfileService(profile._id) // TODO: delete all profiles
+        return res.status(500).json({
+          message: error.message + ' skill could not be created',
+        })
+      }
     }
-    addProfileIdToProjectService(projectId, profile._id)
-    createNewAssignmentService(profile._id)
-    try {
-      const newSkill = await createNewSkillsService(
-        data.targetSkills ? data.targetSkills : []
-      )
-      const newSkillIds = newSkill.map((skill) => skill._id)
-      // console.log(newSkillIds)
-      const profileWithSkills = await addSkillsToProfileService(
-        profile._id,
-        newSkillIds
-      )
-      return res.status(201).json({
-        message: 'User created successfully',
-        data: profileWithSkills,
-      })
-    } catch (error) {
-      deleteProfileService(profile._id)
-      return res.status(500).json({
-        message: error.message + ' skill could not be created',
-      })
-    }
+
+    return res.status(201).json({
+      message: 'Profiles created successfully',
+      profiles: profiles,
+    })
   } catch (err) {
     res
       .status(500)
-      .json({ message: 'Failed to create new profile', error: err.message })
+      .json({ message: 'Failed to create new profiles', error: err.message })
   }
 }
 
