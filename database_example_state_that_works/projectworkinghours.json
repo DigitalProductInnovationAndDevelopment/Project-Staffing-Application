@@ -1,0 +1,12 @@
+{"_id":{"$oid":"66903bb912480cc46f1ef11e"},"date":"2023-04-03T00:00:00.000Z","numberOfRealWorkingHours":7,"userId":"66901ba4d9f5ed2c03e6e16a","projectId":"6690262a8fc9b066cda80164"}
+{"_id":{"$oid":"66903bc112480cc46f1ef120"},"date":"2023-04-04T00:00:00.000Z","numberOfRealWorkingHours":5,"userId":"66901a79d9f5ed2c03e6e156","projectId":"669026348fc9b066cda80166"}
+{"_id":{"$oid":"66903ba912480cc46f1ef11a"},"date":"2023-04-01T00:00:00.000Z","numberOfRealWorkingHours":8,"userId":"66901ca9d9f5ed2c03e6e1a6","projectId":"669024fb8fc9b066cda8015f"}
+{"_id":{"$oid":"66903bb012480cc46f1ef11c"},"date":"2023-04-02T00:00:00.000Z","numberOfRealWorkingHours":6,"userId":"66901c6ed9f5ed2c03e6e192","projectId":"669024fb8fc9b066cda8015f"}
+{"_id":{"$oid":"6690ff62bb8891de96b5c37d"},"date":"2024-05-04T00:00:00.000Z","numberOfRealWorkingHours":3,"userId":"66901a79d9f5ed2c03e6e156","projectId":"6690262a8fc9b066cda80164"}
+{"_id":{"$oid":"669100bcbb8891de96b5c38a"},"date":"2024-05-03T00:00:00.000Z","numberOfRealWorkingHours":1,"userId":"66901ba4d9f5ed2c03e6e16a","projectId":"669024fb8fc9b066cda8015f"}
+{"_id":{"$oid":"66910110bb8891de96b5c390"},"date":"2024-05-02T00:00:00.000Z","numberOfRealWorkingHours":2,"userId":"66901c6ed9f5ed2c03e6e192","projectId":"6690262a8fc9b066cda80164"}
+{"_id":{"$oid":"66910175bb8891de96b5c393"},"date":"2024-05-01T00:00:00.000Z","numberOfRealWorkingHours":8,"userId":"66901d5bd9f5ed2c03e6e1d3","projectId":"669024fb8fc9b066cda8015f"}
+{"_id":{"$oid":"66910185bb8891de96b5c394"},"date":"2024-05-02T00:00:00.000Z","numberOfRealWorkingHours":5,"userId":"66901d5bd9f5ed2c03e6e1d3","projectId":"6690262a8fc9b066cda80164"}
+{"_id":{"$oid":"669101a5bb8891de96b5c395"},"date":"2024-05-02T00:00:00.000Z","numberOfRealWorkingHours":3,"userId":"66901d5bd9f5ed2c03e6e1d3","projectId":"669026348fc9b066cda80166"}
+{"_id":{"$oid":"669101dbbb8891de96b5c398"},"date":"2024-05-01T00:00:00.000Z","numberOfRealWorkingHours":8,"userId":"66901d24d9f5ed2c03e6e1bf","projectId":"669024fb8fc9b066cda8015f"}
+{"_id":{"$oid":"669101ecbb8891de96b5c39b"},"date":"2024-05-01T00:00:00.000Z","numberOfRealWorkingHours":8,"userId":"66901c0dd9f5ed2c03e6e17e","projectId":"669024fb8fc9b066cda8015f"}
