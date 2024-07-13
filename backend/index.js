@@ -32,7 +32,12 @@ app.use('/assets', express.static(path.join(__dirname, 'public/assets'))) // set
 
 /* MIDDLEWARE */
 //cors set-up
-app.use(cors({ origin: await config.get('origin'), credentials: true }))
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  })
+)
 
 // app.use(csrf({cookie: {httpOnly: true}}));
 // app.use((req, res, next) => {
@@ -80,6 +85,8 @@ mongoose
     const collections = await db.listCollections().toArray()
     const collectionNames = collections.map((collection) => collection.name)
     console.log('current database collections (tables):', collectionNames)
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`))
+    app.listen(process.env.PORT || 3001, '0.0.0.0', () => {
+      console.log(`Server running on port ${process.env.PORT || 3001}`)
+    })
   })
   .catch((error) => console.log(`${error} did not connect`))
