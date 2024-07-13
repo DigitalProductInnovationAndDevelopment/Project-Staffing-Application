@@ -108,10 +108,10 @@ export const updateUserController = async (req, res) => {
     }
 
     let updateData = req.body
-     if (updateData.contractId) {
+    if (updateData.contractId) {
       const contract = user.contractId
       await updateContractService(contract._id, updateData.contractId)
-      await updateUserService(userId, {contractId: updateData.contractId})
+      await updateUserService(userId, { contractId: updateData.contractId })
     }
     if (updateData.leaves) {
       const leaveIds = user.leaveIds
@@ -142,7 +142,6 @@ export const updateUserController = async (req, res) => {
       message: error.message,
     })
   }
-
 }
 
 export const deleteUserController = async (req, res) => {
