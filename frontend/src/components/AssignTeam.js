@@ -224,7 +224,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     }
   };
 
-   const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery({projectId: project._id, profileId: profilesData.profiles[1]._id});
+   const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery({projectId: project._id});
    console.log('assignedData data: ', assignedData)
 
   const getFilteredEmployees = () => {

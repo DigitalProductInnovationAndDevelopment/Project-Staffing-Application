@@ -181,8 +181,8 @@ const Overview = ({ project, onFormDataChange }) => {
 
     try {
         console.log('see profile data from edit: ', newProfile)
-        
-        await createProfile({projectId: project._id, payload: newProfile});
+        const newProfilesArray = [newProfile];
+        await createProfile({projectId: project._id, payload: newProfilesArray});
 
         refetch();
         // Update the profiles state with the new data
