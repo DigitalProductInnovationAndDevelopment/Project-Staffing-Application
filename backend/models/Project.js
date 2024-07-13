@@ -20,12 +20,6 @@ const ProjectSchema = new mongoose.Schema(
       max: 100,
     },
 
-    projectWorkingHours: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ProjectWorkingHours',
-      },
-    ],
     demandProfiles: [
       {
         type: mongoose.Schema.Types.ObjectId,

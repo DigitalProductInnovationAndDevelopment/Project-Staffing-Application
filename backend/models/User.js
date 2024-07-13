@@ -39,13 +39,6 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
-    projectWorkingHours: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ProjectWorkingHours',
-      },
-    ],
-
     officeLocation: {
       type: String,
       enum: Object.values(OfficeLocation),
