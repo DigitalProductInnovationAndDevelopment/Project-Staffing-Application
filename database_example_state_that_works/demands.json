@@ -1,4 +1,0 @@
-{"_id":{"$oid":"669028a58fc9b066cda8017b"},"now":2,"nextQuarter":3,"nextNextQuarter":3,"createdAt":{"$date":"2024-07-11T18:47:01.532Z"},"updatedAt":{"$date":"2024-07-11T18:47:01.532Z"},"__v":0}
-{"_id":{"$oid":"669029338fc9b066cda801b1"},"now":1,"createdAt":{"$date":"2024-07-11T18:49:23.059Z"},"updatedAt":{"$date":"2024-07-11T18:49:23.059Z"},"__v":0}
-{"_id":{"$oid":"669029218fc9b066cda8019f"},"now":1,"createdAt":{"$date":"2024-07-11T18:49:05.605Z"},"updatedAt":{"$date":"2024-07-11T18:49:05.605Z"},"__v":0}
-{"_id":{"$oid":"669028f78fc9b066cda8018d"},"now":1,"createdAt":{"$date":"2024-07-11T18:48:23.453Z"},"updatedAt":{"$date":"2024-07-11T18:48:23.453Z"},"__v":0}
