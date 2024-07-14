@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, Divider, Avatar, AvatarGroup, IconButton, LinearProgress } from "@mui/material";
+import { Box, Typography, Button, Divider, Avatar, AvatarGroup, IconButton, LinearProgress, CircularProgress } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { projectApi } from "../state/api/projectApi.js";
 import EditProject from './../components/EditProject';
-import FullScreenLoader from './FullScreenLoader.js';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
 import CreateProject from "../components/projects/create/CreateProjects.js";
 
 function ProjectOverview() {
-  const { data: projectData, isError, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
+  const { data: projectData, error, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
 
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
@@ -55,20 +54,12 @@ function ProjectOverview() {
     else return 0;
   };
 
-  if (isError) {
-    return (
-      <>
-        <p>isError</p>
-      </>
-    );
+  if (error) {
+    return <Typography color="error">Error fetching projects: {error.message}</Typography>;
   }
 
   if (isLoading) {
-    return (
-      <>
-        <FullScreenLoader />
-      </>
-    );
+    return <CircularProgress />;
   }
 
   if (isSuccess) {
