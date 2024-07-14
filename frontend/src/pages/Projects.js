@@ -55,11 +55,33 @@ function ProjectOverview() {
   };
 
   if (error) {
-    return <Typography color="error">Error fetching projects: {error.message}</Typography>;
+    return (
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#F5F7FA',
+            boxShadow: 'none',
+          }}
+        >
+            <Typography color="error">Error fetching projects: {error.message}</Typography>
+        </Box>
+    );
   }
 
   if (isLoading) {
-    return <CircularProgress />;
+    return (
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#F5F7FA',
+            boxShadow: 'none',
+          }}
+        >
+            <CircularProgress />
+        </Box>
+    );
   }
 
   if (isSuccess) {
