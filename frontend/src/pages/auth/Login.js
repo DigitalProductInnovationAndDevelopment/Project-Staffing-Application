@@ -3,7 +3,7 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
+  Box,
   IconButton,
   InputAdornment,
 } from '@mui/material';
@@ -81,15 +81,12 @@ function Login() {
 
 
   return (
-    <div className="container">
-      <Grid container>
+      <Box className="container" display="flex" flexDirection={{ xs: 'column', md: 'row' }}>
         {/* Form Grid item */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          container
-          direction="column"
+        <Box
+          flex={0.4}
+          display="flex"
+          flexDirection="column"
           alignItems="flex-start"
           justifyContent="center"
           className="form-container"
@@ -162,12 +159,12 @@ function Login() {
               </Typography>
             )}
 
-            <Typography variant="body2" className="account-message-text">
+            {/* <Typography variant="body2" className="account-message-text">
               Don't you have an account?{' '}
               <Link to="/signup" className="route-link">
                 Sign Up
               </Link>
-            </Typography>
+            </Typography> */}
 
             <Button
               variant="contained"
@@ -189,20 +186,17 @@ function Login() {
               Login
             </Button>
           </form>
-        </Grid>
+        </Box>
 
         {/* Image Grid item */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          alignItems="flex-start"
+        <Box
+          flex={1}
+          display="flex"
           className="image-container"
         >
           <LoginImage className="image" />
-        </Grid>
-      </Grid>
-    </div>
+        </Box>
+      </Box>
   );
 }
 
