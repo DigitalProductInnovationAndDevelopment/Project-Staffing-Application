@@ -16,7 +16,23 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import deleteIcon from './../../../assets/images/delete-icon.svg';
 
-const Overview = ({ onFormDataChange }) => {
+const initialSkills = [
+    { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
+    { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
+    { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
+    { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
+    { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
+];
+
+const skillCategoryMap = {
+    TECHNOLOGY: "technology",
+    SOLUTION_ENGINEERING: "solutionEngineering",
+    SELF_MANAGEMENT: "selfManagement",
+    COMMUNICATION_SKILLS: "communicationSkills",
+    EMPLOYEE_LEADERSHIP: "employeeLeadership"
+};
+
+const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [priority, setPriority] = useState("");
@@ -25,6 +41,7 @@ const Overview = ({ onFormDataChange }) => {
   const [profileName, setProfileName] = useState("");
   const [fteNumber, setFteNumber] = useState("");
   const [profiles, setProfiles] = useState([]);
+  const [skills, setSkills] = useState(initialSkills);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [sliders, setSliders] = useState({
     technology: 0,
@@ -38,6 +55,22 @@ const Overview = ({ onFormDataChange }) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
     else return '';
   }, []);
+  const getSkillFieldName = (skillCategory) => {
+    switch (skillCategory) {
+      case 'TECHNOLOGY':
+        return 'technology';
+      case 'SOLUTION_ENGINEERING':
+        return 'solutionEngineering';
+      case 'SELF_MANAGEMENT':
+        return 'selfManagement';
+      case 'COMMUNICATION_SKILLS':
+        return 'communicationSkills';
+      case 'EMPLOYEE_LEADERSHIP':
+        return 'employeeLeadership';
+      default:
+        return '';
+    }
+  };
 
   useEffect(() => {
       const normalizedLocation = capitalizeFirstLetter(location);
@@ -45,11 +78,6 @@ const Overview = ({ onFormDataChange }) => {
         setLocations((prevLocations) => [...prevLocations, normalizedLocation]);
       }
   }, [capitalizeFirstLetter, locations, location]);
-
-  useEffect(() => {
-    // Fetch profiles from the backend
-    fetchProfiles();
-  }, []);
 
   useEffect(() => {
     if (startDate instanceof Date && !isNaN(startDate) &&
@@ -61,63 +89,28 @@ const Overview = ({ onFormDataChange }) => {
         projectLocation: location.toUpperCase(),
       });
     }
-  }, [startDate, endDate, priority, location, onFormDataChange]);
+    onFormDataChangeProfiles({
+      profiles: profiles
+    }); 
+  }, [startDate, endDate, priority, location, onFormDataChange, onFormDataChangeProfiles, profiles]);
 
-
-  const fetchProfiles = async () => {
-    // Fetch profiles from the backend
-    // Example:
-    // const response = await fetch('/api/profiles');
-    // const data = await response.json();
-    // setProfiles(data);
-
-    // For now, let's use dummy data
-    const data = [
-    // {
-    //     id: 1,
-    //     title: "Project Lead",
-    //     instances: 1,
-    //     sliders: {
-    //       technology: 10,
-    //       solutionEngineering: 5,
-    //       selfManagement: 8,
-    //       communicationSkills: 7,
-    //       employeeLeadership: 6,
-    //     },
-    //   },
-    //   {
-    //     id: 2,
-    //     title: "Full-Stack Developer",
-    //     instances: 2,
-    //     sliders: {
-    //       technology: 15,
-    //       solutionEngineering: 8,
-    //       selfManagement: 10,
-    //       communicationSkills: 6,
-    //       employeeLeadership: 4,
-    //     },
-    //   },
-    //   {
-    //     id: 3,
-    //     title: "Cloud Expert",
-    //     instances: 1,
-    //     sliders: {
-    //       technology: 8,
-    //       solutionEngineering: 7,
-    //       selfManagement: 9,
-    //       communicationSkills: 8,
-    //       employeeLeadership: 5,
-    //     },
-    //   },
-    ];
-    setProfiles(data);
-  };
 
   const handleEditProfile = (profile) => {
     setSelectedProfile(profile);
-    setProfileName(profile.title);
-    setFteNumber(profile.instances);
-    setSliders(profile.sliders);
+    setProfileName(profile.name);
+    setFteNumber(profile.targetDemandId.now);
+    setSkills(profile.targetSkills);
+
+    //set sliders according to targetSkills from backend, set the value from skillPoints
+    const newSliders = profile.targetSkills.reduce((acc, skill) => {
+        const field = skillCategoryMap[skill.skillCategory];
+        if (field) {
+          acc[field] = skill.skillPoints;
+        }
+        return acc;
+      }, {});
+    
+    setSliders(newSliders);
   };
 
   const handleSliderChange = (field, newValue) => {
@@ -125,22 +118,16 @@ const Overview = ({ onFormDataChange }) => {
   };
 
   const handleSaveProfile = async () => {
-    // Save the updated profile to the backend
-    const updatedProfile = {
+     const updatedProfile = {
       ...selectedProfile,
-      title: profileName,
-      instances: fteNumber,
-      sliders,
-    };
+      name: profileName,
+      targetDemandId: { now: fteNumber },
+      targetSkills: skills.map(skill => ({
+        ...skill,
+        skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
+      }))
 
-    // Example:
-    // await fetch(`/api/profiles/${selectedProfile.id}`, {
-    //   method: 'PUT',
-    //   body: JSON.stringify(updatedProfile),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
+    };
 
     // Update the profiles state with the new data
     setProfiles(
@@ -165,9 +152,12 @@ const Overview = ({ onFormDataChange }) => {
   const handleAddProfile = () => {
     const newProfile = {
       id: profiles.length + 1,
-      title: profileName,
-      instances: fteNumber,
-      sliders,
+      name: profileName,
+      targetDemandId: { now: fteNumber },
+      targetSkills: skills.map(skill => ({
+        ...skill,
+        skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
+      }))
     };
 
     setProfiles([...profiles, newProfile]);
@@ -382,13 +372,13 @@ const Overview = ({ onFormDataChange }) => {
                         color: 'black',
                       }}
                     >
-                      {profile.title}
+                      {profile.name}
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         className="instances-text"
                       >
-                        {profile.instances} Instances
+                        {profile.targetDemandId.now} Instances
                       </Typography>
                     </Typography>
                   </Box>

@@ -180,6 +180,8 @@ const Overview = ({ project, onFormDataChange }) => {
     };
 
     try {
+        console.log('see profile data from edit: ', newProfile)
+        
         await createProfile({projectId: project._id, payload: newProfile});
 
         refetch();
