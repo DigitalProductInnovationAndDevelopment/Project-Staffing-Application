@@ -40,14 +40,14 @@ export const profileApi = createApi({
             }),
         }),
         getProjectAssignmentByProfileId: builder.query({
-            query: ({projectId, profileId}) => ({
-                url: BackendRoutes.GET_PROJECT_ASSIGNMENT_BY_PROJECT_ID(projectId, profileId),
+            query: ({projectId}) => ({
+                url: BackendRoutes.GET_PROJECT_ASSIGNMENT_BY_PROJECT_ID(projectId),
                 credentials: 'include',
             }),
         }),
         updateProjectAssignmentByProfileId: builder.mutation({
-          query: (projectId, profileId, patchData) => ({
-            url: BackendRoutes.UPDATE_PROJECT_ASSIGNMENT(projectId, profileId),
+          query: (projectId, patchData) => ({
+            url: BackendRoutes.UPDATE_PROJECT_ASSIGNMENT(projectId),
             method: 'PATCH',
             body: patchData,
           }),

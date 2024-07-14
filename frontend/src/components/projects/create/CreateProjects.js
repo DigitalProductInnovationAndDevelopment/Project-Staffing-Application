@@ -45,7 +45,7 @@ const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
       const projectId = response.data.data._id;
       console.log('data id: ', projectId)
 
-      if(projectId) await createProfile({projectId: projectId, payload: updatedProfiles.profiles});
+      if(projectId) await createProfile({projectId: projectId, payload: updatedProfiles});
 
       setProjectName('Click & Enter Project Name');
       onCloseCreate();
