@@ -3,175 +3,76 @@ import { Box, Typography, Tabs, Tab, Slider, Avatar, Button } from '@mui/materia
 import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
-import AvatarEx4 from './../assets/images/icons/avatar_ex4.svg';
-import AvatarGreen from './../assets/images/icons/green_avatar.svg';
 import AvatarBlue from './../assets/images/icons/blue_avatar.svg';
-import AvatarDB from './../assets/images/icons/dblue_avatar.svg';
-import AvatarPurple from './../assets/images/icons/purple_avatar.svg';
-import { useGetProfilesByProjectIdQuery,
-    useGetProjectAssignmentByProfileIdQuery,
-    useUpdateProjectAssignmentByProfileIdMutation } from '../state/api/profileApi';
-import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
-const skillsets = {
-    'PROJECT LEAD': [
-      { skill: 'Technology', points: '5/20' },
-      { skill: 'Solution Engineering', points: '7/15' },
-      { skill: 'Self-Management', points: '5/12' },
-      { skill: 'Communication Skills', points: '10/13' },
-      { skill: 'Employee Leadership', points: '9/10' },
-    ],
-    'FULL-STACK DEVELOPER': [
-      { skill: 'Technology', points: '18/20' },
-      { skill: 'Solution Engineering', points: '12/15' },
-      { skill: 'Self-Management', points: '8/12' },
-      { skill: 'Communication Skills', points: '5/13' },
-      { skill: 'Employee Leadership', points: '3/10' },
-    ],
-    'CLOUD EXPERT': [
-      { skill: 'Technology', points: '19/20' },
-      { skill: 'Solution Engineering', points: '9/15' },
-      { skill: 'Self-Management', points: '8/12' },
-      { skill: 'Communication Skills', points: '7/13' },
-      { skill: 'Employee Leadership', points: '3/10' },
-    ],
-    'SOFTWARE TESTER': [
-      { skill: 'Technology', points: '17/20' },
-      { skill: 'Solution Engineering', points: '14/15' },
-      { skill: 'Self-Management', points: '5/12' },
-      { skill: 'Communication Skills', points: '2/13' },
-      { skill: 'Employee Leadership', points: '2/10' },
-    ],
-  };
-  
-  const employees = [
-    {
-      name: 'Peter Drucker',
-      email: 'drucker@itestra.com',
-      avatar: AvatarEx4,
-      skills: [
-        { skill: 'Technology', points: '9/10' },
-        { skill: 'Solution Engineering', points: '10/10' },
-        { skill: 'Self-Management', points: '9/10' },
-        { skill: 'Communication Skills', points: '6/10' },
-        { skill: 'Employee Leadership', points: '9/10' },
-      ],
-    },
-    {
-      name: 'Andrej Karpathy',
-      email: 'karpathy@itestra.com',
-      avatar: AvatarDB,
-      skills: [
-        { skill: 'Technology', points: '8/10' },
-        { skill: 'Solution Engineering', points: '10/10' },
-        { skill: 'Self-Management', points: '7/10' },
-        { skill: 'Communication Skills', points: '2/10' },
-        { skill: 'Employee Leadership', points: '5/10' },
-      ],
-    },
-    {
-      name: 'Kales Urany',
-      email: 'kurany@itestra.com',
-      avatar: AvatarPurple,
-      skills: [
-        { skill: 'Technology', points: '5/10' },
-        { skill: 'Solution Engineering', points: '4/10' },
-        { skill: 'Self-Management', points: '6/10' },
-        { skill: 'Communication Skills', points: '6/10' },
-        { skill: 'Employee Leadership', points: '8/10' },
-      ],
-    },
-    {
-      name: 'Andrew Ng',
-      email: 'andrew@itestra.com',
-      avatar: AvatarBlue,
-      skills: [
-        { skill: 'Technology', points: '1/10' },
-        { skill: 'Solution Engineering', points: '10/10' },
-        { skill: 'Self-Management', points: '2/10' },
-        { skill: 'Communication Skills', points: '5/10' },
-        { skill: 'Employee Leadership', points: '6/10' },
-      ],
-    },
-    {
-      name: 'Paul Paulsen',
-      email: 'paulsen@itestra.com',
-      avatar: AvatarGreen,
-      skills: [
-        { skill: 'Technology', points: '6/10' },
-        { skill: 'Solution Engineering', points: '1/10' },
-        { skill: 'Self-Management', points: '6/10' },
-        { skill: 'Communication Skills', points: '9/10' },
-        { skill: 'Employee Leadership', points: '4/10' },
-      ],
-    },
-  ];
+import { useGetProjectAssignmentByProfileIdQuery} from '../state/api/profileApi';
 
 const AssignTeam = ({ project, onFormDataChange }) => {
   
-  const { data: profilesData } = useGetProfilesByProjectIdQuery(project._id);
-  const { data: employeesData } = useGetAllEmployeesQuery();
-
- // const [tabLabels, setTabLabels] = useState([]);
-  //const [currentSkillsets, setCurrentSkillsets] = useState([]);
- //const [assigned, setAssigned] = useState({});
+  const {data: allDataForAssignment, refetch} = useGetProjectAssignmentByProfileIdQuery({projectId: project._id});
 
   const [activeTab, setActiveTab] = useState(0);
   const [open, setOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [assignedEmployees, setAssignedEmployees] = useState([]);
-  const [totalSlots, setTotalSlots] = useState({
-      'PROJECT LEAD': 1,
-      'FULL-STACK DEVELOPER': 3,
-      'CLOUD EXPERT': 1,
-      'SOFTWARE TESTER': 0,
-  });
-  const [assigned, setAssigned] = useState({
-    'PROJECT LEAD': [],
-    'FULL-STACK DEVELOPER': [],
-    'CLOUD EXPERT': [],
-    'SOFTWARE TESTER': [],
-  });
+  const [tabLabelsFor, setTabLabelsFor] = useState([]);
+  const [formData, setFormData] = useState([]);
+  const [assignedFor, setAssignedFor] = useState();
+  const [suitableEmployees, setSuitableEmployees] = useState();
+  const [currentSkillsetsFor, setCurrentSkillsetsFor] = useState([]);
+  const [sliderValueFor, setSliderValueFor] = useState(0);
+  const [totalSlotsFor, setTotalSlotsFor] = useState(0);
+  const [assignedNum, setAssignedNum] = useState(0);
 
-  //const assignedCount = assigned[tabLabels[activeTab]]?.length || 0;
-  //const totalSlotsForRole = totalSlots[tabLabels[activeTab]] || 0;
-  //const sliderValue = totalSlotsForRole ? (assignedCount / totalSlotsForRole) * 100 : 0;
+  // Initialize state from the fetched data
+  useEffect(() => {
+    refetch();
 
-//   useEffect(() => {
-//     if (profilesData) {
-//         const labels = profilesData.profiles.map(profile => profile.name);
-//         setTabLabels(labels);
+    if (allDataForAssignment) {
+      const tabs = allDataForAssignment.data.map(profileData => ({
+        profileId: profileData.profile._id,
+        name: profileData.profile.name,
+        assignedEmployees: profileData.assignedEmployees,
+        suitableEmployees: profileData.suitableEmployees,
+        targetSkills: profileData.profile.targetSkills,
+        demand: profileData.profile.targetDemandId.now,
+      }));
+      setFormData(tabs);
 
-//         const initialAssigned = labels.reduce((acc, label) => {
-//             acc[label] = [];
-//             return acc;
-//         }, {});
-//         console.log('initialAssigned: ', initialAssigned)
-//         setAssigned(initialAssigned);
+      const tabLabels = tabs.map(tab => tab.name);
+      setTabLabelsFor(tabLabels);
 
-//         if (labels.length > 0) {
-//             const initialSkillsets = profilesData.profiles[0].targetSkills.map(skill => ({
-//                 skill: skill.skillCategory,
-//                 points: `${skill.skillPoints}/${skill.maxSkillPoints}`
-//             }));
-//             setCurrentSkillsets(initialSkillsets);
-//         }
-//     }
-//   }, [profilesData]);
+      if (tabs.length > 0) {
+        const initialAssigned = tabs[0].assignedEmployees || [];
+        const initialSuitable = tabs[0].suitableEmployees || [];
+        setAssignedFor(initialAssigned);
+        setSuitableEmployees(initialSuitable);
+        setCurrentSkillsetsFor(tabs[0].targetSkills);
+        setTotalSlotsFor(tabs[0].demand);
+        setAssignedNum(initialAssigned.length);
+        setSliderValueFor((initialAssigned.length / tabs[0].demand) * 100);
+      }
+    }
+  }, [allDataForAssignment, refetch]);
 
-//   const profileId = profilesData.profiles[activeTab]._id;
-//   const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery(profileId);
-
-//   useEffect(() => {
-//     if (assignedData) {
-//         console.log('assigned data: ', assignedData)
-
-//       setAssignedEmployees(assignedData.profiles);
-//       setAssigned(prevAssigned => ({
-//         ...prevAssigned,
-//         [tabLabels[activeTab]]: assignedData.profiles
-//       }));
-//     }
-//   }, [activeTab, tabLabels, profilesData, assignedData]);
+  // Update state when activeTab changes
+  useEffect(() => {
+    if (formData.length > 0) {
+      const currentProfile = formData[activeTab];
+      setCurrentSkillsetsFor(currentProfile.targetSkills);
+      setAssignedFor(currentProfile.assignedEmployees);
+      setSuitableEmployees(currentProfile.suitableEmployees);
+      setTotalSlotsFor(currentProfile.demand);
+      setAssignedNum(currentProfile.assignedEmployees.length);
+      setSliderValueFor((currentProfile.assignedEmployees.length / currentProfile.demand) * 100);
+    }
+  }, [activeTab, formData]);
+ 
+  useEffect(() => {
+    const formattedData = formData.map(profile => ({
+      profileId: profile.profileId,
+      assignedEmployees: profile.assignedEmployees.map(employee => employee._id),
+    }));
+    onFormDataChange(formattedData);
+  }, [formData, onFormDataChange]);
 
   const handleOpenEmployeeDialog = (employee) => {
     setSelectedEmployee(employee);
@@ -192,24 +93,36 @@ const AssignTeam = ({ project, onFormDataChange }) => {
   };
 
   const handleAssign = (employee) => {
-    const role = tabLabels[activeTab];
-    setAssigned({
-      ...assigned,
-      [role]: [...assigned[role], employee],
-    });
+    const updatedAssignedFor = [...assignedFor, employee];
+    const updatedSuitableEmployees = suitableEmployees.filter((e) => e.email !== employee.email);
+
+    setAssignedFor(updatedAssignedFor);
+    setSuitableEmployees(updatedSuitableEmployees);
+    setAssignedNum(updatedAssignedFor.length);
+    setSliderValueFor((updatedAssignedFor.length / totalSlotsFor) * 100);
+
+    const updatedFormData = [...formData];
+    updatedFormData[activeTab].assignedEmployees = updatedAssignedFor;
+    updatedFormData[activeTab].suitableEmployees = updatedSuitableEmployees;
+    setFormData(updatedFormData);
   };
 
   const handleRemove = (employee) => {
-    const role = tabLabels[activeTab];
-    setAssigned({
-      ...assigned,
-      [role]: assigned[role].filter((e) => e.email !== employee.email),
-    });
-  };
+    const updatedAssignedFor = assignedFor.filter((e) => e.email !== employee.email);
+    const updatedSuitableEmployees = [...suitableEmployees, employee];
 
-  const getColor = (employeeSkillPoints, targetSkillPoints) => {
-    const employeePoints = parseInt(employeeSkillPoints.split('/')[0]);
-    const targetPoints = parseInt(targetSkillPoints.split('/')[1]);
+    setAssignedFor(updatedAssignedFor);
+    setSuitableEmployees(updatedSuitableEmployees);
+    setAssignedNum(updatedAssignedFor.length);
+    setSliderValueFor((updatedAssignedFor.length / totalSlotsFor) * 100);
+
+    const updatedFormData = [...formData];
+    updatedFormData[activeTab].assignedEmployees = updatedAssignedFor;
+    updatedFormData[activeTab].suitableEmployees = updatedSuitableEmployees;
+    setFormData(updatedFormData);
+  };
+  
+  const getColor = (employeePoints, targetPoints) => {
     const third = targetPoints / 3;
 
     if (employeePoints < third) {
@@ -224,32 +137,15 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     }
   };
 
-   const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery({projectId: project._id});
-   console.log('assignedData data: ', assignedData)
-
-  const getFilteredEmployees = () => {
-    console.log('profilesData data: ', profilesData)
-    console.log('employeesData data: ', employeesData)
-    //const profileId = profilesData.profiles[activeTab]._id;
-   // const {data: assignedData} = useGetProjectAssignmentByProfileIdQuery(profileId);
-    // console.log('assignedData data: ', assignedData)
-
-    const role = tabLabels[activeTab];
-    const assignedEmails = assigned[role].map(e => e.email);
-  
-    return employees.filter((employee) =>
-      !assignedEmails.includes(employee.email) &&
-      currentSkillsets.every((skillset) =>
-        employee.skills.some((skill) => skill.skill === skillset.skill)
-      )
-    );
+  const getCategory = (category) => {
+    if(category  === 'TECHNOLOGY') return 'Technology';
+    else if (category  === 'SOLUTION_ENGINEERING') return 'Solution Engineering';
+    else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
+    else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
+    else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
+    else return ''
   };
-
-  const tabLabels = Object.keys(skillsets);
-  const currentSkillsets = skillsets[tabLabels[activeTab]];
-  const assignedCount = assigned[tabLabels[activeTab]].length;
-  const totalSlotsForRole = totalSlots[tabLabels[activeTab]];
-  const sliderValue = (assignedCount / totalSlotsForRole) * 100;  return (
+  return (
     <Box>
     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
       <Box>
@@ -290,7 +186,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
             },
           }}
         >
-        {tabLabels.map((label) => (
+        {tabLabelsFor.map((label) => (
           <Tab key={label} label={label} />
         ))}
         </Tabs>
@@ -320,7 +216,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
             alignSelf: 'flex-start',
           }}
         >
-          Assigned Profiles
+          Assigned for Profile
         </Typography>
         <Typography
           sx={{
@@ -333,10 +229,10 @@ const AssignTeam = ({ project, onFormDataChange }) => {
             alignSelf: 'flex-start',
           }}
         >
-          {assigned[tabLabels[activeTab]].length}/{totalSlots[tabLabels[activeTab]]}
+          {assignedNum}/{totalSlotsFor}
         </Typography>
         <Slider
-          value={sliderValue}
+          value={sliderValueFor}
           sx={{
             width: '100%',
             height: '2px',
@@ -370,7 +266,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
           backgroundColor: 'white',
           boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
           display: 'grid',
-          gridTemplateColumns: `repeat(${currentSkillsets.length + 1}, auto)`,
+          gridTemplateColumns: `repeat(${currentSkillsetsFor.length + 1}, auto)`,
           gap: 1,
         }}
       >
@@ -388,8 +284,8 @@ const AssignTeam = ({ project, onFormDataChange }) => {
         >
           Target Skillsets
         </Typography>
-        {currentSkillsets.map((skillset) => (
-          <Box key={skillset.skill} sx={{ display: 'inline-block' }}>
+        {currentSkillsetsFor.map((skillset) => (
+          <Box key={skillset.skillCategory} sx={{ display: 'inline-block' }}>
             <Typography
               sx={{
                 fontFamily: 'Roboto, sans-serif',
@@ -406,7 +302,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 display: 'inline-block',
               }}
             >
-              {skillset.skill}
+              {getCategory(skillset.skillCategory)}
             </Typography>
           </Box>
         ))}
@@ -424,8 +320,8 @@ const AssignTeam = ({ project, onFormDataChange }) => {
         >
           Target Points
         </Typography>
-        {currentSkillsets.map((skillset) => (
-          <Box key={skillset.points} sx={{ display: 'inline-block' }}>
+        {currentSkillsetsFor.map((skillset) => (
+          <Box key={skillset.skillCategory} sx={{ display: 'inline-block' }}>
             <Typography
               sx={{
                 fontFamily: 'Roboto, sans-serif',
@@ -442,7 +338,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 display: 'inline-block',
               }}
             >
-              {skillset.points}
+              {skillset.skillPoints}/{skillset.maxSkillPoints}
             </Typography>
           </Box>
         ))}
@@ -451,23 +347,23 @@ const AssignTeam = ({ project, onFormDataChange }) => {
       <Box>
       <Box sx={{ marginTop: 4}}>
         <Typography sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '18px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBottom: 2 }}>
-          Assigned {tabLabels[activeTab]}s ({assigned[tabLabels[activeTab]].length})
+          Assigned {tabLabelsFor[activeTab]}s ({assignedNum})
         </Typography>
-        {assigned[tabLabels[activeTab]].map((employee) => (
-          <Box key={employee.email} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
-            <Avatar src={employee.avatar} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.name[0]}</Avatar>
+        {assignedFor && assignedFor.length > 0 ?  ( assignedFor.map((employee) => (
+          <Box key={employee._id} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
+            <Avatar src={AvatarBlue} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.firstName[0]}</Avatar>
             <Box  sx={{ flex: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', mr: '30px'}}>
               <Typography
                 sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}
-              >{employee.name}</Typography>
+              >{employee.firstName} {employee.lastName}</Typography>
               <Typography
                 sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', color: '#718096', marginBlock: '0'}}
               >{employee.email}</Typography>
             </Box>
             <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-              {currentSkillsets.map((skillset) => {
-                const employeeSkill = employee.skills.find((s) => s.skill === skillset.skill);
-                const color = employeeSkill ? getColor(employeeSkill.points, skillset.points) : 'grey';
+              {currentSkillsetsFor.map((skillset) => {
+                const employeeSkill = employee.skills.find((s) => s.skillCategory === skillset.skillCategory);
+                const color = employeeSkill ? getColor(employeeSkill.skillPoints, skillset.skillPoints) : 'grey';
 
                 return (
                   <Typography
@@ -487,7 +383,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       display: 'inline-block',
                     }}
                   >
-                    {skillset.skill}
+                    {getCategory(skillset.skillCategory)}
                   </Typography>
                 );
               })}
@@ -524,28 +420,32 @@ const AssignTeam = ({ project, onFormDataChange }) => {
               }}
             />
           </Box>
-        ))}
+        ))) : (
+          <Typography variant="body2" color="textSecondary">
+            Assignment for the profile not yet started.
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ marginTop: 3}}>
         <Typography sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '18px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBottom: 2 }}>
           Suitable Employees
         </Typography>
-        {getFilteredEmployees().map((employee) => (
+        { suitableEmployees && suitableEmployees.length > 0 ?  ( suitableEmployees.map((employee) => (
           <Box key={employee.email} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
-            <Avatar src={employee.avatar} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.name[0]}</Avatar>
+            <Avatar src={AvatarBlue} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.firstName[0]}</Avatar>
             <Box sx={{ flex: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', mr: '30px' }}>
               <Typography
                sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}
-              >{employee.name}</Typography>
+              >{employee.firstName} {employee.lastName} </Typography>
               <Typography
                 sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', color: '#718096', marginBlock: '0'}}
               >{employee.email}</Typography>
             </Box>
             <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-              {currentSkillsets.map((skillset) => {
-                const employeeSkill = employee.skills.find((s) => s.skill === skillset.skill);
-                const color = employeeSkill ? getColor(employeeSkill.points, skillset.points) : 'grey';
+              {currentSkillsetsFor.map((skillset) => {
+                const employeeSkill = employee.skills.find((s) => s.skillCategory === skillset.skillCategory);
+                const color = employeeSkill ? getColor(employeeSkill.skillPoints, skillset.skillPoints) : 'grey';
 
                 return (
                   <Typography
@@ -565,7 +465,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       display: 'inline-block',
                     }}
                   >
-                    {skillset.skill}
+                    {getCategory(skillset.skillCategory)}
                   </Typography>
                 );
               })}
@@ -613,12 +513,16 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 },
               }}
               onClick={() => handleAssign(employee)}
-              disabled={assigned[tabLabels[activeTab]].some((e) => e.email === employee.email)}
+              disabled={assignedNum === totalSlotsFor}
             >
               Add <img src={addIcon} alt="Add" style={{ marginLeft: '8px' }} />
             </Button>
           </Box>
-        ))}
+        ))) : (
+          <Typography variant="body2" color="textSecondary">
+            No Suitable employees available for this profile.
+          </Typography>
+        )}
       </Box>
     </Box>
     {selectedEmployee && (
