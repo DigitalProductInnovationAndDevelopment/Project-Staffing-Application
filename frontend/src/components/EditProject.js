@@ -237,7 +237,7 @@ const EditProject = ({ open, onClose, project }) => {
           </Box>
           <DialogContent>
             {activeTab === 0 && <Overview project={projectData} onFormDataChange={handleFormDataChange}/>}
-            {activeTab === 1 && <AssignTeam />}
+            {activeTab === 1 && <AssignTeam project={projectData} onFormDataChange={handleFormDataChange}/>}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 1 }}>
             <Button 
