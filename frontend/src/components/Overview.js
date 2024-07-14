@@ -139,7 +139,7 @@ const Overview = ({ project, onFormDataChange }) => {
     const updatedProfile = {
       ...selectedProfile,
       name: profileName,
-      targetDemandId: { _id: selectedProfile.targetDemandId._id, now: fteNumber },
+      targetDemandId: { _id: selectedProfile.targetDemandId._id, now: fteNumber || 0},
       targetSkills: skills.map(skill => ({
         ...skill,
         skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
@@ -172,7 +172,7 @@ const Overview = ({ project, onFormDataChange }) => {
   const handleAddProfile = async() => {
     const newProfile = {
       name: profileName,
-      targetDemandId: { now: fteNumber },
+      targetDemandId: { now: fteNumber || 0},
       targetSkills: skills.map(skill => ({
         ...skill,
         skillPoints: sliders[getSkillFieldName(skill.skillCategory)]

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation} from 'react-router-dom';
 import './App.css';
 import Login from './pages/auth/Login.js';
 import PageNotFound from './pages/PageNotFound.js';
@@ -75,35 +75,47 @@ const theme = createTheme({
     }
 })
 
-function App() {
-  const [activeItem, setActiveItem] = useState('projects'); // Initialize activeItem state
-
-  return (
+function AppWithLocation() {
+    const [activeItem, setActiveItem] = useState('projects'); // Initialize activeItem state
+    const location = useLocation();
+  
+    useEffect(() => {
+      const path = location.pathname.split('/')[1];
+      setActiveItem(path || 'projects');
+    }, [location]);
+  
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route
+          path="/projects"
+          element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
+        />
+        <Route
+          path="/employees"
+          element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
+        />
+        <Route
+          path="/projects/edit"
+          element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company: 'Itestra Project', image: '' }} />}
+        />
+        <Route path="/" element={<Login />} /> {/* Default route */}
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    );
+  }
+  
+  function App() {
+    return (
       <ThemeProvider theme={theme}>
         <Router>
           <AuthenticationMiddleware>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route
-                path="/projects"
-                element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
-              />
-              <Route
-                path="/employees"
-                element={<AppLayout activeItem={activeItem} setActiveItem={setActiveItem} />}
-              />
-              <Route
-                path="/projects/edit"
-                element={<EditProject open onClose={() => {}} project={{ name: 'Project: Mobile App Performance', company: 'Itestra Project', image: '' }} />}
-              />
-              <Route path="/" element={<Login />} /> {/* Default route */}
-              <Route path="*" element={<PageNotFound/>}/>
-            </Routes>
+            <AppWithLocation />
           </AuthenticationMiddleware>
         </Router>
       </ThemeProvider>
-  );
-}
-
-export default App;
+    );
+  }
+  
+  export default App;
