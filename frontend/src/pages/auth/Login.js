@@ -10,14 +10,14 @@ import {
 import { ReactComponent as LoginImage } from '../../assets/images/login-page.svg';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import FrontendRoutes from '../../utils/FrontendRoutes';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLogin } from '../../state/authSlice';
 import {useSnackbar} from "notistack";
 import SnackbarOptions from "../../utils/SnackbarOptions";
-import { authApi, useLoginMutation } from '../../state/api/authApi.js';
+import { useLoginMutation } from '../../state/api/authApi.js';
 
 
 function Login() {
@@ -35,7 +35,7 @@ function Login() {
     if (loggedIn) {
       navigate(FrontendRoutes.PROJECTS);
     }
-  }, [loggedIn]);
+  }, [loggedIn, navigate]);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
