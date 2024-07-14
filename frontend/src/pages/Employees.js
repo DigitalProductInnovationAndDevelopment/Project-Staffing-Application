@@ -4,7 +4,7 @@ import {
   Typography,
   Avatar,
   Divider,
-  LinearProgress,
+ //LinearProgress,
   Grid,
   IconButton,
   CircularProgress,
@@ -61,30 +61,52 @@ function EmployeeOverview() {
     return name + ' ' + surname;
   };
 
-  const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
-    const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
-      value: parseFloat(percentage),
-    }));
+//   const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
+//     const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
+//       value: parseFloat(percentage),
+//     }));
   
-    const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
+//     const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
 
-    return allocatedHours;
-  };
+//     return allocatedHours;
+//   };
 
 
   if (isLoading) {
-    return <CircularProgress />;
+    return (
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#F5F7FA',
+            boxShadow: 'none',
+          }}
+        >
+            <CircularProgress />
+        </Box>
+    );
   }
 
   if (error) {
-    return <Typography color="error">Error fetching employees: {error.message}</Typography>;
+    return (
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#F5F7FA',
+            boxShadow: 'none',
+          }}
+        > 
+          <Typography color="error">Error fetching employees: {error.message}</Typography>
+        </Box>
+    );
   }
 
 if (isSuccess) {
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none", }}>
       <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3}}>
             <Button
               variant="contained"
               color="profBlue"
@@ -126,28 +148,28 @@ if (isSuccess) {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p:1, maxHeight: '80vh', overflowY: 'auto'}}>
             <Box sx={{ display: 'flex', color: '#A0AEC0', fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>
               <Grid container>
-                <Grid item xs={2}>
+                <Grid item xs={2.5}>
                   <Typography className="table-title">PERSON</Typography>
                 </Grid>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                   <Typography className="table-title">CURRENT UTILIZATION</Typography>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={1}>
                   <Typography className="table-title"># PROJECTS</Typography>
                 </Grid>
                 <Grid item xs={1}>
                   <Typography className="table-title">Technology</Typography>
                 </Grid>
-                <Grid item xs={1}>
+                <Grid item xs={1.2}>
                   <Typography className="table-title">Solution Engineering</Typography>
                 </Grid>
                 <Grid item xs={1}>
                   <Typography className="table-title">Self Management</Typography>
                 </Grid>
-                <Grid item xs={1}>
+                <Grid item xs={1.2}>
                   <Typography className="table-title">Communication Skills</Typography>
                 </Grid>
-                <Grid item xs={1}>
+                <Grid item xs={1.6}>
                   <Typography className="table-title">Employee Leadership</Typography>
                 </Grid>
                 <Grid item xs={1}>
@@ -163,7 +185,7 @@ if (isSuccess) {
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
                   <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Grid item xs={2}>
+                    <Grid item xs={2.5}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                         <Box sx={{ ml: 2 }}>
@@ -178,7 +200,7 @@ if (isSuccess) {
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item xs={2}>
+                    {/* <Grid item xs={2}>
                       <Box sx={{ display: 'flex', flexDirection: 'column'}}>
                         <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}%</Typography>
                         <LinearProgress
@@ -194,39 +216,39 @@ if (isSuccess) {
                           }}
                         />
                       </Box>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={1}>
-                      <Typography variant="body2">{employee.numberOfProjectsLast3Months || 0}</Typography>
+                        <Typography variant="body2" >{employee.numberOfProjectsLast3Months || 0}</Typography>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1.2}>
                       <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
                         employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY').skillPoints : 0}/
                         {employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
                         employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY').maxSkillPoints : 0}
                       </Typography>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1.2}>
                       <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING') ?
                         employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING').skillPoints : 0}/
                         {employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING') ?
                         employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING').maxSkillPoints : 0}
                       </Typography>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1.2}>
                       <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT') ?
                         employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT').skillPoints : 0}/
                         {employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT') ?
                         employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT').maxSkillPoints : 0}
                       </Typography>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1.2}>
                       <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS') ?
                         employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS').skillPoints : 0}/
                         {employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS') ?
                         employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS').maxSkillPoints : 0}
                       </Typography>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1.2}>
                       <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP') ?
                         employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP').skillPoints : 0}/
                         {employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP') ?

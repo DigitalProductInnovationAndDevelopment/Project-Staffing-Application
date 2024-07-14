@@ -217,27 +217,36 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
 
 export const updateAssignmentController = async (req, res, next) => {
   try {
-    const { projectId } = req.params
-    const { profileId, assignedEmployees } = req.body
+    const { projectId } = req.params;
+    const profiles = req.body;
 
-    const assignment = await getAssignmentByProfileIdService(profileId)
-    if (!assignment) {
-      return res.status(404).json({ message: 'Assignment not found' })
-    }
+    const profilesArray = Array.isArray(profiles) ? profiles : Object.values(profiles);
 
-    console.log(assignment._id)
+    const updatePromises = profilesArray.map(async (profile) => {
+      const { profileId, assignedEmployees } = profile;
 
-    const updatedAssignment = await updateAssignmentService(assignment._id, {
-      userId: assignedEmployees,
-    })
+      const assignment = await getAssignmentByProfileIdService(profileId);
+      if (!assignment) {
+        return { profileId, status: 'not_found' };
+      }
+
+      const updatedAssignment = await updateAssignmentService(assignment._id, {
+        userId: assignedEmployees,
+      });
+
+      return { profileId, status: 'success', data: updatedAssignment };
+    });
+
+    const updateResults = await Promise.all(updatePromises);
+
     res.status(200).json({
-      message: 'Assignment successfully updated',
-      data: updatedAssignment,
-    })
+      message: 'Assignments successfully updated',
+      data: updateResults,
+    });
   } catch (err) {
     res.status(500).json({
-      message: 'Failed to update assignment by profile',
+      message: 'Failed to update assignments by profile',
       error: err.message,
-    })
+    });
   }
 }

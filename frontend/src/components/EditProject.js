@@ -8,6 +8,7 @@ import AssignTeamIcon from './../assets/images/assign-icon.svg';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
 import deleteIcon from './../assets/images/delete-icon.svg';
 import { useGetProjectByIdQuery, useUpdateProjectMutation, useDeleteProjectMutation} from '../state/api/projectApi';
+import { useUpdateProjectAssignmentByProfileIdMutation } from '../state/api/profileApi';
 import '../style.scss';
 
 const EditProject = ({ open, onClose, project }) => {
@@ -16,9 +17,12 @@ const EditProject = ({ open, onClose, project }) => {
   const { data: projectData, error, isLoading, refetch } = useGetProjectByIdQuery(projectId);
   const [updateProject] = useUpdateProjectMutation();
   const [deleteProject] = useDeleteProjectMutation();
+  const [assignEmployees] = useUpdateProjectAssignmentByProfileIdMutation();
   const [formData, setFormData] = useState({});
+  const [formDataAssignment, setFormDataAssignment] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [projectName, setProjectName] = useState(project.name);
+  const [checkForAssignment, setCheckForAssignment] = useState(false); 
 
   useEffect(() => {
     if (projectData) {
@@ -40,9 +44,15 @@ const EditProject = ({ open, onClose, project }) => {
     setFormData((prevData) => ({ ...prevData, ...newData }));
   };
 
+  const handleFormDataChangeAssignment = (newData) => {
+    setFormDataAssignment((prevData) => ({ ...prevData, ...newData }));
+    setCheckForAssignment(true); 
+  };
+
   const handleSaveAndClose = async () => {
     try {
       await updateProject({ projectId: projectId, patchData: formData });
+      if(checkForAssignment) await assignEmployees({ projectId: projectId, patchData: formDataAssignment });
       refetch();
       onClose();
     } catch (err) {
@@ -237,7 +247,7 @@ const EditProject = ({ open, onClose, project }) => {
           </Box>
           <DialogContent>
             {activeTab === 0 && <Overview project={projectData} onFormDataChange={handleFormDataChange}/>}
-            {activeTab === 1 && <AssignTeam />}
+            {activeTab === 1 && <AssignTeam project={projectData} onFormDataChange={handleFormDataChangeAssignment}/>}
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 1 }}>
             <Button 

@@ -3,21 +3,21 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
+  Box,
   IconButton,
   InputAdornment,
 } from '@mui/material';
 import { ReactComponent as LoginImage } from '../../assets/images/login-page.svg';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import FrontendRoutes from '../../utils/FrontendRoutes';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLogin } from '../../state/authSlice';
 import {useSnackbar} from "notistack";
 import SnackbarOptions from "../../utils/SnackbarOptions";
-import { authApi, useLoginMutation } from '../../state/api/authApi.js';
+import { useLoginMutation } from '../../state/api/authApi.js';
 
 
 function Login() {
@@ -35,7 +35,7 @@ function Login() {
     if (loggedIn) {
       navigate(FrontendRoutes.PROJECTS);
     }
-  }, [loggedIn]);
+  }, [loggedIn, navigate]);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -81,15 +81,12 @@ function Login() {
 
 
   return (
-    <div className="container">
-      <Grid container>
+      <Box className="container" display="flex" flexDirection={{ xs: 'column', md: 'row' }}>
         {/* Form Grid item */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          container
-          direction="column"
+        <Box
+          flex={0.4}
+          display="flex"
+          flexDirection="column"
           alignItems="flex-start"
           justifyContent="center"
           className="form-container"
@@ -162,12 +159,12 @@ function Login() {
               </Typography>
             )}
 
-            <Typography variant="body2" className="account-message-text">
+            {/* <Typography variant="body2" className="account-message-text">
               Don't you have an account?{' '}
               <Link to="/signup" className="route-link">
                 Sign Up
               </Link>
-            </Typography>
+            </Typography> */}
 
             <Button
               variant="contained"
@@ -189,20 +186,17 @@ function Login() {
               Login
             </Button>
           </form>
-        </Grid>
+        </Box>
 
         {/* Image Grid item */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          alignItems="flex-start"
+        <Box
+          flex={1}
+          display="flex"
           className="image-container"
         >
           <LoginImage className="image" />
-        </Grid>
-      </Grid>
-    </div>
+        </Box>
+      </Box>
   );
 }
 

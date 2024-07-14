@@ -4,14 +4,17 @@ import Overview from './Overview';
 import backgroundImage from './../../../assets/images/edit_background.svg';
 import AvatarGreen from "./../../../assets/images/icons/green_avatar.svg";
 import { useCreateProjectMutation } from '../../../state/api/projectApi';
+import { useCreateProfileForProjectMutation } from '../../../state/api/profileApi';
 import '../../../style.scss';
 
 const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
 
   const [createProject] = useCreateProjectMutation();
   const [formData, setFormData] = useState({});
+  const [formDataProfiles, setFormDataProfiles] = useState({});
   const [isEditingName, setIsEditingName] = useState(false);
   const [projectName, setProjectName] = useState('Click & Enter Project Name');
+  const [createProfile] = useCreateProfileForProjectMutation();
 
   useEffect(() => {
       setFormData({
@@ -20,15 +23,30 @@ const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
         priority: '',
         projectLocation: '',
       });
+      setFormDataProfiles({
+        profiles: [],
+      }); 
   }, []);
 
   const handleFormDataChange = (newData) => {
     setFormData((prevData) => ({ ...prevData, ...newData }));
   };
+  const handleFormDataChangeProfiles = (newData) => {
+    setFormDataProfiles((prevData) => ({ ...prevData, ...newData }));
+  };
 
   const handleCreateAndClose = async () => {
+    const updatedProfiles = formDataProfiles.profiles.map(({ id, ...rest }) => rest);
+    console.log('formdata profiles: ', updatedProfiles)
+
     try {
-      await createProject(formData);
+      const response = await createProject(formData);
+      console.log('response: ', response)
+      const projectId = response.data.data._id;
+      console.log('data id: ', projectId)
+
+      if(projectId) await createProfile({projectId: projectId, payload: updatedProfiles});
+
       setProjectName('Click & Enter Project Name');
       onCloseCreate();
     } catch (err) {
@@ -160,7 +178,7 @@ const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
             </Box>
           </Box>
           <DialogContent>
-            <Overview onFormDataChange={handleFormDataChange}/>
+            <Overview onFormDataChange={handleFormDataChange} onFormDataChangeProfiles={handleFormDataChangeProfiles}/>
           </DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', padding: 1 }}>
             <Button
