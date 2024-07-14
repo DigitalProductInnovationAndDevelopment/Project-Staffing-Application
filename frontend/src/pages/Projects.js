@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, Divider, Avatar, AvatarGroup, IconButton, LinearProgress } from "@mui/material";
+import { Box, Typography, Button, Divider, Avatar, AvatarGroup, IconButton, LinearProgress, CircularProgress } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { projectApi } from "../state/api/projectApi.js";
 import EditProject from './../components/EditProject';
-import FullScreenLoader from './FullScreenLoader.js';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
 import CreateProject from "../components/projects/create/CreateProjects.js";
 
 function ProjectOverview() {
-  const { data: projectData, isError, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
+  const { data: projectData, error, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
 
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
@@ -55,19 +54,33 @@ function ProjectOverview() {
     else return 0;
   };
 
-  if (isError) {
+  if (error) {
     return (
-      <>
-        <p>isError</p>
-      </>
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#F5F7FA',
+            boxShadow: 'none',
+          }}
+        >
+            <Typography color="error">Error fetching projects: {error.message}</Typography>
+        </Box>
     );
   }
 
   if (isLoading) {
     return (
-      <>
-        <FullScreenLoader />
-      </>
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#F5F7FA',
+            boxShadow: 'none',
+          }}
+        >
+            <CircularProgress />
+        </Box>
     );
   }
 
