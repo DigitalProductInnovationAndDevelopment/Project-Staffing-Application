@@ -3,7 +3,10 @@ import Project from '../models/Project.js'
 import Demand from '../models/Demand.js'
 import Skill from '../models/Skill.js'
 import { getProjectByProjectIdService } from './project.js'
-import { getAssignmentByProfileIdService, deleteAssignmentService } from './assignment.js'
+import {
+  getAssignmentByProfileIdService,
+  deleteAssignmentService,
+} from './assignment.js'
 
 export const getAllProfileIdsByProjectIdService = async (projectId) => {
   try {
@@ -19,8 +22,8 @@ export const getAllProfileIdsByProjectIdService = async (projectId) => {
 export const getProfileByIdService = async (profileId) => {
   try {
     const profile = await ProjectDemandProfile.findById(profileId).populate([
-      { path: "targetDemandId", select: "now" },
-      { path: "targetSkills" }
+      { path: 'targetDemandId', select: 'now' },
+      { path: 'targetSkills' },
     ])
     return profile
   } catch (error) {
@@ -36,7 +39,7 @@ export const createNewProfileService = async (profileData) => {
     // await newMinimalDemand.save()
     // const newMinimalDemandId = newMinimalDemand._id
     // create a target demand object
-    const newTargetDemand = new Demand(profileData.targetDemandId)
+    const newTargetDemand = new Demand(profileData.targetDemand)
     await newTargetDemand.save()
     const newTargetDemandId = newTargetDemand._id
     // create target skills objects
@@ -64,20 +67,27 @@ export const createNewProfileService = async (profileData) => {
 export const updateProfileService = async (profileId, updatedData) => {
   try {
     // Find the existing profile to get the current targetDemandId
-    const existingProfile = await ProjectDemandProfile.findById(profileId);
+    const existingProfile = await ProjectDemandProfile.findById(profileId)
     if (!existingProfile) {
-      throw new Error('Profile not found');
+      throw new Error('Profile not found')
     }
 
     // Update the Demand object if targetDemandId is part of the update
-    if (updatedData.targetDemandId && updatedData.targetDemandId.now !== undefined) {
-      await Demand.findByIdAndUpdate(existingProfile.targetDemandId, {
-        now: updatedData.targetDemandId.now
-      }, { new: true });
+    if (
+      updatedData.targetDemandId &&
+      updatedData.targetDemandId.now !== undefined
+    ) {
+      await Demand.findByIdAndUpdate(
+        existingProfile.targetDemandId,
+        {
+          now: updatedData.targetDemandId.now,
+        },
+        { new: true }
+      )
     }
 
     // Remove targetDemandId from updatedData as it is already updated
-    delete updatedData.targetDemandId;
+    delete updatedData.targetDemandId
 
     const updatedProfile = await ProjectDemandProfile.findOneAndUpdate(
       profileId,
@@ -104,7 +114,8 @@ export const deleteProfileService = async (profileId, projectId) => {
 
     // delete the minimal demand
     // await Demand.findByIdAndDelete(minimalDemandId)
-    const deletedProfile = await ProjectDemandProfile.findByIdAndDelete(profileId)
+    const deletedProfile =
+      await ProjectDemandProfile.findByIdAndDelete(profileId)
     if (!deletedProfile) {
       throw new Error('Profile not found')
     }
@@ -120,7 +131,9 @@ export const deleteProfileService = async (profileId, projectId) => {
     try {
       await removeProfileIdFromProjectService(projectId, profileId)
     } catch (err) {
-      throw new Error(`Failed to remove profile id from project: ${err.message}`)
+      throw new Error(
+        `Failed to remove profile id from project: ${err.message}`
+      )
     }
     // await deleteSkillsService(profile.targetSkills)
     const assignment = await getAssignmentByProfileIdService(profileId)

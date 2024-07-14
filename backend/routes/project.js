@@ -7,12 +7,12 @@ import {
   deleteProjectController,
 } from '../controllers/project.js'
 import {
-  createNewProfileController,
+  createNewProfilesController,
   getAllProfilesByProjectIdController,
   getProfileByIdController,
   updateProfileController,
   deleteProfileController,
-  getAssignmentByProfileIdController,
+  getAssignmentsByProjectIdController,
   updateAssignmentController,
 } from '../controllers/profile.js'
 import { verifyToken } from '../middleware/auth.js'
@@ -22,15 +22,15 @@ const router = express.Router()
 // CREATE
 router.post('/', verifyToken, createNewProjectController)
 
-router.post('/:projectId', verifyToken, createNewProfileController)
+router.post('/:projectId', verifyToken, createNewProfilesController)
 
 // READ
 router.get('/', verifyToken, getAllProjectsController)
 router.get('/:projectId', verifyToken, getProjectByIdController)
 router.get(
-  '/:projectId/:profileId/assign',
+  '/:projectId/assign',
   verifyToken,
-  getAssignmentByProfileIdController
+  getAssignmentsByProjectIdController
 )
 
 router.get(
@@ -42,11 +42,7 @@ router.get('/:projectId/:profileId', verifyToken, getProfileByIdController)
 
 // UPDATE
 router.patch('/:projectId', verifyToken, updateProjectController)
-router.patch(
-  '/:projectId/:profileId/assign',
-  verifyToken,
-  updateAssignmentController
-)
+router.patch('/:projectId/assign', verifyToken, updateAssignmentController)
 
 router.patch('/:projectId/:profileId', verifyToken, updateProfileController)
 
