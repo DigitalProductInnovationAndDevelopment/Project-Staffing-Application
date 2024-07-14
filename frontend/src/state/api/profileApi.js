@@ -46,7 +46,7 @@ export const profileApi = createApi({
             }),
         }),
         updateProjectAssignmentByProfileId: builder.mutation({
-          query: (projectId, patchData) => ({
+          query: ({projectId, patchData}) => ({
             url: BackendRoutes.UPDATE_PROJECT_ASSIGNMENT(projectId),
             method: 'PATCH',
             body: patchData,

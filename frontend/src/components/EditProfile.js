@@ -21,6 +21,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
   const [email, setEmail] = useState('');
 
   useEffect(() => {
+    refetch();
     if (user) {
       const newFormData = {
       officeLocation: user.officeLocation,
@@ -39,7 +40,7 @@ const EditProfile = ({ open, onClose, employee, source, onBack}) => {
     setFullName(`${user.firstName} ${user.lastName}`);
     setEmail(user.email);
     }
-  }, [user]);
+  }, [user, refetch]);
 
   const handleSaveAndClose = async () => {
    try {
