@@ -69,6 +69,11 @@ const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
     else setFormData((prevData) => ({ ...prevData, projectName: projectName }));
   };
 
+  const isFormComplete = () => {
+    const { projectName, kickoffDate, deadlineDate, priority } = formData;
+    return projectName && kickoffDate && deadlineDate && priority;
+  };
+
   return (
     <Dialog open={openCreate} onClose={onCloseCreate} fullWidth maxWidth="lg">
       <Box sx={{ backgroundColor: '#F8F9FA', padding: 2}}>
@@ -221,6 +226,7 @@ const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
                 padding: 0
               }}
               onClick={handleCreateAndClose}
+              disabled={!isFormComplete()}
             >
               Create & Close
             </Button>
