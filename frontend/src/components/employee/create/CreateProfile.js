@@ -12,8 +12,9 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
   const [formData, setFormData] = useState({});
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [fullName, setFullName] = useState('Click & Enter Employee Name');
+  const [fullName, setFullName] = useState('Click & Enter Employee Name and Surname');
   const [email, setEmail] = useState('Click & Enter email');
+  const [isFullNameInvalid, setIsFullNameInvalid] = useState(false);
 
   useEffect(() => {
       setFormData({
@@ -53,8 +54,11 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
   const handleFullNameBlur = () => {
     setIsEditingName(false);
     if(!fullName) setFullName('Click & Enter Employee Name')
-    else{
-      const nameParts = fullName.split(' ');
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length < 2) {
+      setIsFullNameInvalid(true);
+    } else {
+      setIsFullNameInvalid(false);
       const lastName = nameParts.pop();
       const firstName = nameParts.join(' ');
       setFormData((prevData) => ({ ...prevData, firstName, lastName }));
@@ -74,6 +78,11 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
     setIsEditingEmail(false);
     if(!email) setEmail('Click & Enter email')
     else setFormData((prevData) => ({ ...prevData, email }));
+  };
+
+  const isFormComplete = () => {
+    const { firstName, lastName, email, officeLocation } = formData;
+    return firstName && lastName && email && officeLocation;
   };
 
   return (
@@ -144,6 +153,8 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
                     onChange={handleFullNameChange}
                     onBlur={handleFullNameBlur}
                     autoFocus
+                    error={isFullNameInvalid}
+                    helperText={isFullNameInvalid ? 'Please enter both first name and last name.' : ''}
                     sx={{
                       '& .MuiInputBase-input': {
                         fontFamily: 'Helvetica, sans-serif',
@@ -151,6 +162,17 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
                         lineHeight: '140%',
                         fontWeight: 'bold',
                         color: '#2D3748',
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          borderColor: isFullNameInvalid ? 'red' : 'default',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: isFullNameInvalid ? 'red' : 'default',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: isFullNameInvalid ? 'red' : 'default',
+                        },
                       },
                     }}
                   />
@@ -248,6 +270,7 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
                   marginRight: 2,
                 }}
                 onClick={handleCreateAndClose}
+                disabled={!isFormComplete()}
               >
                 Create & Close
               </Button>
