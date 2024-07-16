@@ -17,5 +17,8 @@
     "mongoose": "^8.4.0",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10"
   }
 }
