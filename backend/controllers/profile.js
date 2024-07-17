@@ -169,12 +169,10 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
 
     let payload = []
 
-    // console.log(projectId)
     const profileIds = await getAllProfileIdsByProjectIdService(projectId)
     if (!profileIds) {
       return res.status(404).json({ message: 'Profile ids not found' })
     }
-    // console.log(profileIds)
 
     for (const profileId of profileIds) {
       const profile = await getProfileByIdService(profileId)
@@ -183,23 +181,65 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
         return res.status(404).json({ message: 'Assignment not found' })
       }
       const assignedEmployees = assignment.userId
-      // console.log(assignedEmployees)
       const assignedEmployeesData = await Promise.all(
         assignedEmployees.map(async (userId) => {
           const user = await getUserByUserIdService(userId)
           return user
         })
       )
-      // console.log(assignedEmployeesData)
       const suitableEmployees = await getAllUsersService()
       const suitableEmployeesFilteredByAssigned = suitableEmployees.filter(
         (user) => !assignedEmployees.includes(user._id)
       )
 
+      // SORT SUITABLE EMPLOYEES (<=> augmented matching)
+      // 1st in the list = employee with lowest total difference between their currentSkillPoints and the targetSkillPoints of the profile
+      
+      // sort suitable employees by total difference between their skillPoints and the profile target skillPoints
+      const suitableEmployeesSorted = suitableEmployeesFilteredByAssigned.sort((a, b) => {
+        const scoreA = calculateSkillDifferenceScore(a, profile);
+        const scoreB = calculateSkillDifferenceScore(b, profile);
+        return scoreB - scoreA; // sort in descending order (highest difference first)
+      });
+
+      function calculateSkillDifferenceScore(user, profile) {
+        let totalDifference = 0;
+        
+        // for each target skill in the profile, calculate the difference between the user's skill points and the target skill points
+        for (const targetSkill of profile.targetSkills) {
+    
+          // find the user's skill that matches the target skill category
+          const userSkill = user.skills.find(skill => skill.skillCategory === targetSkill.skillCategory);
+
+          if (userSkill) {
+            const difference = userSkill.skillPoints - targetSkill.skillPoints;
+            totalDifference += difference;
+          } else {
+            // if the user doesn't have the skill, consider it as a negative difference
+            totalDifference -= targetSkill.skillPoints;
+          }
+        }
+        return totalDifference;
+      }
+
+      console.log("profile:", profile.name);
+
+      // // debug log: before sorting
+      // console.log("Suitable employees before sorting:", suitableEmployeesFilteredByAssigned.map(user => ({
+      //   name: user.firstName + ' ' + user.lastName,
+      //   skills: user.skills
+      // })));
+
+      // debug log: after sorting
+      console.log("Suitable employees after sorting:", suitableEmployeesSorted.map(user => ({
+        name: user.firstName + ' ' + user.lastName,
+        score: calculateSkillDifferenceScore(user, profile)
+      })));
+
       payload.push({
         profile: profile,
         assignedEmployees: assignedEmployeesData,
-        suitableEmployees: suitableEmployeesFilteredByAssigned,
+        suitableEmployees: suitableEmployeesSorted,
       })
     }
 
@@ -211,6 +251,7 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
     res.status(500).json({
       message: 'Failed to get project assignment by profile id',
       error: err.message,
+      stack: err.stack,
     })
   }
 }
