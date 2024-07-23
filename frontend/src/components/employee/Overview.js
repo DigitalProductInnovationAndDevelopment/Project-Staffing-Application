@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
+import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { projectApi } from "../../state/api/projectApi.js";
 
@@ -17,6 +17,7 @@ const Overview = ({ user, onFormDataChange }) => {
   const [workingHours, setWorkingHours] = useState(40);
   const [skills, setSkills] = useState([]);
   const [projectData, setProjectData] = useState([]);
+  const [timeRange, setTimeRange] = useState('current');
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
   
@@ -66,7 +67,15 @@ const Overview = ({ user, onFormDataChange }) => {
       }
       setLocation(normalizedLocation);
       setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
+
+      const selectedData =
+        timeRange === 'current' ? user.projectWorkingHourDistributionInPercentageLast7Days :
+        timeRange === 'past3Months' ? user.projectWorkingHourDistributionInPercentageLast3Months :
+        timeRange === 'past1Year' ? user.projectWorkingHourDistributionInPercentageLastYear :
+        user.projectWorkingHourDistributionInPercentageLast5Years;
+
+      setProjectData(formatProjectData(selectedData));
+      
       setWorkingHours(user.contractId ? user.contractId.weeklyWorkingHours : 40);
 
       if(user.skills.length > 0) {
@@ -76,7 +85,7 @@ const Overview = ({ user, onFormDataChange }) => {
         setSkills(initialSkills); 
       }
     }
-  }, [user, normalizeLocation, locations, projects]);
+  }, [user, normalizeLocation, locations, projects, timeRange]);
 
 
   useEffect(() => {
@@ -115,6 +124,10 @@ const Overview = ({ user, onFormDataChange }) => {
     setLocation(event.target.value);
   };
 
+  const handleTimeRangeChange = (event) => {
+    setTimeRange(event.target.value);
+  };
+  
   const getCategory = (category) => {
     if(category  === 'TECHNOLOGY') return 'Technology';
     else if (category  === 'SOLUTION_ENGINEERING') return 'Solution Engineering';
@@ -123,15 +136,6 @@ const Overview = ({ user, onFormDataChange }) => {
     else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
     else return ''
   };
- 
-//   const getCategoryName = (category) => {
-//     if(category  === 'Technology') return 'TECHNOLOGY';
-//     else if (category  === 'Solution Engineering') return 'SOLUTION_ENGINEERING';
-//     else if (category  === 'Communication Skills') return 'COMMUNICATION_SKILLS';
-//     else if (category  === 'Self Management') return 'SELF_MANAGEMENT';
-//     else if (category  === 'Employee Leadership') return 'EMPLOYEE_LEADERSHIP';
-//     else return ''
-//   };
 
   return (
     <Box sx={{ display: "flex", gap: 5, padding: 0, mt: 2 }}>
@@ -251,8 +255,18 @@ const Overview = ({ user, onFormDataChange }) => {
                 pb: 1,
               }}
             >
-              Allocated Projects
+              Project History
             </Typography>
+            <RadioGroup
+              value={timeRange}
+              onChange={handleTimeRangeChange}
+              sx={{ flexDirection: "row", gap: 2, mt: 2 }}
+            >
+              <FormControlLabel value="current" control={<Radio color="primBlue"/>} label="Current" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+              <FormControlLabel value="past3Months" control={<Radio color="primBlue" />} label="Past 3 months"sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }} />
+              <FormControlLabel value="past1Year" control={<Radio color="primBlue"/>} label="Past 1 year" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+              <FormControlLabel value="past5Years" control={<Radio color="primBlue"/>} label="Past 5 years" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+            </RadioGroup>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
                 <PieChart width={200} height={200}>
                 <Pie
