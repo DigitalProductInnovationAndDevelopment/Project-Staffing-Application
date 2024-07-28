@@ -4,6 +4,14 @@ import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
 import AvatarBlue from './../assets/images/icons/blue_avatar.svg';
+import GreenUp from './../assets/images/assign/green_up_vector.svg';
+import YellowUp from './../assets/images/assign/yellow_up_vector.svg';
+import RedUp from './../assets/images/assign/red_up_vector.svg';
+import GreenEq from './../assets/images/assign/green_eq_vector.svg';
+import YellowEq from './../assets/images/assign/yellow_eq_vector.svg';
+import RedEq from './../assets/images/assign/red_eq_vector.svg';
+import GreyEq from './../assets/images/assign/grey_eq_vector.svg';
+import TargetIcon from './../assets/images/assign/target_vector.svg';
 import { useGetProjectAssignmentByProfileIdQuery} from '../state/api/profileApi';
 
 const AssignTeam = ({ project, onFormDataChange }) => {
@@ -134,6 +142,24 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     } else {
       //green
       return '#2E7D32';
+    }
+  };
+
+  const getTargetIcon = (employeePoints, targetPoints, delta) => {
+    const third = targetPoints / 3;
+
+    if (employeePoints < third) {
+      //red
+      if(delta > 0) return RedUp;
+      else return RedEq;
+    } else if (employeePoints < 2 * third) {
+      //yellow
+      if(delta > 0) return YellowUp;
+      else return YellowEq;
+    } else {
+      //green
+      if(delta > 0) return GreenUp;
+      else return GreenEq;
     }
   };
 
@@ -285,7 +311,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
           Target Skillsets
         </Typography>
         {currentSkillsetsFor.map((skillset) => (
-          <Box key={skillset.skillCategory} sx={{ display: 'inline-block' }}>
+          <Box key={skillset.skillCategory} sx={{ display: 'flex'}}>
             <Typography
               sx={{
                 fontFamily: 'Roboto, sans-serif',
@@ -299,9 +325,11 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 padding: '4px 8px',
                 textAlign: 'center',
                 margin: '0',
-                display: 'inline-block',
+                display: 'flex',
+                alignItems: 'center'
               }}
             >
+              <img src={TargetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
               {getCategory(skillset.skillCategory)}
             </Typography>
           </Box>
@@ -370,6 +398,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
               {currentSkillsetsFor.map((skillset) => {
                 const employeeSkill = employee.skills.find((s) => s.skillCategory === skillset.skillCategory);
                 const color = employeeSkill ? getColor(employeeSkill.skillPoints, skillset.skillPoints) : 'grey';
+                const targetIcon = employeeSkill ? getTargetIcon(employeeSkill.skillPoints, skillset.skillPoints, employeeSkill.delta) : GreyEq;
 
                 return (
                   <Typography
@@ -386,9 +415,11 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       padding: '4px 8px',
                       textAlign: 'center',
                       margin: '0 4px 4px 0',
-                      display: 'inline-block',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
                   >
+                    <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
                     {getCategory(skillset.skillCategory)}
                   </Typography>
                 );
@@ -437,6 +468,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
               {currentSkillsetsFor.map((skillset) => {
                 const employeeSkill = employee.skills.find((s) => s.skillCategory === skillset.skillCategory);
                 const color = employeeSkill ? getColor(employeeSkill.skillPoints, skillset.skillPoints) : 'grey';
+                const targetIcon = employeeSkill ? getTargetIcon(employeeSkill.skillPoints, skillset.skillPoints, employeeSkill.delta) : GreyEq;
 
                 return (
                   <Typography
@@ -453,9 +485,11 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       padding: '4px 8px',
                       textAlign: 'center',
                       margin: '0 4px 4px 0',
-                      display: 'inline-block',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
                   >
+                    <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
                     {getCategory(skillset.skillCategory)}
                   </Typography>
                 );
