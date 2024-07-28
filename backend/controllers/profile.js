@@ -80,10 +80,10 @@ export const createNewProfilesController = async (req, res, next) => {
       // console.log(p)
       const profile = await createNewProfileService(p)
       if (!profile) {
-        return res.status(404).json({ error: 'Profile not found' })
+        return res.status(404).json({ error: 'Profile not found' }) //TODO
       }
-      addProfileIdToProjectService(projectId, profile._id)
-      createNewAssignmentService(profile._id)
+      addProfileIdToProjectService(projectId, profile._id) //TODO
+      createNewAssignmentService(profile._id) //TODO
       try {
         const newSkill = await createNewSkillsService(
           p.targetSkills ? p.targetSkills : []
@@ -128,7 +128,7 @@ export const updateProfileController = async (req, res, next) => {
     }
     let updateData = req.body
     if (updateData.targetSkills) {
-      await updateSkillsService(updateData.targetSkills, profile.targetSkills)
+      await updateSkillsService(updateData.targetSkills, profile.targetSkills) //TODO
     }
 
     const { targetSkills, ...rest } = updateData
@@ -175,7 +175,7 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
     }
 
     for (const profileId of profileIds) {
-      const profile = await getProfileByIdService(profileId)
+      const profile = await getProfileByIdService(profileId) //TODO
       const assignment = await getAssignmentByProfileIdService(profileId)
       if (!assignment) {
         return res.status(404).json({ message: 'Assignment not found' })
@@ -183,7 +183,7 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
       const assignedEmployees = assignment.userId
       const assignedEmployeesData = await Promise.all(
         assignedEmployees.map(async (userId) => {
-          const user = await getUserByUserIdService(userId)
+          const user = await getUserByUserIdService(userId) //TODO
           return user
         })
       )
@@ -222,7 +222,7 @@ export const getAssignmentsByProjectIdController = async (req, res, next) => {
         return totalDifference;
       }
 
-      console.log("profile:", profile.name);
+      // console.log("profile:", profile.name);
 
       // // debug log: before sorting
       // console.log("Suitable employees before sorting:", suitableEmployeesFilteredByAssigned.map(user => ({
@@ -268,14 +268,14 @@ export const updateAssignmentController = async (req, res, next) => {
 
       const assignment = await getAssignmentByProfileIdService(profileId);
       if (!assignment) {
-        return { profileId, status: 'not_found' };
+        return { profileId, status: 'not_found' }; //TODO
       }
 
       const updatedAssignment = await updateAssignmentService(assignment._id, {
         userId: assignedEmployees,
       });
 
-      return { profileId, status: 'success', data: updatedAssignment };
+      return { profileId, status: 'success', data: updatedAssignment }; //TODO
     });
 
     const updateResults = await Promise.all(updatePromises);

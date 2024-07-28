@@ -35,7 +35,7 @@ export const createNewUserController = async (req, res) => {
     if (userData.contract) {
       const newContract = new Contract(userData.contract)
       await newContract.save()
-      newUser = await updateUserService(newUser._id, {
+      newUser = await updateUserService(newUser._id, { //TODO
         contractId: newContract._id,
       })
     }
@@ -46,14 +46,45 @@ export const createNewUserController = async (req, res) => {
         await newLeave.save()
         leaveIds.push(newLeave._id)
       }
-      newUser = await updateUserService(newUser._id, { leaveIds: leaveIds })
+      newUser = await updateUserService(newUser._id, { leaveIds: leaveIds })//TODO
     }
     try {
+
+      for (const userSkill of userData.skills) {
+        if (userSkill.targetSkillPoints && userSkill.targetSkillPoints < userSkill.skillPoints) {
+          return res.status(400).json({
+            message: 'Invalid target skill points. Target skill points should be greater than or equal to skill points.',
+          });
+        }
+      }
+
       const newSkill = await createNewSkillsService(userData.skills)
       const newSkillIds = newSkill.map((skill) => skill._id)
+
+      const targetSkillsInformation = userData.skills.map((skill) => {
+        if(!skill.targetSkillPoints){ 
+          return {
+            skillCategory: skill.skillCategory,
+            skillPoints: skill.skillPoints,
+          };
+        }else{
+          return {
+            skillCategory: skill.skillCategory,
+            skillPoints: skill.targetSkillPoints,
+          };
+        }
+      });
+
+      // console.log(targetSkillsInformation);
+
+      const newTargetSkill = await createNewSkillsService(targetSkillsInformation);
+      // console.log(newTargetSkill);
+      const newTargetSkillIds = newTargetSkill.map((skill) => skill._id)
+
       const newUserWithSkills = await addSkillsToUserService(
         newUser._id,
-        newSkillIds
+        newSkillIds,
+        newTargetSkillIds
       )
       return res.status(201).json({
         message: 'User created successfully',
@@ -110,13 +141,13 @@ export const updateUserController = async (req, res) => {
     let updateData = req.body
     if (updateData.contractId) {
       const contract = user.contractId
-      await updateContractService(contract._id, updateData.contractId)
-      await updateUserService(userId, { contractId: updateData.contractId })
+      await updateContractService(contract._id, updateData.contractId) //TODO
+      await updateUserService(userId, { contractId: updateData.contractId }) //TODO
     }
     if (updateData.leaves) {
       const leaveIds = user.leaveIds
       for (const id of leaveIds) {
-        await Leave.findByIdAndDelete(id)
+        await Leave.findByIdAndDelete(id) //TODO
       }
       const newLeaveIds = []
       for (const leave of updateData.leaves) {
@@ -124,15 +155,30 @@ export const updateUserController = async (req, res) => {
         await newLeave.save()
         newLeaveIds.push(newLeave._id)
       }
-      await updateUserService(userId, { leaveIds: newLeaveIds })
+      await updateUserService(userId, { leaveIds: newLeaveIds }) //TODO
     }
     if (updateData.skills) {
-      await updateSkillsService(updateData.skills, user.skills)
+
+      for (const userSkill of updateData.skills) {
+        if (userSkill.targetSkillPoints < userSkill.skillPoints) {
+          return res.status(400).json({
+            message: 'Invalid target skill points. Target skill points should be greater than or equal to skill points.',
+          });
+        }
+      }
+      await updateSkillsService(updateData.skills, user.skills) //TODO
+      const targetSkillsInformation = updateData.skills.map((skill) => {
+        return {
+          skillCategory: skill.skillCategory,
+          skillPoints: skill.targetSkillPoints,
+        }
+      })
+      await updateSkillsService(targetSkillsInformation, user.targetSkills) //TODO
     }
 
-    const { skills, ...rest } = updateData
+    const { skills = [], leave = [], contractId= [], ...rest } = updateData
 
-    const updatedUser = await updateUserService(userId, rest)
+    const updatedUser = await updateUserService(userId, rest) //TODO
     return res.status(200).json({
       message: 'User updated successfully',
       data: updatedUser,
@@ -146,14 +192,16 @@ export const updateUserController = async (req, res) => {
 
 export const deleteUserController = async (req, res) => {
   const { userId } = req.params
-  const user = await getUserByUserIdService(userId)
+  const user = await getUserByUserIdService(userId) //TODO
   const skillIds = user.skills.map((skill) => skill._id)
-  await deleteSkillsService(skillIds)
+  await deleteSkillsService(skillIds) //TODO
+  const targetSkillPoints = user.targetSkills.map((skill) => skill._id)
+  await deleteSkillsService(targetSkillPoints) //TODO
   const contractId = user.contractId
-  await Contract.findByIdAndDelete(contractId)
+  await Contract.findByIdAndDelete(contractId) //TODO
   const leaveIds = user.leaveIds
   for (const id of leaveIds) {
-    await Leave.findByIdAndDelete(id)
+    await Leave.findByIdAndDelete(id) //TODO
   }
   const _id = user._id
   try {
