@@ -68,7 +68,10 @@ test.describe('Login Page Tests', () => {
 
        // Test Logout functionality
     test('should logout successfully', async ({ page }) => {
-        await page.getByText('Sign Out').click();
-        await expect(page).toHaveURL('http://localhost:3000/login');
+      await page.getByPlaceholder('Your email address').fill('selin@yildiz.com');
+      await page.getByPlaceholder('Your password').fill('0000');
+      await page.getByRole('button', { name: 'Login' }).click();
+      await page.getByText('Sign Out').click();
+      await expect(page).toHaveURL('http://localhost:3000/login');
     });
 });
