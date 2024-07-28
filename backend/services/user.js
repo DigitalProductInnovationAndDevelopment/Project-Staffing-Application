@@ -142,12 +142,6 @@ export const getUserByUserIdService = async (userId) => {
       skill.delta = skill.targetSkillPoints - skill.skillPoints;
     });
 
-    userObject.skills.forEach((skill) => {
-      const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
-      skill.targetSkillPoints = targetSkill.skillPoints;
-      skill.delta = skill.targetSkillPoints - skill.skillPoints;
-    });
-
     return userObject
   } catch (error) {
     throw new Error(`Failed to get user: ${error.message}`)
