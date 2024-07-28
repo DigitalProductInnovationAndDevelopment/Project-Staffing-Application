@@ -62,7 +62,10 @@ export const getUserByUserIdService = async (userId) => {
     const user = await User.findById(userId)
       .select('-password')
       .populate('skills')
-      .populate("targetSkills")
+      .populate({
+        path: 'targetSkills',
+        select: 'skillCategory skillPoints',
+      })
       .populate({
         path: 'contractId',
         select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
@@ -70,6 +73,7 @@ export const getUserByUserIdService = async (userId) => {
     if (!user) {
       throw new Error('User not found')
     }
+    // console.log(user);
 
     const all_projectWorkingHours = await ProjectWorkingHours.find()
     const endDate = new Date() // endDate is always today
@@ -137,8 +141,12 @@ export const getUserByUserIdService = async (userId) => {
       // console.log(userObject);
 
     userObject.skills.forEach((skill) => {
+      // console.log(userObject.firstName);
+      // console.log(skill.skillCategory);
       const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+      // console.log("Points:" + targetSkill.skillPoints);
       skill.targetSkillPoints = targetSkill.skillPoints;
+      // console.log(skill.skillPoints);
       skill.delta = skill.targetSkillPoints - skill.skillPoints;
     });
 

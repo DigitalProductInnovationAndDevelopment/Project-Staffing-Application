@@ -4,7 +4,7 @@ import { getUserByUserIdService } from './user.js'
 
 // Function to get assignments by profile ID
 export const getAssignmentByProfileIdService = async (profileId) => {
-  return Assignment.findOne({ projectDemandProfileId: profileId }) /TODO
+  return Assignment.findOne({ projectDemandProfileId: profileId }) //TODO
 }
 
 export const getAllEmployeesByProfileIdsService = async (profileIds) => {
