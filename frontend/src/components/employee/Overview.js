@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { projectApi } from "../../state/api/projectApi.js";
+import TargetLevelIcon from '../../assets/images/assign/target_level.svg';
 
 const initialSkills = [
     { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
@@ -101,6 +102,7 @@ const Overview = ({ user, onFormDataChange }) => {
     skills: skills.map(skill => ({
       ...skill,
       skillPoints: skill.skillPoints,
+      targetSkillPoints: skill.targetSkillPoints,
     })),
   });
   }, [location, canWorkRemote, workingHours, normalizeLocation, onFormDataChange, skills, user.contractId]);
@@ -115,7 +117,7 @@ const Overview = ({ user, onFormDataChange }) => {
 
   const handleSkillChange = (index) => (event, newValue) => {
     const updatedSkills = skills.map((skill, i) =>
-      i === index ? { ...skill, skillPoints: newValue } : skill
+      i === index ? { ...skill, skillPoints: newValue[0], targetSkillPoints: newValue[1] } : skill
     );
     setSkills(updatedSkills);
   };
@@ -305,64 +307,86 @@ const Overview = ({ user, onFormDataChange }) => {
           </Paper>
         </Box>
 
-        {/* Define Skill Point Categories Section */}
-        <Box sx={{ flex: 1 }}>
-          <Paper
+       {/* Define Skill Point Categories Section */}
+       <Box sx={{ flex: 1 }}>
+        <Paper
             sx={{
               padding: 4,
               backgroundColor: "white",
               boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
               borderRadius: "15px",
             }}
-          >
+        >
+            {/* Flex container for the headers */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography
-              sx={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                lineHeight: "150%",
-                letterSpacing: "0",
-                fontWeight: "medium",
-                color: "black",
-                pb: 1,
-              }}
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "black",
+                }}
             >
-              Skill Point Categories
+                Skill Point Categories
             </Typography>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
+            <Typography
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "#2D3748",
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
             >
+                <img src={TargetLevelIcon} alt="Target" style={{ marginLeft: '2px', marginRight: '6px' }} />
+                Target Level
+            </Typography>
+            </Box>
+
+            {/* Skill points section */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
             {skills.map((skill, index) => (
-            <Box
+                <Box
                 key={index}
                 sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}
-            >
-                <Typography 
-                  sx={{ 
-                    fontSize: "14px", 
-                    minWidth: '180px',
-                    color: "#828282",
-                    fontFamily: "Inter, sans-serif",
-                    lineHeight: "150%",
-                    letterSpacing: "0%",
-                  }}>
-                  {getCategory(skill.skillCategory)}
+                >
+                <Typography
+                    sx={{
+                      fontSize: "14px",
+                      minWidth: '180px',
+                      color: "#828282",
+                      fontFamily: "Inter, sans-serif",
+                      lineHeight: "150%",
+                      letterSpacing: "0%",
+                    }}
+                >
+                    {getCategory(skill.skillCategory)}
                 </Typography>
                 <Slider
-                  value={skill.skillPoints}
-                  step={1}
-                  marks
-                  min={0}
-                  max={skill.maxSkillPoints}
-                  valueLabelDisplay="auto"
-                  onChange={handleSkillChange(index)}
-                  aria-labelledby={`slider-${index}`}
-                  sx={{ color: "#36C5F0", flex: 1 }}
+                    value={[skill.skillPoints, skill.targetSkillPoints]}
+                    min={0}
+                    max={skill.maxSkillPoints}
+                    valueLabelDisplay="auto"
+                    onChange={handleSkillChange(index)}
+                    sx={{
+                      color: "#36C5F0",
+                      "& .MuiSlider-thumb": {
+                        "&:nth-child(4)": {
+                          color: "#4FD1C5 !important"
+                        }
+                      }
+                    }}
                 />
-              </Box>
-              ))}
+                </Box>
+            ))}
             </Box>
-          </Paper>
-        </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 };
