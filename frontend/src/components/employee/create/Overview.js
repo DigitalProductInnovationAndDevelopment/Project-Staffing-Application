@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper} from '@mui/material';
+import TargetLevelIcon from '../../../assets/images/assign/target_level.svg';
 
 const initialSkills = [
   { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
@@ -37,6 +38,7 @@ const Overview = ({ onFormDataChange }) => {
       skills: skills.map(skill => ({
         ...skill,
         skillPoints: skill.skillPoints,
+        targetSkillPoints: skill.targetSkillPoints,
       })),
     });
   }, [location, canWorkRemote, normalizeLocation, onFormDataChange, workingHours, skills]);
@@ -51,7 +53,7 @@ const Overview = ({ onFormDataChange }) => {
 
   const handleSkillChange = (index) => (event, newValue) => {
     const updatedSkills = skills.map((skill, i) =>
-      i === index ? { ...skill, skillPoints: newValue } : skill
+      i === index ? { ...skill, skillPoints: newValue[0], targetSkillPoints: newValue[1] } : skill
     );
     setSkills(updatedSkills);
   };
@@ -178,19 +180,36 @@ const Overview = ({ onFormDataChange }) => {
               borderRadius: "15px",
             }}
           >
-            <Typography
-              sx={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                lineHeight: "150%",
-                letterSpacing: "0",
-                fontWeight: "medium",
-                color: "black",
-                pb: 1,
-              }}
-            >
-              Skill Point Categories
-            </Typography>
+            {/* Flex container for the headers */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "black",
+                }}
+              >
+                Skill Point Categories
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "#2D3748",
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <img src={TargetLevelIcon} alt="Target" style={{ marginLeft: '2px', marginRight: '6px' }} />
+                Target Level
+              </Typography>
+            </Box>
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
             >
@@ -211,15 +230,19 @@ const Overview = ({ onFormDataChange }) => {
                   {getCategory(skill.skillCategory)}
                 </Typography>
                 <Slider
-                  value={skill.skillPoints}
-                  step={1}
-                  marks
+                  value={[skill.skillPoints, skill.targetSkillPoints]}
                   min={0}
                   max={skill.maxSkillPoints}
                   valueLabelDisplay="auto"
                   onChange={(event, newValue) => handleSkillChange(index)(event, newValue)}
-                  aria-labelledby={`slider-${index}`}
-                  sx={{ color: "#36C5F0", flex: 1 }}
+                  sx={{
+                    color: "#36C5F0",
+                    "& .MuiSlider-thumb": {
+                      "&:nth-child(4)": {
+                        color: "#4FD1C5 !important"
+                      }
+                    }
+                  }}
                 />
               </Box>
               ))}

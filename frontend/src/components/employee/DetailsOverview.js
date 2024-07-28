@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
+import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper, Radio, RadioGroup, FormControlLabel} from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { projectApi } from "../../state/api/projectApi.js";
 
@@ -17,6 +17,7 @@ const Overview = ({ user }) => {
   const [workingHours, setWorkingHours] = useState(40);
   const [skills, setSkills] = useState([]);
   const [projectData, setProjectData] = useState([]);
+  const [timeRange, setTimeRange] = useState('current');
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
   
@@ -66,7 +67,15 @@ const Overview = ({ user }) => {
       }
       setLocation(normalizedLocation);
       setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
+      
+      const selectedData =
+        timeRange === 'current' ? user.projectWorkingHourDistributionInPercentageLast7Days :
+        timeRange === 'past3Months' ? user.projectWorkingHourDistributionInPercentageLast3Months :
+        timeRange === 'past1Year' ? user.projectWorkingHourDistributionInPercentageLastYear :
+        user.projectWorkingHourDistributionInPercentageLast5Years;
+
+      setProjectData(formatProjectData(selectedData));
+
       setWorkingHours(user.contractId ? user.contractId.weeklyWorkingHours : 40);
 
       if(user.skills.length > 0) {
@@ -76,7 +85,11 @@ const Overview = ({ user }) => {
         setSkills(initialSkills); 
       }
     }
-  }, [user, normalizeLocation, locations, projects]);
+  }, [user, normalizeLocation, locations, projects, timeRange]);
+
+  const handleTimeRangeChange = (event) => {
+    setTimeRange(event.target.value);
+  };
 
   const getCategory = (category) => {
     if(category  === 'TECHNOLOGY') return 'Technology';
@@ -203,8 +216,18 @@ const Overview = ({ user }) => {
                 pb: 1,
               }}
             >
-              Allocated Projects
+              Project History
             </Typography>
+            <RadioGroup
+              value={timeRange}
+              onChange={handleTimeRangeChange}
+              sx={{ flexDirection: "row", gap: 2, mt: 2 }}
+            >
+              <FormControlLabel value="current" control={<Radio color="primBlue"/>} label="Current" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+              <FormControlLabel value="past3Months" control={<Radio color="primBlue" />} label="Past 3 months"sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }} />
+              <FormControlLabel value="past1Year" control={<Radio color="primBlue"/>} label="Past 1 year" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+              <FormControlLabel value="past5Years" control={<Radio color="primBlue"/>} label="Past 5 years" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+            </RadioGroup>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
                 <PieChart width={200} height={200}>
                 <Pie
@@ -286,14 +309,18 @@ const Overview = ({ user }) => {
                   {getCategory(skill.skillCategory)}
                 </Typography>
                 <Slider
-                  value={skill.skillPoints}
-                  step={1}
-                  marks
+                  value={[skill.skillPoints, skill.targetSkillPoints]}
                   min={0}
                   max={skill.maxSkillPoints}
                   valueLabelDisplay="auto"
-                  aria-labelledby={`slider-${index}`}
-                  sx={{ color: "#36C5F0", flex: 1 }}
+                  sx={{
+                    color: "#36C5F0",
+                    "& .MuiSlider-thumb": {
+                      "&:nth-child(4)": {
+                        color: "#4FD1C5 !important"
+                      }
+                    }
+                  }}
                 />
               </Box>
               ))}
