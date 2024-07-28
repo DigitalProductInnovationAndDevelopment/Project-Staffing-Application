@@ -39,13 +39,13 @@ export const createNewSkillsService = async (skillData) => {
         skillCategory: category,
         maxSkillPoints: maxSkillPointsArray[category],
       }
-      const skill = await createNewSkillService(data)
+      const skill = await createNewSkillService(data) //TODO
       newSkills.push(skill)
     }
 
     for (const data of categoriesToCreate) {
       const { skillPoints, skillCategory } = data
-      const skill = await createNewSkillService({
+      const skill = await createNewSkillService({ //TODO
         skillPoints,
         skillCategory,
         maxSkillPoints: maxSkillPointsArray[skillCategory],
@@ -58,11 +58,11 @@ export const createNewSkillsService = async (skillData) => {
   }
 }
 
-export const addSkillsToUserService = async (userId, skillIds) => {
+export const addSkillsToUserService = async (userId, skillIds, targetSkillsIds) => {
   try {
     const user = await User.findByIdAndUpdate(
       userId,
-      { $push: { skills: skillIds } },
+      { $push: { skills: skillIds, targetSkills: targetSkillsIds } },
       { new: true, useFindAndModify: false }
     )
     return user
@@ -130,14 +130,14 @@ export const updateSkillsService = async (skillData, existingIds) => {
     const SkillsIds = existingIds
     const updateSkillsCategories = skillData.map((skill) => skill.skillCategory)
 
-    for (const ids of SkillsIds) {
-      const skill = await getSkillBySkillIdService(ids)
+    for (const id of SkillsIds) {
+      const skill = await getSkillBySkillIdService(id) //TODO
       if (updateSkillsCategories.includes(skill.skillCategory)) {
         const updatedSkillPoints = skillData.find(
           (updateSkill) => updateSkill.skillCategory === skill.skillCategory
         ).skillPoints
         // console.log(updatedSkillPoints)
-        await updateSkillPointsBySkillIdService(skill._id, {
+        await updateSkillPointsBySkillIdService(skill._id, { //TODO
           skillPoints: updatedSkillPoints,
         })
       }
