@@ -1,7 +1,8 @@
 This folder holds example collections for the used collections in the database plus files for execution to import and export all collections to/from the database.
 
-Requires installation of MongoDB Database Tools (mongoexport and mongoimport)
-MongoExportPath must be adjusted accordingly.
+Requires installation of MongoDB Database Tools (mongoexport and mongoimport).
+
+Pathes must be adjusted.
 
 For executing the script in the folder database_example_state_that_works:
 
