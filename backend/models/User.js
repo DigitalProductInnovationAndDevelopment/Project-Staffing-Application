@@ -39,6 +39,13 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
+    targetSkills: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Skill',
+      },
+    ],
+
     officeLocation: {
       type: String,
       enum: Object.values(OfficeLocation),

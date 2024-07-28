@@ -16,7 +16,7 @@ export const createNewUserService = async (userData) => {
 // enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
   // get all users
-  const all_users = await User.find()
+  const all_users = await User.find() //TODO???
     .select('-password') //exclude password from query response
     .populate('skills')
     .populate({
@@ -62,6 +62,7 @@ export const getUserByUserIdService = async (userId) => {
     const user = await User.findById(userId)
       .select('-password')
       .populate('skills')
+      .populate("targetSkills")
       .populate({
         path: 'contractId',
         select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
@@ -132,8 +133,20 @@ export const getUserByUserIdService = async (userId) => {
     userObject.projectWorkingHourDistributionInPercentageLast5Years =
       pwdPast5Years.percentageDistribution
 
-      console.log('userObject');
-      console.log(userObject);
+      // console.log('userObject');
+      // console.log(userObject);
+
+    userObject.skills.forEach((skill) => {
+      const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+      skill.targetSkillPoints = targetSkill.skillPoints;
+      skill.delta = skill.targetSkillPoints - skill.skillPoints;
+    });
+
+    userObject.skills.forEach((skill) => {
+      const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+      skill.targetSkillPoints = targetSkill.skillPoints;
+      skill.delta = skill.targetSkillPoints - skill.skillPoints;
+    });
 
     return userObject
   } catch (error) {

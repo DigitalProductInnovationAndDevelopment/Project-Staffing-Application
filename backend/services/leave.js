@@ -1,6 +1,6 @@
 import Leave from '../models/Leave.js'
 
-export const updateLeaveService = async (leaveId, updateData) => {
+export const updateLeaveService = async (leaveId, updateData) => { //TOD: or Leaves???
   try {
     const leave = await Leave.findByIdAndUpdate(leaveId, updateData, {
       new: true,
