@@ -1,30 +1,64 @@
-name: Deploy Node Application
+name: Deploy Application
 
 on:
   push:
     branches:
-     - 99-realease-branch-via-aws
+      - 99-realease-branch-via-aws
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build Docker Image
-        run: |
-          cd backend
-          docker build -t lucatum/nodejs-app-aws .
-      - name: Push Docker Image
-        run: docker push lucatum/nodejs-app-aws:latest
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: lucatum/nodejs-app-aws-backend:latest
+      
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: lucatum/nodejs-app-aws-frontend:latest
 
   deploy:
-    needs: build
+    needs: build-and-push
     runs-on: self-hosted
     steps:
-      - name: pull image from Docker Hub
-        run: docker pull lucatum/nodejs-app-aws:latest
-      - name: Run Docker Container
-        run: docker run -d -p 3001:3001 --name nodejs-app-container lucatum/nodejs-app-aws
+      - name: Pull backend image
+        run: docker pull lucatum/nodejs-app-aws-backend:latest
+      
+      - name: Pull frontend image
+        run: docker pull lucatum/nodejs-app-aws-frontend:latest
+      
+      - name: Stop and remove existing containers
+        run: |
+          docker stop nodejs-app-backend nodejs-app-frontend || true
+          docker rm nodejs-app-backend nodejs-app-frontend || true
+      
+      - name: Run backend container
+        run: |
+          docker run -d --name nodejs-app-backend \
+            -p 3001:3001 \
+            -e MONGO_URL=${{ secrets.MONGO_URL }} \
+            lucatum/nodejs-app-aws-backend:latest
+      
+      - name: Run frontend container
+        run: |
+          docker run -d --name nodejs-app-frontend \
+            -p 80:80 \
+            lucatum/nodejs-app-aws-frontend:latest
+      
+      - name: Cleanup old images
+        run: docker image prune -af
