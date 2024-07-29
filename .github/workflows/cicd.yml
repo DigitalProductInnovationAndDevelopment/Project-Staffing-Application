@@ -14,7 +14,9 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Build Docker Image
-        run: docker build -t lucatum/nodejs-app-aws .
+        run: |
+          cd backend
+          docker build -t lucatum/nodejs-app-aws .
       - name: Push Docker Image
         run: docker push lucatum/nodejs-app-aws:latest
 
