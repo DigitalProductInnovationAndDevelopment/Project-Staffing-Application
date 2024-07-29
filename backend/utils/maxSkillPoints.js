@@ -1,8 +1,0 @@
-const maxSkillPointsArray = {
-  TECHNOLOGY: 20,
-  SOLUTION_ENGINEERING: 15,
-  SELF_MANAGEMENT: 15,
-  COMMUNICATION_SKILLS: 20,
-  EMPLOYEE_LEADERSHIP: 18,
-}
-export default maxSkillPointsArray

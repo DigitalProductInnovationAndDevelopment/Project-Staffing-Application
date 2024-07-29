@@ -14,7 +14,6 @@ import {
   updateSkillPointsBySkillIdService,
   updateSkillsService,
 } from '../services/skill.js'
-import maxSkillPointsArray from '../utils/maxSkillPoints.js'
 import { updateContractService } from '../services/contract.js'
 import { updateLeaveService } from '../services/leave.js'
 import Contract from '../models/Contract.js'
@@ -49,7 +48,6 @@ export const createNewUserController = async (req, res) => {
       newUser = await updateUserService(newUser._id, { leaveIds: leaveIds })//TODO
     }
     try {
-
       for (const userSkill of userData.skills) {
         if (userSkill.targetSkillPoints && userSkill.targetSkillPoints < userSkill.skillPoints) {
           return res.status(400).json({
