@@ -1,9 +1,10 @@
 import { get } from 'mongoose'
 import Skill from '../models/Skill.js'
 import User from '../models/User.js'
-import { deleteUserService } from './user.js'
+import { deleteUserService, getAllUsersService, updateUserService } from './user.js'
 import ProjectDemandProfile from '../models/ProjectDemandProfile.js'
 import SkillCategory from '../models/SkillCategory.js'
+import { getAllProfilesService, getProfileByIdService, updateProfileService } from './projectDemandProfile.js'
 
 export const createNewSkillService = async (skillData) => {
   try {
@@ -44,7 +45,7 @@ export const createNewSkillsService = async (skillData) => {
       const data = {
         skillPoints: 0,
         skillCategory: await getIdOfCategory(category),
-        maxSkillPoints: await getMaxPointsByCategory(category),
+        // maxSkillPoints: await getMaxPointsByCategory(category),
       }
       const skill = await createNewSkillService(data) //TODO
       newSkills.push(skill)
@@ -64,7 +65,7 @@ export const createNewSkillsService = async (skillData) => {
       const skill = await createNewSkillService({ //TODO
         skillPoints,
         skillCategory: await getIdOfCategory(skillCategory),
-        maxSkillPoints: await getMaxPointsByCategory(skillCategory),
+        // maxSkillPoints: await getMaxPointsByCategory(skillCategory),
       })
       // console.log("Skill:")
       // console.log(skill)
@@ -186,6 +187,30 @@ export const createNewSkillCategoryService = async (categoryData) => {
     const { name, maxPoints } = categoryData;
     const skillCategory = new SkillCategory({ name, maxPoints });
     await skillCategory.save();
+    // add to all employees in skills and targetSkills
+    const allEmployees = (await getAllUsersService()).filter((user) => user.firstName !== 'Admin')
+    for (const employee of allEmployees) {
+      const skill = await createNewSkillService({
+        skillPoints: 0,
+        skillCategory: skillCategory._id,
+      });
+      const targetSkill = await createNewSkillService({
+        skillPoints: 0,
+        skillCategory: skillCategory._id,
+      });
+      await addSkillsToUserService(employee._id, skill._id, targetSkill._id);
+    }
+    
+    const allProfiles = await getAllProfilesService();
+    for (const profile of allProfiles) {
+      const targetSkill = await createNewSkillService({
+        skillPoints: 0,
+        skillCategory: skillCategory._id,
+      });
+      await addSkillsToProfileService(profile._id, targetSkill._id);
+    }
+
+    // add to all profiles
     return skillCategory;
   } catch (error) {
     throw new Error(`Failed to create a new skill category: ${error.message}`);
@@ -227,6 +252,40 @@ export const deleteSkillCategoryService = async (categoryId) => {
     if (!category) {
       throw new Error('Category not found')
     }
+
+    const categoryName = await getSkillCategoryByIdService(categoryId).name;
+
+    // delete from all employees skills and targetSkills
+    const allEmployees = (await getAllUsersService()).filter((user) => user.firstName !== 'Admin')
+    for (const employee of allEmployees) {
+      // employee.skills.forEach(skill => console.log(skill._id));
+      // console.log(categoryId)
+      const deleteSkill = employee.skills.find((skill) => skill.skillCategory === categoryName);
+      const deleteTargetSkill = employee.targetSkills.find((skill) => skill.skillCategory === categoryName)
+      // console.log(deleteSkill)
+      // console.log(deleteTargetSkill)
+      // if (!deleteSkill || !deleteTargetSkill) {
+      //   throw new Error('Skill not found')
+      // }
+      await deleteSkillsService([deleteSkill._id])
+      await deleteSkillsService([deleteTargetSkill._id])
+      // console.log(employee.skills)
+      await updateUserService(employee._id, { skills: employee.skills.filter((skill) => skill.skillCategory !== categoryName), targetSkills: employee.targetSkills.filter((skill) => skill.skillCategory !== categoryName) });
+    }
+
+    // delete from all profiles
+    const allProfiles = await getAllProfilesService()
+    for (const profile of allProfiles) {
+      const deleteSkill = profile.targetSkills.find((skill) => skill.skillCategory === categoryName);
+      // console.log(deleteSkill)
+      // if(!deleteSkill) {
+      //   throw new Error('Skill not found')
+      // }
+      await deleteSkillsService([deleteSkill._id])
+
+      // console.log(profile.targetSkills)
+      await updateProfileService(profile._id, { targetSkills: profile.targetSkills.filter((skill) => skill.skillCategory !== categoryName) });
+    }
   } catch (error) {
     throw new Error(`Failed to delete the category: ${error.message}`)
   }
@@ -234,6 +293,7 @@ export const deleteSkillCategoryService = async (categoryId) => {
 
 export const updateSkillCategoryService = async (categoryId, categoryData) => {
   try {
+    // console.log(categoryId)
     const updatedCategory = await SkillCategory.findByIdAndUpdate(categoryId, categoryData, {
       new: true,
     })

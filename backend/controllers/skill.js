@@ -3,6 +3,7 @@ import { createNewSkillCategoryService, getSkillCategoriesService, deleteSkillCa
 export const createNewSkillCategoryController = async (req, res, next) => { 
   try {
     const newSkillCategory = await createNewSkillCategoryService(req.body)
+
     res.status(201).json({ message: 'Skill category created successfully', data: newSkillCategory })
   } catch (err) {
     throw new Error('Error creating skill category: ' + err.message);
@@ -20,8 +21,10 @@ export const getSkillCategoriesController = async (req, res, next) => {
 
 export const updateSkillCategoryController = async (req, res, next) => {
   try {
-    const { skillCategoryId } = req.params;
-    const updatedSkillCategory = await updateSkillCategoryService(skillCategoryId, req.body);
+    const { skillId } = req.params;
+    // console.log(skillId)
+    // console.log(req.body)
+    const updatedSkillCategory = await updateSkillCategoryService(skillId, req.body);
     res.status(200).json({ message: 'Skill category updated successfully', data: updatedSkillCategory });
   } catch (err) {
     throw new Error('Error updating skill category: ' + err.message);
@@ -30,8 +33,8 @@ export const updateSkillCategoryController = async (req, res, next) => {
 
 export const deleteSkillCategoryController = async (req, res, next) => {
   try {
-    const { skillCategoryId } = req.params;
-    const deletedSkillCategory = await deleteSkillCategoryService(skillCategoryId);
+    const { skillId } = req.params;
+    const deletedSkillCategory = await deleteSkillCategoryService(skillId);
     res.status(200).json({ message: 'Skill category deleted successfully', data: deletedSkillCategory });
   } catch (err) {
     throw new Error('Error deleting skill category: ' + err.message);

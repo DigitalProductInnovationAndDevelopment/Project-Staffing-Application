@@ -15,7 +15,7 @@ router.post('/', verifyToken, createNewUserController)
 
 // READ
 router.get('/', getAllUsersController)
-router.get('/:userId', verifyToken, getUserByIdController)
+router.get('/:userId', getUserByIdController)
 
 // UPDATE
 router.patch('/:userId', verifyToken, updateUserController)
