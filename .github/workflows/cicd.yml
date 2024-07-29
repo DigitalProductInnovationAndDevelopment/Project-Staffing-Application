@@ -65,9 +65,11 @@ jobs:
         run: |
           echo "Attempting to run backend container"
           echo "Image name: lucatum/nodejs-app-aws-backend:latest"
+          docker images
           docker run -d --name nodejs-app-backend \
             -p 3001:3001 \
-            -e MONGO_URL='mongodb+srv://greatstaff-database-admin:BG2g9sZtAwuqHOan@great-staff-cluster.swbpgja.mongodb.net/great-staff-database?retryWrites=true&w=majority' \
+            -e MONGO_URL="${{ secrets.MONGO_URL }}" \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
             lucatum/nodejs-app-aws-backend:latest
           echo "Backend container started"
           docker ps
