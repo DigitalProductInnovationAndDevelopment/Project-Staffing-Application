@@ -1,0 +1,28 @@
+name: Deploy Node Application
+
+on:
+  push:
+    branches:
+     - 99-realease-branch-via-aws
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker Image
+        run: docker build -t lucatum/nodejs-app-aws .
+      - name: Push Docker Image
+        run: docker push lucatum/nodejs-app-aws:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: pull image from Docker Hub
+        run: docker pull lucatum/nodejs-app-aws:latest
+      - name: Run Docker Container
+        run: docker run -d -p 3001:3001 --name nodejs-app-container lucatum/nodejs-app-aws
