@@ -16,6 +16,7 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
     }
     assignmentIds.push(assignment)
   }
+  // console.log(assignmentIds)
   //get people from assignment
   const allEmployeesIds = []
   for (let i = 0; i < assignmentIds.length; i++) {
@@ -25,6 +26,7 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
 
   //no duplicates in allemployeeids
   const uniqueAllEmployeesIds = await removeDuplicateObjectIDs(allEmployeesIds) //TODO
+  // console.log(uniqueAllEmployeesIds)
 
   const allEmployees = []
   for (let i = 0; i < uniqueAllEmployeesIds.length; i++) {
@@ -32,8 +34,10 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
     if (!user) {
       throw new Error('User not found')
     }
+    // console.log(user)
     allEmployees.push(user)
   }
+  // console.log(allEmployees)
   return allEmployees
 }
 

@@ -23,6 +23,7 @@ export const getAllProjectsController = async (req, res, next) => {
       )
       const allEmployees =
         await getAllEmployeesByProfileIdsService(allProfileIds) //TODO
+      // console.log(allEmployees)
       const demand = await getDemandByProfileIdsService(allProfileIds) //TODO
       completeListOfProjects.push({
         ...all_projects[i]._doc,

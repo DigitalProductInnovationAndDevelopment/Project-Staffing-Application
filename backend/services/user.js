@@ -2,6 +2,8 @@ import User from '../models/User.js'
 import Contract from '../models/Contract.js'
 import ProjectWorkingHours from '../models/ProjectWorkingHours.js'
 import { getProjectWorkingHourDistributionByUserId } from '../utils/projectWorkingHoursHelper.js'
+// import { getSkillsWithTargetPointsAndDelta, getSkillsWithSkillCategory } from '../utils/helper.js'0
+// import SkillCategory from '../models/SkillCategory.js'
 
 export const createNewUserService = async (userData) => {
   try {
@@ -16,13 +18,45 @@ export const createNewUserService = async (userData) => {
 // enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
   // get all users
-  const all_users = await User.find() //TODO???
-    .select('-password') //exclude password from query response
-    .populate('skills')
+  const all_users = await User.find()
+    .select('-password')
+    .populate({path: 'skills', 
+      populate : {
+        path : 'skillCategory',
+        select: 'name maxPoints',
+        transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+      },
+      transform: doc => doc == null ? null : {  _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+    })
     .populate({
       path: 'contractId',
-      select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
+      select: 'weeklyWorkingHours',
     })
+    .populate({
+      path: 'targetSkills',
+      select: 'skillCategory skillPoints',
+      populate : {
+        path : 'skillCategory', 
+        select: 'name maxPoints',
+        transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints },
+      },
+      transform: doc => doc == null ? null : { _id: doc._id,  skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+    });
+
+    for(let i = 0; i < all_users.length; i++) {
+      const user = all_users[i];
+      const skills = user.skills
+      const targetSkills = user.targetSkills;
+      for(let i = 0; i < skills.length; i++) {
+        const skill = skills[i];
+        const targetSkill = targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+        if(targetSkill) {
+          skill.targetSkillPoints = targetSkill.skillPoints;
+          skill.delta = targetSkill.skillPoints - skill.skillPoints;
+        }
+      }
+    }
+
   // get all projectWorkingHours
   const all_projectWorkingHours = await ProjectWorkingHours.find()
 
@@ -49,6 +83,14 @@ export const getAllUsersService = async () => {
   }
   // console.log('all_users')
   // console.log(all_users)
+
+  // for(let i = 0; i < all_users.length; i++) {
+  //   const user = all_users[i];
+  //   const skills = user.skills
+  //     user.skills = await getSkillsWithSkillCategory(skills);
+  //   // console.log(user.skills);
+  // }
+
   return all_users
 }
 
@@ -61,19 +103,45 @@ export const getUserByUserIdService = async (userId) => {
   try {
     const user = await User.findById(userId)
       .select('-password')
-      .populate('skills')
-      .populate({
-        path: 'targetSkills',
-        select: 'skillCategory skillPoints',
+      .populate({path: 'skills', 
+        populate : {
+          path : 'skillCategory',
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+        },
+        transform: doc => doc == null ? null : { _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
       })
       .populate({
         path: 'contractId',
         select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
       })
+      .populate({
+        path: 'targetSkills',
+        select: 'skillCategory skillPoints',
+        populate : {
+          path : 'skillCategory', 
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints },
+        },
+        transform: doc => doc == null ? null : { _id: doc._id,  skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+      });
     if (!user) {
       throw new Error('User not found')
     }
+
+    const skills = user.skills
+    const targetSkills = user.targetSkills;
+    for(let i = 0; i < skills.length; i++) {
+      const skill = skills[i];
+      const targetSkill = targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+      if(targetSkill) {
+        skill.targetSkillPoints = targetSkill.skillPoints;
+        skill.delta = targetSkill.skillPoints - skill.skillPoints;
+      }
+    }
+
     // console.log(user);
+    // console.log(user.skills);
 
     const all_projectWorkingHours = await ProjectWorkingHours.find()
     const endDate = new Date() // endDate is always today
@@ -139,16 +207,22 @@ export const getUserByUserIdService = async (userId) => {
 
       // console.log('userObject');
       // console.log(userObject);
+      // console.log(userObject.skills);
+      // console.log(userObject.targetSkills);
 
-    userObject.skills.forEach((skill) => {
-      // console.log(userObject.firstName);
-      // console.log(skill.skillCategory);
-      const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
-      // console.log("Points:" + targetSkill.skillPoints);
-      skill.targetSkillPoints = targetSkill.skillPoints;
-      // console.log(skill.skillPoints);
-      skill.delta = skill.targetSkillPoints - skill.skillPoints;
-    });
+    // const skills = userObject.skills
+    // const targetSkills = userObject.targetSkills;
+    // const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+
+
+    // console.log("Skills:")
+    // console.log(skills);
+    // console.log("TargetSkills:")
+    // console.log(targetSkills);
+    
+    // if (!skills || !targetSkills) {
+      // userObject.skills = await getSkillsWithTargetPointsAndDelta(skills, targetSkills);
+    // }
 
     return userObject
   } catch (error) {

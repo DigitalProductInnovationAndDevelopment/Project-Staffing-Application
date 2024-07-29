@@ -19,12 +19,57 @@ export const getAllProfileIdsByProjectIdService = async (projectId) => {
   }
 }
 
+export const getAllProfilesService = async () => {
+  try {
+    const profiles = await ProjectDemandProfile.find().populate([
+      { path: 'targetDemandId', select: 'now' },
+      {path: 'targetSkills', 
+        populate : {
+          path : 'skillCategory',
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+        },
+        transform: doc => doc == null ? null : { _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+      }
+    ])
+    return profiles
+  } catch (error) {
+    console.error(error)
+    throw new Error(`Failed to get all profiles: ${error.message}`)
+  }
+}
+
 export const getProfileByIdService = async (profileId) => {
   try {
-    const profile = await ProjectDemandProfile.findById(profileId).populate([
+     let profile = await ProjectDemandProfile.findById(profileId).populate([
       { path: 'targetDemandId', select: 'now' },
-      { path: 'targetSkills' },
+    //   { path: 'targetSkills', 
+    //     populate : {
+    //     path : 'skillCategory',
+    //     select: "name maxPoints"
+    //   },
+    // },
+      {path: 'targetSkills', 
+        populate : {
+          path : 'skillCategory',
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+        },
+        transform: doc => doc == null ? null : { _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+      }
     ])
+
+    // const { targetDemandId, targetSkills } = profile
+    // let targetSkillsFormatted = []
+
+    // for (const skill of targetSkills) {
+    //   const {skillCategory, skillPoints} = skill
+    //   const categoryName = skillCategory.name
+    //   const maxPoints = skillCategory.maxPoints
+    //   targetSkillsFormatted.push({ skillPoints, maxSkillPoints: maxPoints, skillCategory: categoryName })
+    // }
+    // profile = {targetDemandId, targetSkills: targetSkillsFormatted}
+    // console.log(profile)
     return profile
   } catch (error) {
     console.error(error)
