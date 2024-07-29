@@ -42,6 +42,21 @@ export const getAllUsersService = async () => {
       },
       transform: doc => doc == null ? null : { _id: doc._id,  skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
     });
+
+    for(let i = 0; i < all_users.length; i++) {
+      const user = all_users[i];
+      const skills = user.skills
+      const targetSkills = user.targetSkills;
+      for(let i = 0; i < skills.length; i++) {
+        const skill = skills[i];
+        const targetSkill = targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+        if(targetSkill) {
+          skill.targetSkillPoints = targetSkill.skillPoints;
+          skill.delta = targetSkill.skillPoints - skill.skillPoints;
+        }
+      }
+    }
+
   // get all projectWorkingHours
   const all_projectWorkingHours = await ProjectWorkingHours.find()
 
@@ -113,6 +128,18 @@ export const getUserByUserIdService = async (userId) => {
     if (!user) {
       throw new Error('User not found')
     }
+
+    const skills = user.skills
+    const targetSkills = user.targetSkills;
+    for(let i = 0; i < skills.length; i++) {
+      const skill = skills[i];
+      const targetSkill = targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+      if(targetSkill) {
+        skill.targetSkillPoints = targetSkill.skillPoints;
+        skill.delta = targetSkill.skillPoints - skill.skillPoints;
+      }
+    }
+
     // console.log(user);
     // console.log(user.skills);
 
@@ -194,7 +221,7 @@ export const getUserByUserIdService = async (userId) => {
     // console.log(targetSkills);
     
     // if (!skills || !targetSkills) {
-    //   userObject.skills = await getSkillsWithTargetPointsAndDelta(skills, targetSkills);
+      // userObject.skills = await getSkillsWithTargetPointsAndDelta(skills, targetSkills);
     // }
 
     return userObject

@@ -19,6 +19,26 @@ export const getAllProfileIdsByProjectIdService = async (projectId) => {
   }
 }
 
+export const getAllProfilesService = async () => {
+  try {
+    const profiles = await ProjectDemandProfile.find().populate([
+      { path: 'targetDemandId', select: 'now' },
+      {path: 'targetSkills', 
+        populate : {
+          path : 'skillCategory',
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+        },
+        transform: doc => doc == null ? null : { _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+      }
+    ])
+    return profiles
+  } catch (error) {
+    console.error(error)
+    throw new Error(`Failed to get all profiles: ${error.message}`)
+  }
+}
+
 export const getProfileByIdService = async (profileId) => {
   try {
      let profile = await ProjectDemandProfile.findById(profileId).populate([

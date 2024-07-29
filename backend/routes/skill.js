@@ -10,9 +10,9 @@ router.post('/', createNewSkillCategoryController)
 router.get('/', getSkillCategoriesController)
 
 // UPDATE
-router.patch('/:id', updateSkillCategoryController)
+router.patch('/:skillId', updateSkillCategoryController)
 
 // DELETE
-router.delete('/:id', deleteSkillCategoryController)
+router.delete('/:skillId', deleteSkillCategoryController)
 
 export default router
