@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import SkillCategory from './enums/SkillCategory.js'
 
 const SkillSchema = new mongoose.Schema(
   {
@@ -11,8 +10,9 @@ const SkillSchema = new mongoose.Schema(
     //   required: true,
     // },
     skillCategory: {
-      type: String,
-      enum: Object.values(SkillCategory),
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'SkillCategory',
+      required: true,
     },
   },
   { timestamps: true }

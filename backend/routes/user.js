@@ -14,7 +14,7 @@ const router = express.Router()
 router.post('/', verifyToken, createNewUserController)
 
 // READ
-router.get('/', verifyToken, getAllUsersController)
+router.get('/', getAllUsersController)
 router.get('/:userId', verifyToken, getUserByIdController)
 
 // UPDATE
