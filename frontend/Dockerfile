@@ -1,8 +1,16 @@
 # Build stage
-FROM node:14 as build
+FROM node:18-alpine as build
 WORKDIR /app
+
+# Install a specific npm version
+RUN npm install -g npm@9.6.7
+
+# Copy package.json and package-lock.json
 COPY package*.json ./
-RUN npm ci
+
+# Clear npm cache and install dependencies
+RUN npm cache clean --force && npm ci
+
 COPY . .
 RUN npm run build
 
