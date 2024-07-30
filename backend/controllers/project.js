@@ -18,12 +18,13 @@ export const getAllProjectsController = async (req, res, next) => {
     }
     // get all profiles of a project
     for (let i = 0; i < all_projects.length; i++) {
-      const allProfileIds = await getAllProfileIdsByProjectIdService(
+      const allProfileIds = await getAllProfileIdsByProjectIdService( //TODO
         all_projects[i]._id
       )
       const allEmployees =
-        await getAllEmployeesByProfileIdsService(allProfileIds)
-      const demand = await getDemandByProfileIdsService(allProfileIds)
+        await getAllEmployeesByProfileIdsService(allProfileIds) //TODO
+      // console.log(allEmployees)
+      const demand = await getDemandByProfileIdsService(allProfileIds) //TODO
       completeListOfProjects.push({
         ...all_projects[i]._doc,
         assignedEmployees: allEmployees,
@@ -63,7 +64,7 @@ export const createNewProjectController = async (req, res, next) => {
     if (existingProject) {
       return res
         .status(400)
-        .json({ message: 'Project with this id already exists' })
+        .json({ message: 'Project with this id already exists' }) //TODO why?
     }
     const project = await createNewProjectService(req.body)
     res
@@ -94,7 +95,7 @@ export const updateProjectController = async (req, res, next) => {
   }
 }
 
-export const deleteProjectController = async (req, res, next) => {
+export const deleteProjectController = async (req, res, next) => { //TODO: delete all associated
   try {
     const { projectId } = req.params
     const project = await getProjectByProjectIdService(projectId)

@@ -4,7 +4,7 @@ import { getUserByUserIdService } from './user.js'
 
 // Function to get assignments by profile ID
 export const getAssignmentByProfileIdService = async (profileId) => {
-  return Assignment.findOne({ projectDemandProfileId: profileId })
+  return Assignment.findOne({ projectDemandProfileId: profileId }) //TODO
 }
 
 export const getAllEmployeesByProfileIdsService = async (profileIds) => {
@@ -16,15 +16,17 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
     }
     assignmentIds.push(assignment)
   }
+  // console.log(assignmentIds)
   //get people from assignment
   const allEmployeesIds = []
   for (let i = 0; i < assignmentIds.length; i++) {
-    allEmployeesIds.push(...assignmentIds[i].userId)
+    allEmployeesIds.push(...assignmentIds[i].userId) //TODO
   }
   // tranform ids to objects or there like
 
   //no duplicates in allemployeeids
-  const uniqueAllEmployeesIds = await removeDuplicateObjectIDs(allEmployeesIds)
+  const uniqueAllEmployeesIds = await removeDuplicateObjectIDs(allEmployeesIds) //TODO
+  // console.log(uniqueAllEmployeesIds)
 
   const allEmployees = []
   for (let i = 0; i < uniqueAllEmployeesIds.length; i++) {
@@ -32,8 +34,10 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
     if (!user) {
       throw new Error('User not found')
     }
+    // console.log(user)
     allEmployees.push(user)
   }
+  // console.log(allEmployees)
   return allEmployees
 }
 

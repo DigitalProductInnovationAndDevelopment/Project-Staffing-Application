@@ -14,6 +14,7 @@ import cookieParser from 'cookie-parser'
 import authRoutes from './routes/auth.js'
 import userRoutes from './routes/user.js'
 import projectRoutes from './routes/project.js'
+import skillRoutes from './routes/skill.js'
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url)
@@ -49,6 +50,7 @@ app.use(
 app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
 app.use('/project', projectRoutes)
+app.use('/skill', skillRoutes)
 //home route (remove later)
 app.get('/', (req, res) => {
   res.send('Hello World! This is the GREAT STAFF server!')

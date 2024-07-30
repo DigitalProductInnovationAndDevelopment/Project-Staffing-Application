@@ -2,6 +2,8 @@ import User from '../models/User.js'
 import Contract from '../models/Contract.js'
 import ProjectWorkingHours from '../models/ProjectWorkingHours.js'
 import { getProjectWorkingHourDistributionByUserId } from '../utils/projectWorkingHoursHelper.js'
+// import { getSkillsWithTargetPointsAndDelta, getSkillsWithSkillCategory } from '../utils/helper.js'0
+// import SkillCategory from '../models/SkillCategory.js'
 
 export const createNewUserService = async (userData) => {
   try {
@@ -17,12 +19,44 @@ export const createNewUserService = async (userData) => {
 export const getAllUsersService = async () => {
   // get all users
   const all_users = await User.find()
-    .select('-password') //exclude password from query response
-    .populate('skills')
+    .select('-password')
+    .populate({path: 'skills', 
+      populate : {
+        path : 'skillCategory',
+        select: 'name maxPoints',
+        transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+      },
+      transform: doc => doc == null ? null : {  _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+    })
     .populate({
       path: 'contractId',
-      select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
+      select: 'weeklyWorkingHours',
     })
+    .populate({
+      path: 'targetSkills',
+      select: 'skillCategory skillPoints',
+      populate : {
+        path : 'skillCategory', 
+        select: 'name maxPoints',
+        transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints },
+      },
+      transform: doc => doc == null ? null : { _id: doc._id,  skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+    });
+
+    for(let i = 0; i < all_users.length; i++) {
+      const user = all_users[i];
+      const skills = user.skills
+      const targetSkills = user.targetSkills;
+      for(let i = 0; i < skills.length; i++) {
+        const skill = skills[i];
+        const targetSkill = targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+        if(targetSkill) {
+          skill.targetSkillPoints = targetSkill.skillPoints;
+          skill.delta = targetSkill.skillPoints - skill.skillPoints;
+        }
+      }
+    }
+
   // get all projectWorkingHours
   const all_projectWorkingHours = await ProjectWorkingHours.find()
 
@@ -49,43 +83,146 @@ export const getAllUsersService = async () => {
   }
   // console.log('all_users')
   // console.log(all_users)
+
+  // for(let i = 0; i < all_users.length; i++) {
+  //   const user = all_users[i];
+  //   const skills = user.skills
+  //     user.skills = await getSkillsWithSkillCategory(skills);
+  //   // console.log(user.skills);
+  // }
+
   return all_users
 }
 
-// enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
+// enriches the returned user object with project history based on ProjectWorkingHours for 4 time spans
+// (1) last 7 days (current) -> "numberOfProjectsLast7Days" + "projectWorkingHourDistributionInPercentageLast7Days"
+// (2) last 3 months <-> "numberOfProjectsLast3Months" + "projectWorkingHourDistributionInPercentageLast3Months"
+// (3) last year <-> "numberOfProjectsLastYear" + "projectWorkingHourDistributionInPercentageLastYear"
+// (4) last 5 years <-> "numberOfProjectsLast5Years" + "projectWorkingHourDistributionInPercentageLast5Years"
 export const getUserByUserIdService = async (userId) => {
   try {
     const user = await User.findById(userId)
       .select('-password')
-      .populate('skills')
+      .populate({path: 'skills', 
+        populate : {
+          path : 'skillCategory',
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints }
+        },
+        transform: doc => doc == null ? null : { _id: doc._id, skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+      })
       .populate({
         path: 'contractId',
         select: 'weeklyWorkingHours', // selecting weeklyWorkingHours field from Contract
       })
+      .populate({
+        path: 'targetSkills',
+        select: 'skillCategory skillPoints',
+        populate : {
+          path : 'skillCategory', 
+          select: 'name maxPoints',
+          transform: doc => doc == null ? null : { skillCategory: doc.name, maxPoints: doc.maxPoints },
+        },
+        transform: doc => doc == null ? null : { _id: doc._id,  skillPoints: doc.skillPoints, skillCategory: doc.skillCategory?.skillCategory, maxSkillPoints: doc.skillCategory?.maxPoints },
+      });
     if (!user) {
       throw new Error('User not found')
     }
 
+    const skills = user.skills
+    const targetSkills = user.targetSkills;
+    for(let i = 0; i < skills.length; i++) {
+      const skill = skills[i];
+      const targetSkill = targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+      if(targetSkill) {
+        skill.targetSkillPoints = targetSkill.skillPoints;
+        skill.delta = targetSkill.skillPoints - skill.skillPoints;
+      }
+    }
+
+    // console.log(user);
+    // console.log(user.skills);
+
     const all_projectWorkingHours = await ProjectWorkingHours.find()
-    const startDate = new Date()
-    startDate.setMonth(startDate.getMonth() - 3)
-    const endDate = new Date()
-    const workingHourDistribution = getProjectWorkingHourDistributionByUserId(
+    const endDate = new Date() // endDate is always today
+
+    // (1) last 7 days (current)
+    const startDate7DaysAgo = new Date()
+    startDate7DaysAgo.setDate(startDate7DaysAgo.getDate() - 7)
+    const pwdLast7Days = getProjectWorkingHourDistributionByUserId(
       all_projectWorkingHours,
       userId,
-      startDate,
+      startDate7DaysAgo,
       endDate
     )
 
-    const userObject = user.toObject() // Convert user document to plain JavaScript object
+    // (2) last 3 months
+    const startDate3MonthsAgo = new Date()
+    startDate3MonthsAgo.setMonth(startDate3MonthsAgo.getMonth() - 3)
+    const pwdPast3Months = getProjectWorkingHourDistributionByUserId(
+      all_projectWorkingHours,
+      userId,
+      startDate3MonthsAgo,
+      endDate
+    )
+
+    // (3) last year
+    const startDateYearAgo = new Date()
+    startDateYearAgo.setFullYear(startDateYearAgo.getFullYear() - 1)
+    const pwdPastYear = getProjectWorkingHourDistributionByUserId(
+      all_projectWorkingHours,
+      userId,
+      startDateYearAgo,
+      endDate
+    )
+
+    // (4) last 5 years
+    const startDate5YearsAgo = new Date()
+    startDate5YearsAgo.setFullYear(startDate5YearsAgo.getFullYear() - 5)
+    const pwdPast5Years = getProjectWorkingHourDistributionByUserId(
+      all_projectWorkingHours,
+      userId,
+      startDate5YearsAgo,
+      endDate
+    )
 
     // enrich userObject with additional values
-    userObject.numberOfProjectsLast3Months =
-      workingHourDistribution.numberOfProjects
-    userObject.projectWorkingHourDistributionInHours =
-      workingHourDistribution.distribution
-    userObject.projectWorkingHourDistributionInPercentage =
-      workingHourDistribution.percentageDistribution
+    const userObject = user.toObject() // convert user document to plain JavaScript object
+
+    userObject.numberOfProjectsLast7Days = pwdLast7Days.numberOfProjects
+    userObject.projectWorkingHourDistributionInPercentageLast7Days =
+      pwdLast7Days.percentageDistribution
+    
+    userObject.numberOfProjectsLast3Months = pwdPast3Months.numberOfProjects
+    userObject.projectWorkingHourDistributionInPercentageLast3Months =
+      pwdPast3Months.percentageDistribution
+
+    userObject.numberOfProjectsLastYear = pwdPastYear.numberOfProjects
+    userObject.projectWorkingHourDistributionInPercentageLastYear =
+      pwdPastYear.percentageDistribution
+
+    userObject.numberOfProjectsLast5Years = pwdPast5Years.numberOfProjects
+    userObject.projectWorkingHourDistributionInPercentageLast5Years =
+      pwdPast5Years.percentageDistribution
+
+      // console.log('userObject');
+      // console.log(userObject);
+      // console.log(userObject.skills);
+      // console.log(userObject.targetSkills);
+
+    // const skills = userObject.skills
+    // const targetSkills = userObject.targetSkills;
+    // const targetSkill = userObject.targetSkills.find(targetSkill => targetSkill.skillCategory === skill.skillCategory);
+
+
+    // console.log("Skills:")
+    // console.log(skills);
+    // console.log("TargetSkills:")
+    // console.log(targetSkills);
+    
+    // if (!skills || !targetSkills) {
+      // userObject.skills = await getSkillsWithTargetPointsAndDelta(skills, targetSkills);
+    // }
 
     return userObject
   } catch (error) {

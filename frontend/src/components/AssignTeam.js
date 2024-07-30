@@ -4,6 +4,14 @@ import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
 import AvatarBlue from './../assets/images/icons/blue_avatar.svg';
+import GreenUp from './../assets/images/assign/green_up_vector.svg';
+import YellowUp from './../assets/images/assign/yellow_up_vector.svg';
+import RedUp from './../assets/images/assign/red_up_vector.svg';
+import GreenEq from './../assets/images/assign/green_eq_vector.svg';
+import YellowEq from './../assets/images/assign/yellow_eq_vector.svg';
+import RedEq from './../assets/images/assign/red_eq_vector.svg';
+import GreyEq from './../assets/images/assign/grey_eq_vector.svg';
+import TargetIcon from './../assets/images/assign/target_vector.svg';
 import { useGetProjectAssignmentByProfileIdQuery} from '../state/api/profileApi';
 
 const AssignTeam = ({ project, onFormDataChange }) => {
@@ -134,6 +142,24 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     } else {
       //green
       return '#2E7D32';
+    }
+  };
+
+  const getTargetIcon = (employeePoints, targetPoints, delta) => {
+    const third = targetPoints / 3;
+
+    if (employeePoints < third) {
+      //red
+      if(delta > 0) return RedUp;
+      else return RedEq;
+    } else if (employeePoints < 2 * third) {
+      //yellow
+      if(delta > 0) return YellowUp;
+      else return YellowEq;
+    } else {
+      //green
+      if(delta > 0) return GreenUp;
+      else return GreenEq;
     }
   };
 
@@ -285,7 +311,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
           Target Skillsets
         </Typography>
         {currentSkillsetsFor.map((skillset) => (
-          <Box key={skillset.skillCategory} sx={{ display: 'inline-block' }}>
+          <Box key={skillset.skillCategory} sx={{ display: 'flex'}}>
             <Typography
               sx={{
                 fontFamily: 'Roboto, sans-serif',
@@ -299,9 +325,11 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 padding: '4px 8px',
                 textAlign: 'center',
                 margin: '0',
-                display: 'inline-block',
+                display: 'flex',
+                alignItems: 'center'
               }}
             >
+              <img src={TargetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
               {getCategory(skillset.skillCategory)}
             </Typography>
           </Box>
@@ -351,19 +379,26 @@ const AssignTeam = ({ project, onFormDataChange }) => {
         </Typography>
         {assignedFor && assignedFor.length > 0 ?  ( assignedFor.map((employee) => (
           <Box key={employee._id} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
-            <Avatar src={AvatarBlue} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.firstName[0]}</Avatar>
+            <Avatar onClick={() => handleOpenEmployeeDialog(employee)} 
+              src={AvatarBlue} sx={{ cursor: 'pointer', marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}
+            >
+                {employee.firstName[0]}
+            </Avatar>
             <Box  sx={{ flex: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', mr: '30px'}}>
               <Typography
-                sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}
+                onClick={() => handleOpenEmployeeDialog(employee)}
+                sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0', cursor: 'pointer'}}
               >{employee.firstName} {employee.lastName}</Typography>
               <Typography
-                sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', color: '#718096', marginBlock: '0'}}
+                onClick={() => handleOpenEmployeeDialog(employee)}
+                sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', color: '#718096', marginBlock: '0', cursor: 'pointer'}}
               >{employee.email}</Typography>
             </Box>
             <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
               {currentSkillsetsFor.map((skillset) => {
                 const employeeSkill = employee.skills.find((s) => s.skillCategory === skillset.skillCategory);
                 const color = employeeSkill ? getColor(employeeSkill.skillPoints, skillset.skillPoints) : 'grey';
+                const targetIcon = employeeSkill ? getTargetIcon(employeeSkill.skillPoints, skillset.skillPoints, employeeSkill.delta) : GreyEq;
 
                 return (
                   <Typography
@@ -380,42 +415,23 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       padding: '4px 8px',
                       textAlign: 'center',
                       margin: '0 4px 4px 0',
-                      display: 'inline-block',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
                   >
+                    <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
                     {getCategory(skillset.skillCategory)}
                   </Typography>
                 );
               })}
             </Box>
-            <Button
-              sx={{
-                marginLeft: '16px',
-                bgcolor: '#2196F3',
-                color: 'white',
-                borderRadius: '100px',
-                fontFamily: 'Roboto, sans-serif',
-                fontSize: '12px',
-                lineHeight: '24px',
-                letterSpacing: '0.4px',
-                padding: '6px 14px',
-                boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
-                '&:hover': {
-                  bgcolor: '#2D82C5',
-                },
-              }}
-              onClick={() => handleOpenEmployeeDialog(employee)}
-            >
-              See Details
-            </Button>
 
             <img
               onClick={() => handleRemove(employee)}
               src={removeIcon}
               alt="Remove"
               style={{
-                marginLeft: '40px',
-                marginRight: '30px',
+                marginLeft: '10px',
                 cursor: 'pointer',
               }}
             />
@@ -433,19 +449,26 @@ const AssignTeam = ({ project, onFormDataChange }) => {
         </Typography>
         { suitableEmployees && suitableEmployees.length > 0 ?  ( suitableEmployees.map((employee) => (
           <Box key={employee.email} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1, borderBottom: '1px solid #E2E8F0', paddingBottom: 1 }}>
-            <Avatar src={AvatarBlue} sx={{ marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}>{employee.firstName[0]}</Avatar>
+            <Avatar onClick={() => handleOpenEmployeeDialog(employee)}
+              src={AvatarBlue} sx={{ cursor: 'pointer', marginRight: 2, borderRadius: '15px', overflow: 'hidden'}}
+            >
+                {employee.firstName[0]}
+            </Avatar>
             <Box sx={{ flex: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', mr: '30px' }}>
               <Typography
-               sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0'}}
+               onClick={() => handleOpenEmployeeDialog(employee)}
+               sx={{fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBlock: '0', cursor: 'pointer'}}
               >{employee.firstName} {employee.lastName} </Typography>
               <Typography
-                sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', color: '#718096', marginBlock: '0'}}
+                onClick={() => handleOpenEmployeeDialog(employee)}
+                sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '14px', lineHeight: '140%', letterSpacing: '0', color: '#718096', marginBlock: '0', cursor: 'pointer'}}
               >{employee.email}</Typography>
             </Box>
             <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
               {currentSkillsetsFor.map((skillset) => {
                 const employeeSkill = employee.skills.find((s) => s.skillCategory === skillset.skillCategory);
                 const color = employeeSkill ? getColor(employeeSkill.skillPoints, skillset.skillPoints) : 'grey';
+                const targetIcon = employeeSkill ? getTargetIcon(employeeSkill.skillPoints, skillset.skillPoints, employeeSkill.delta) : GreyEq;
 
                 return (
                   <Typography
@@ -462,9 +485,11 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       padding: '4px 8px',
                       textAlign: 'center',
                       margin: '0 4px 4px 0',
-                      display: 'inline-block',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
                   >
+                    <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
                     {getCategory(skillset.skillCategory)}
                   </Typography>
                 );
@@ -473,36 +498,13 @@ const AssignTeam = ({ project, onFormDataChange }) => {
 
             <Button
               sx={{
-                marginLeft: '16px',
-                bgcolor: '#2196F3',
-                color: 'white',
-                borderRadius: '100px',
-                fontFamily: 'Roboto, sans-serif',
-                fontSize: '12px',
-                lineHeight: '24px',
-                letterSpacing: '0.4px',
-                padding: '6px 14px',
-                boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
-                '&:hover': {
-                  bgcolor: '#2D82C5',
-                },
-              }}
-              onClick={() => handleOpenEmployeeDialog(employee)}
-            >
-              See Details
-            </Button>
-
-            <Button
-              sx={{
                 marginLeft: '10px',
                 bgcolor: '#2196F3',
+                minWidth: 'unset',
                 color: 'white',
                 borderRadius: '100px',
                 fontFamily: 'Roboto, sans-serif',
-                fontSize: '12px',
-                lineHeight: '24px',
-                letterSpacing: '0.4px',
-                padding: '6px 14px',
+                padding: '6px 7px',
                 boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
                 '&:hover': {
                   bgcolor: '#2D82C5',
@@ -515,7 +517,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
               onClick={() => handleAssign(employee)}
               disabled={assignedNum === totalSlotsFor}
             >
-              Add <img src={addIcon} alt="Add" style={{ marginLeft: '8px' }} />
+              <img src={addIcon} alt="Add" />
             </Button>
           </Box>
         ))) : (

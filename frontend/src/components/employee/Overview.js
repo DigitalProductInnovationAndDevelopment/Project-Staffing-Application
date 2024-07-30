@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper } from '@mui/material';
+import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { projectApi } from "../../state/api/projectApi.js";
+import TargetLevelIcon from '../../assets/images/assign/target_level.svg';
 
 const initialSkills = [
     { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
@@ -17,6 +18,7 @@ const Overview = ({ user, onFormDataChange }) => {
   const [workingHours, setWorkingHours] = useState(40);
   const [skills, setSkills] = useState([]);
   const [projectData, setProjectData] = useState([]);
+  const [timeRange, setTimeRange] = useState('current');
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   const { data: projects } = projectApi.endpoints.getAllProjects.useQuery();
   
@@ -66,7 +68,15 @@ const Overview = ({ user, onFormDataChange }) => {
       }
       setLocation(normalizedLocation);
       setCanWorkRemote(user.canWorkRemote);
-      setProjectData(formatProjectData(user.projectWorkingHourDistributionInPercentage));
+
+      const selectedData =
+        timeRange === 'current' ? user.projectWorkingHourDistributionInPercentageLast7Days :
+        timeRange === 'past3Months' ? user.projectWorkingHourDistributionInPercentageLast3Months :
+        timeRange === 'past1Year' ? user.projectWorkingHourDistributionInPercentageLastYear :
+        user.projectWorkingHourDistributionInPercentageLast5Years;
+
+      setProjectData(formatProjectData(selectedData));
+      
       setWorkingHours(user.contractId ? user.contractId.weeklyWorkingHours : 40);
 
       if(user.skills.length > 0) {
@@ -76,7 +86,7 @@ const Overview = ({ user, onFormDataChange }) => {
         setSkills(initialSkills); 
       }
     }
-  }, [user, normalizeLocation, locations, projects]);
+  }, [user, normalizeLocation, locations, projects, timeRange]);
 
 
   useEffect(() => {
@@ -92,6 +102,7 @@ const Overview = ({ user, onFormDataChange }) => {
     skills: skills.map(skill => ({
       ...skill,
       skillPoints: skill.skillPoints,
+      targetSkillPoints: skill.targetSkillPoints,
     })),
   });
   }, [location, canWorkRemote, workingHours, normalizeLocation, onFormDataChange, skills, user.contractId]);
@@ -106,7 +117,7 @@ const Overview = ({ user, onFormDataChange }) => {
 
   const handleSkillChange = (index) => (event, newValue) => {
     const updatedSkills = skills.map((skill, i) =>
-      i === index ? { ...skill, skillPoints: newValue } : skill
+      i === index ? { ...skill, skillPoints: newValue[0], targetSkillPoints: newValue[1] } : skill
     );
     setSkills(updatedSkills);
   };
@@ -115,6 +126,10 @@ const Overview = ({ user, onFormDataChange }) => {
     setLocation(event.target.value);
   };
 
+  const handleTimeRangeChange = (event) => {
+    setTimeRange(event.target.value);
+  };
+  
   const getCategory = (category) => {
     if(category  === 'TECHNOLOGY') return 'Technology';
     else if (category  === 'SOLUTION_ENGINEERING') return 'Solution Engineering';
@@ -123,15 +138,6 @@ const Overview = ({ user, onFormDataChange }) => {
     else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
     else return ''
   };
- 
-//   const getCategoryName = (category) => {
-//     if(category  === 'Technology') return 'TECHNOLOGY';
-//     else if (category  === 'Solution Engineering') return 'SOLUTION_ENGINEERING';
-//     else if (category  === 'Communication Skills') return 'COMMUNICATION_SKILLS';
-//     else if (category  === 'Self Management') return 'SELF_MANAGEMENT';
-//     else if (category  === 'Employee Leadership') return 'EMPLOYEE_LEADERSHIP';
-//     else return ''
-//   };
 
   return (
     <Box sx={{ display: "flex", gap: 5, padding: 0, mt: 2 }}>
@@ -251,8 +257,18 @@ const Overview = ({ user, onFormDataChange }) => {
                 pb: 1,
               }}
             >
-              Allocated Projects
+              Project History
             </Typography>
+            <RadioGroup
+              value={timeRange}
+              onChange={handleTimeRangeChange}
+              sx={{ flexDirection: "row", gap: 2, mt: 2 }}
+            >
+              <FormControlLabel value="current" control={<Radio color="primBlue"/>} label="Current" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+              <FormControlLabel value="past3Months" control={<Radio color="primBlue" />} label="Past 3 months"sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }} />
+              <FormControlLabel value="past1Year" control={<Radio color="primBlue"/>} label="Past 1 year" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+              <FormControlLabel value="past5Years" control={<Radio color="primBlue"/>} label="Past 5 years" sx={{ marginRight: "0px", "& .MuiTypography-root": { fontSize: "14px" } }}/>
+            </RadioGroup>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
                 <PieChart width={200} height={200}>
                 <Pie
@@ -291,64 +307,86 @@ const Overview = ({ user, onFormDataChange }) => {
           </Paper>
         </Box>
 
-        {/* Define Skill Point Categories Section */}
-        <Box sx={{ flex: 1 }}>
-          <Paper
+       {/* Define Skill Point Categories Section */}
+       <Box sx={{ flex: 1 }}>
+        <Paper
             sx={{
               padding: 4,
               backgroundColor: "white",
               boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
               borderRadius: "15px",
             }}
-          >
+        >
+            {/* Flex container for the headers */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography
-              sx={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                lineHeight: "150%",
-                letterSpacing: "0",
-                fontWeight: "medium",
-                color: "black",
-                pb: 1,
-              }}
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "black",
+                }}
             >
-              Skill Point Categories
+                Skill Point Categories
             </Typography>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
+            <Typography
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "#2D3748",
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
             >
+                <img src={TargetLevelIcon} alt="Target" style={{ marginLeft: '2px', marginRight: '6px' }} />
+                Target Level
+            </Typography>
+            </Box>
+
+            {/* Skill points section */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
             {skills.map((skill, index) => (
-            <Box
+                <Box
                 key={index}
                 sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}
-            >
-                <Typography 
-                  sx={{ 
-                    fontSize: "14px", 
-                    minWidth: '180px',
-                    color: "#828282",
-                    fontFamily: "Inter, sans-serif",
-                    lineHeight: "150%",
-                    letterSpacing: "0%",
-                  }}>
-                  {getCategory(skill.skillCategory)}
+                >
+                <Typography
+                    sx={{
+                      fontSize: "14px",
+                      minWidth: '180px',
+                      color: "#828282",
+                      fontFamily: "Inter, sans-serif",
+                      lineHeight: "150%",
+                      letterSpacing: "0%",
+                    }}
+                >
+                    {getCategory(skill.skillCategory)}
                 </Typography>
                 <Slider
-                  value={skill.skillPoints}
-                  step={1}
-                  marks
-                  min={0}
-                  max={skill.maxSkillPoints}
-                  valueLabelDisplay="auto"
-                  onChange={handleSkillChange(index)}
-                  aria-labelledby={`slider-${index}`}
-                  sx={{ color: "#36C5F0", flex: 1 }}
+                    value={[skill.skillPoints, skill.targetSkillPoints]}
+                    min={0}
+                    max={skill.maxSkillPoints}
+                    valueLabelDisplay="auto"
+                    onChange={handleSkillChange(index)}
+                    sx={{
+                      color: "#36C5F0",
+                      "& .MuiSlider-thumb": {
+                        "&:nth-child(4)": {
+                          color: "#4FD1C5 !important"
+                        }
+                      }
+                    }}
                 />
-              </Box>
-              ))}
+                </Box>
+            ))}
             </Box>
-          </Paper>
-        </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 };
