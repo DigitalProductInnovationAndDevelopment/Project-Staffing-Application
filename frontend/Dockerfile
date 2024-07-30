@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN REACT_APP_API_URL=http://51.20.104.180:3001 npm run build
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine

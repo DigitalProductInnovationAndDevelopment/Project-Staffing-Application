@@ -80,7 +80,7 @@ jobs:
           echo "Image name: lucatum/nodejs-app-aws-frontend:latest"
           docker run -d --name nodejs-app-frontend \
             -p 80:80 \
-            -e REACT_APP_API_BASE_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001/api \
+            -e REACT_APP_API_BASE_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001 \
             lucatum/nodejs-app-aws-frontend:latest
           echo "Frontend container started"
           docker ps
