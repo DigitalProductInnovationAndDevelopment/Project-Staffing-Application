@@ -1,4 +1,4 @@
-const server = process.env.REACT_APP_API_URL || 'http://51.20.104.180:3001'
+const server = process.env.REACT_APP_API_URL || 'http://localhost:3001'
 
 const BackendRoutes = {
   BASE: server,

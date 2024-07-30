@@ -32,7 +32,7 @@ jobs:
           push: true
           tags: lucatum/nodejs-app-aws-frontend:latest
           build-args: |
-            REACT_APP_API_BASE_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001
+            REACT_APP_API_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001
 
   deploy:
     needs: build-and-push
