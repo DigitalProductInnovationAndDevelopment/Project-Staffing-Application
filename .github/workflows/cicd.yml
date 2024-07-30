@@ -47,14 +47,8 @@ jobs:
           docker pull lucatum/nodejs-app-aws-backend:latest
           docker pull lucatum/nodejs-app-aws-frontend:latest
       
-      - name: Debug information
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Docker version: $(docker --version)"
-          echo "Docker images:"
-          docker images
-          echo "Running containers:"
-          docker ps -a
+      - name: Create Docker network
+        run: docker network create mern-app-network || true
       
       - name: Stop and remove existing containers
         run: |
@@ -63,27 +57,20 @@ jobs:
       
       - name: Run backend container
         run: |
-          echo "Attempting to run backend container"
-          echo "Image name: lucatum/nodejs-app-aws-backend:latest"
-          docker images
           docker run -d --name nodejs-app-backend \
+            --network mern-app-network \
             -p 3001:3001 \
             -e MONGO_URL='${{ secrets.MONGO_URL }}' \
             -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
             lucatum/nodejs-app-aws-backend:latest
-          echo "Backend container started"
-          docker ps
       
       - name: Run frontend container
         run: |
-          echo "Attempting to run frontend container"
-          echo "Image name: lucatum/nodejs-app-aws-frontend:latest"
           docker run -d --name nodejs-app-frontend \
+            --network mern-app-network \
             -p 80:80 \
             -e REACT_APP_API_BASE_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001/api \
             lucatum/nodejs-app-aws-frontend:latest
-          echo "Frontend container started"
-          docker ps
       
       - name: Cleanup old images
         run: docker image prune -af
@@ -91,7 +78,5 @@ jobs:
       - name: Final deployment status
         run: |
           echo "Deployment completed"
-          echo "Running containers:"
           docker ps
-          echo "All images:"
-          docker images
+          docker network ls
