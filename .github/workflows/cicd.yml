@@ -31,6 +31,8 @@ jobs:
           context: ./frontend
           push: true
           tags: lucatum/nodejs-app-aws-frontend:latest
+          build-args: |
+            REACT_APP_API_BASE_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001
 
   deploy:
     needs: build-and-push
@@ -61,15 +63,18 @@ jobs:
           docker stop nodejs-app-backend nodejs-app-frontend || true
           docker rm nodejs-app-backend nodejs-app-frontend || true
       
+      - name: Create Docker network
+        run: docker network create app-network || true
+      
       - name: Run backend container
         run: |
           echo "Attempting to run backend container"
-          echo "Image name: lucatum/nodejs-app-aws-backend:latest"
-          docker images
           docker run -d --name nodejs-app-backend \
+            --network app-network \
             -p 3001:3001 \
             -e MONGO_URL='${{ secrets.MONGO_URL }}' \
             -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+            -e FRONTEND_URL='http://${{ secrets.EC2_PUBLIC_IP }}:3000' \
             lucatum/nodejs-app-aws-backend:latest
           echo "Backend container started"
           docker ps
@@ -77,13 +82,24 @@ jobs:
       - name: Run frontend container
         run: |
           echo "Attempting to run frontend container"
-          echo "Image name: lucatum/nodejs-app-aws-frontend:latest"
           docker run -d --name nodejs-app-frontend \
-            -p 80:80 \
-            -e REACT_APP_API_BASE_URL=http://${{ secrets.EC2_PUBLIC_IP }}:3001 \
+            --network app-network \
+            -p 3000:80 \
             lucatum/nodejs-app-aws-frontend:latest
           echo "Frontend container started"
           docker ps
+      
+      - name: Verify Nginx configuration
+        run: docker exec nodejs-app-frontend nginx -t
+      
+      - name: Debug Containers
+        run: |
+          echo "Backend logs:"
+          docker logs nodejs-app-backend
+          echo "Frontend logs:"
+          docker logs nodejs-app-frontend
+          echo "Nginx configuration:"
+          docker exec nodejs-app-frontend cat /etc/nginx/conf.d/default.conf
       
       - name: Cleanup old images
         run: docker image prune -af
