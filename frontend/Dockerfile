@@ -1,4 +1,4 @@
-# Stage 1: Build the React app
+# Stage 1: Build the React application
 FROM node:alpine3.18 as build
 WORKDIR /app
 COPY package*.json ./
