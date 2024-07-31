@@ -58,7 +58,6 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          cd frontend
           npx playwright test --config=playwright.config.ts
         env:
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
