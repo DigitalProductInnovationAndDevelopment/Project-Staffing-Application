@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('test that all components on projects overview page is appeared', async ({ page }) => {
-  await page.goto('http://localhost:3000/login');
+  await page.goto('/login');
   await page.getByPlaceholder('Your email address').click();
   await page.getByPlaceholder('Your email address').fill('handesy@yilmaz.com');
   await page.getByPlaceholder('Your password').click();
