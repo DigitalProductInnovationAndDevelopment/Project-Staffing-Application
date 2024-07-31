@@ -58,9 +58,9 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          npx playwright test --config=playwright.config.ts
+          docker run --network test-network --add-host=host.docker.internal:172.17.0.1 --rm -v $(pwd)/frontend:/app -w /app mcr.microsoft.com/playwright:v1.41.1-focal npx playwright test --config=playwright.config.ts
         env:
-          PLAYWRIGHT_TEST_BASE_URL: http://frontend:3000
+          PLAYWRIGHT_TEST_BASE_URL: http://host.docker.internal:3000
 
       - name: Cleanup
         if: always()
