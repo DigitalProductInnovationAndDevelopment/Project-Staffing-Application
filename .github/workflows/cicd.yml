@@ -51,28 +51,17 @@ jobs:
 
       - name: Install Playwright
         run: |
-          npm init -y
-          npm install -D @playwright/test
+          cd frontend
+          npm ci
+          npm install -g playwright
           npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: |
+          cd frontend
+          npx playwright test --config=playwright.config.ts
         env:
-          PLAYWRIGHT_TEST_BASE_URL: http://frontend:3000
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: "playwright-report/*.xml"
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
 
       - name: Cleanup
         if: always()
