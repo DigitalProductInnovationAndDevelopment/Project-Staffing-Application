@@ -1,0 +1,36 @@
+name: E2E Tests
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          cd frontend
+          npx playwright test
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://${{ secrets.EC2_PUBLIC_IP }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 30
