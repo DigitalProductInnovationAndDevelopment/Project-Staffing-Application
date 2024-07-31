@@ -60,7 +60,7 @@ jobs:
         run: |
           npx playwright test --config=playwright.config.ts
         env:
-          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_TEST_BASE_URL: http://frontend:3000
 
       - name: Cleanup
         if: always()
