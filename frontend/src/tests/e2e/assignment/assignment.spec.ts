@@ -14,16 +14,29 @@ test.describe('Assignment Tests', () => {
     await page.getByRole('combobox').first().click();
     await page.getByRole('option', { name: 'Stockholm' }).click();
     await page.getByLabel('New Profile Name').click();
-    await page.getByLabel('New Profile Name').fill('New Assignment Profile');
+    await page.getByLabel('New Profile Name').fill('New Assign Profile');
     await page.getByText('Number of FTEs').click();
     await page.getByRole('option', { name: '2', exact: true }).click();
     await page.locator('.MuiSlider-thumb').first().click();
     await page.locator('div:nth-child(4) > .MuiSlider-root').click();
     await page.getByRole('button', { name: 'ADD' }).click();
     await page.getByRole('button', { name: 'Create & Close' }).click();
+
+    //Add employee
+    await page.getByRole('link', { name: 'Employees Employees' }).click();
+    await page.getByRole('button', { name: '+ Add Employee' }).click();
+    await page.getByText('Click & Enter Employee Name').click();
+    await page.getByRole('textbox').fill('New Assign Employee 1');
+    await page.getByText('Click & Enter email').click();
+    await page.getByText('Click & Enter email').click();
+    await page.getByRole('textbox').fill('new@employee1.com');
+    await page.getByRole('combobox').click();
+    await page.getByRole('option', { name: 'Munich' }).click();
+    await page.getByRole('button', { name: 'Create & Close' }).click();
   });
 
   test('should display all components in assign project page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Projects Projects' }).click();
     await page.waitForSelector('div:has-text("New Assign Project")');
     await page.locator('div').filter({ hasText: /^New Assign Project/ }).getByRole('button').click();
     await page.waitForSelector('role=dialog');
@@ -36,49 +49,52 @@ test.describe('Assignment Tests', () => {
     await expect(page.getByRole('button', { name: 'Save & Close' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Delete Delete Project' })).toBeVisible();
     await expect(page.getByText('Assigned for Profile')).toBeVisible();
-    });
 
-    test('should test assignment process', async ({ page }) => {
-      test.setTimeout(60000); // Increase timeout for this test
-        //Add employees
-        await page.getByRole('link', { name: 'Employees Employees' }).click();
-        await page.getByRole('button', { name: '+ Add Employee' }).click();
-        await page.getByText('Click & Enter Employee Name').click();
-        await page.getByRole('textbox').fill('New Assign Employee 1');
-        await page.getByText('Click & Enter email').click();
-        await page.getByText('Click & Enter email').click();
-        await page.getByRole('textbox').fill('new@employee1.com');
-        await page.getByRole('combobox').click();
-        await page.getByRole('option', { name: 'Munich' }).click();
-        await page.getByRole('button', { name: 'Create & Close' }).click();
+    await expect(page.getByText('Suitable Employees')).toBeVisible();
+    await expect(page.getByText('New Assign Employee 1')).toBeVisible();
 
-        await page.getByRole('button', { name: '+ Add Employee' }).click();
-        await page.getByText('Click & Enter Employee Name').click();
-        await page.getByRole('textbox').fill('New Assign Employee 2');
-        await page.getByText('Click & Enter email').click();
-        await page.getByText('Click & Enter email').click();
-        await page.getByRole('textbox').fill('new@employee2.com');
-        await page.getByRole('combobox').click();
-        await page.getByRole('option', { name: 'Munich' }).click();
-        await page.getByRole('button', { name: 'Create & Close' }).click();
+    await page.getByRole('button', { name: 'Save & Close' }).click();
+  });
 
+  test('should test assignment process', async ({ page }) => {
+    test.setTimeout(60000); // Increase timeout for this test
+    await page.getByRole('link', { name: 'Projects Projects' }).click();
+      
+    //Assign Employee
+    await page.getByRole('link', { name: 'Projects Projects' }).click();
+    await page.locator('div').filter({ hasText: /^New Assign Project/ }).getByRole('button').click();
+    await page.getByRole('tab', { name: 'Assign Team ASSIGN TEAM' }).click();
+    await page.getByRole('combobox').click();
 
-        //Assign Employee
-        await page.getByRole('link', { name: 'Projects Projects' }).click();
-        await page.locator('div').filter({ hasText: /^New Assign Project/ }).getByRole('button').click();
-        await page.getByRole('tab', { name: 'Assign Team ASSIGN TEAM' }).click();
-        await page.getByRole('combobox').click();
+    /*
+    await expect(page.locator('div:nth-child(2) > div:nth-child(8) > .MuiButtonBase-root')).toBeVisible();
+    await page.locator('div:nth-child(2) > div:nth-child(8) > .MuiButtonBase-root').click();
+    await expect(page.getByText('Assigned profiles (1)')).toBeVisible();
+    await expect(page.getByText('New test Employee 1')).toBeVisible();
+    await expect(page.getByRole('img', { name: 'Remove' })).toBeVisible();
+    await page.getByRole('img', { name: 'Remove' }).click();
+    await expect(page.getByText('Assignment for the profile')).toBeVisible();
+    await expect(page.getByText('Assigned profiles (0)')).toBeVisible();
+    await page.locator('div').filter({ hasText: 'Start / Projects / Edit ProjectEdit ProjectNew Assign ProjectOVERVIEWASSIGN' }).nth(3).click();
+    await page.getByRole('button', { name: 'Save & Close' }).click();
+    await page.locator('div').filter({ hasText: /^New Assign Project1 FTENot Started0%normal0 Days left$/ }).getByRole('button').click();
+    await page.getByRole('tab', { name: 'Assign Team ASSIGN TEAM' }).click();
+    await page.locator('div').filter({ hasText: 'Start / Projects / Edit ProjectEdit ProjectNew Assign ProjectOVERVIEWASSIGN' }).nth(1).click();
+    */
 
-        //Delete Employee
-        await page.getByRole('link', { name: 'Employees Employees' }).click();
-        await page.locator('div').filter({ hasText: /^New Assign Employee 1/ }).getByRole('button').click();
-        await page.getByRole('button', { name: 'Delete Delete Profile' }).click();
-        });
+  });
 
 
   // Delete Project after every test
   test.afterEach(async ({ page }) => {
-    //await page.locator('div').filter({ hasText: /^New Assign Project 1/ }).getByRole('button').click();
+    //Delete Employee
+    await page.getByRole('link', { name: 'Employees Employees' }).click();
+    await page.locator('div').filter({ hasText: /^New Assign Employee 1/ }).getByRole('button').click();
+    await page.getByRole('button', { name: 'Delete Delete Profile' }).click();
+
+    //Delete Project
+    await page.getByRole('link', { name: 'Projects Projects' }).click();
+    await page.locator('div').filter({ hasText: /^New Assign Project/ }).getByRole('button').click();
     await page.getByRole('button', { name: 'Delete Delete Project' }).click();
   });
 }); 
