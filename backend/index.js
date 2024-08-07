@@ -92,3 +92,18 @@ mongoose
     })
   })
   .catch((error) => console.log(`${error} did not connect`))
+
+// Only start the server if this file is run directly
+if (process.env.NODE_ENV !== 'test') {
+  startServer()
+}
+
+export function startServer(port) {
+  return new Promise((resolve) => {
+    const server = app.listen(port, '0.0.0.0', () => {
+      console.log(`Server running on port ${port}`)
+      resolve(server)
+    })
+  })
+}
+export default app
