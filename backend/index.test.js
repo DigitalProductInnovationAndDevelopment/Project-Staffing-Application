@@ -179,7 +179,7 @@ describe('Express App', () => {
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty(
       'message',
-      'Skill categories fetched successfully!!'
+      'Skill categories fetched successfully.'
     )
     expect(response.body).toHaveProperty('data')
     expect(response.body.data).toBeInstanceOf(Array)
