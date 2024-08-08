@@ -73,7 +73,7 @@ jest.mock('./routes/skill.js', () =>
     const router = express.Router()
     router.get('/', (req, res) =>
       res.json({
-        message: 'Skill categories fetched successfully.',
+        message: 'Skill categories fetched successfully',
         data: [
           {
             _id: '1',
