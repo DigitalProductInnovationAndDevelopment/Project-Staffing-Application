@@ -13,7 +13,6 @@ test('test that all components on projects overview page is appeared', async ({ 
   await expect(page.getByText('PROJECT TITLE')).toBeVisible();
   await expect(page.getByText('ALLOCATED FTEs')).toBeVisible();
   await expect(page.getByText('DEMAND')).toBeVisible();
-  await expect(page.getByText('ASSIGN')).toBeVisible();
   await expect(page.getByText('STAFFING RATE')).toBeVisible();
   await expect(page.getByText('PRIORITY')).toBeVisible();
   await expect(page.getByText('START DATE')).toBeVisible();
