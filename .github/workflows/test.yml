@@ -7,7 +7,7 @@ on:
     branches: [ 99-realease-branch-via-aws ]
 
 jobs:
-  backend-tests:  # This is the job name (for GitHub Actions)
+  backend-tests:  # This is the job name (for Github Actions)
     name: Run Backend Tests
     runs-on: ubuntu-latest
 
