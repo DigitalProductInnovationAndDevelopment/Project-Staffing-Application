@@ -2,12 +2,12 @@ name: Run Backend Tests
 
 on:
   push:
-    branches: [ 99-realease-branch-via-aws ]
+    branches: [ 140-branch-protection-testing-branch ]
   pull_request:
-    branches: [ 99-realease-branch-via-aws ]
+    branches: [ 140-branch-protection-testing-branch ]
 
 jobs:
-  backend-tests:  # This is the job name (for GitHub Actions)
+  backend-tests:  # This is the job name (for Github Actions)
     name: Run Backend Tests
     runs-on: ubuntu-latest
 
