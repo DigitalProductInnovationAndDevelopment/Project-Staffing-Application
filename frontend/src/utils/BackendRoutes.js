@@ -28,6 +28,12 @@ const BackendRoutes = {
     GET_PROFILE_BY_ID: (projectId, profileId) => "/project/" + projectId + "/" + profileId,
     UPDATE_PROFILE: (projectId, profileId) => "/project/" + projectId + "/" + profileId,
     DELETE_PROFILE: (projectId, profileId) => "/project/" + projectId + "/" + profileId,
+
+    //skilss
+    GET_SKILLS: "/skill",
+    CREATE_SKILLS: "/skill", 
+    UPDATE_SKILL: (skillId) => "/skill/" + skillId,
+    DELETE_SKILL: (skillId) =>  "/skill/" + skillId,
 };
 
 export default BackendRoutes;
