@@ -1,22 +1,12 @@
-import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
+import { loginService } from '../services/auth.js'
 
 export const loginController = async (req, res) => {
   try {
-    // extract credentials from request body
-    const { email, password } = req.body
-
-    // check if user exists via email
-    const user = await User.findOne({ email: email })
-    if (!user) return res.status(400).json({ msg: 'User does not exist. ' })
-
-    // check if password is correct
-    if (password !== user.password)
-      return res.status(400).json({ msg: 'Invalid credentials. ' })
-
-    // TODO LATER: advanced password hashing
-    // const isMatch = await bcrypt.compare(password, user.password);
-    // if (!isMatch) return res.status(400).json({ msg: "Invalid credentials. " });
+    const user = await loginService(req.body)
+    if (!user) {
+      res.status(400).json({ message: 'User does not exist.' })
+    }
 
     // create JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
@@ -27,18 +17,25 @@ export const loginController = async (req, res) => {
     })
 
     // send response
-    delete user.password // remove password before sending back response
     res.status(200).json({ token, user })
   } catch (err) {
+    if (
+      err.message === 'User does not exist.' ||
+      err.message === 'Invalid credentials.'
+    ) {
+      res.status(400).json({ error: err.message })
+    }
+
     res.status(500).json({ error: err.message })
   }
 }
 
-export const logoutController = async (req, res, next) => {
+export const logoutController = async (_, res) => {
   try {
     res.clearCookie('jwt_token')
-    res.status(200).json({ msg: 'User logged out.' })
+
+    res.status(200).json({ message: 'User logged out.' })
   } catch (err) {
-    next(err)
+    res.status(500).json({ error: err.message })
   }
 }

@@ -1,5 +1,10 @@
 import express from 'express'
-import { createNewSkillCategoryController, getSkillCategoriesController, updateSkillCategoryController, deleteSkillCategoryController } from '../controllers/skill.js'
+import {
+  createNewSkillCategoryController,
+  getSkillCategoriesController,
+  updateSkillCategoryController,
+  deleteSkillCategoryController,
+} from '../controllers/skill.js'
 
 const router = express.Router()
 
