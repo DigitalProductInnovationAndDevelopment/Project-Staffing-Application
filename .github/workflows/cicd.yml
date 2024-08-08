@@ -3,7 +3,7 @@ name: Deploy MERN Application
 on:
   push:
     branches:
-      - 99-realease-branch-via-aws
+      - 99-realease-branch-via-awsXXXX
 
 jobs:
   build-and-push:
