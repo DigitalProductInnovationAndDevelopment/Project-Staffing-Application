@@ -73,7 +73,7 @@ jest.mock('./routes/skill.js', () =>
     const router = express.Router()
     router.get('/', (req, res) =>
       res.json({
-        message: 'Skill categories fetched successfully',
+        message: 'Skill categories fetched successfully.',
         data: [
           {
             _id: '1',
@@ -179,7 +179,7 @@ describe('Express App', () => {
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty(
       'message',
-      'Skill categories fetched successfully.'
+      'Skill categories fetched successfully'
     )
     expect(response.body).toHaveProperty('data')
     expect(response.body.data).toBeInstanceOf(Array)
