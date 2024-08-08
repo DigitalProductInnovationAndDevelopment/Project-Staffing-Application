@@ -1,33 +1,101 @@
 import request from 'supertest'
 import { jest } from '@jest/globals'
-import express from 'express' // Import express for route mocking
+import express from 'express'
+import { app, startServer } from './index.js'
 
-// Mock the server listening *before* importing the app
-jest.mock('./index.js', () => {
-  const originalModule = jest.requireActual('./index.js')
-  return {
-    ...originalModule,
-    default: {
-      ...originalModule.default,
-      listen: jest.fn(() => {}), // Mock listen to do nothing
-    },
-  }
+let server
+
+beforeAll(async () => {
+  server = await startServer(0) // Use port 0 to let the OS assign a free port
 })
 
-// Now import the app (after the mock)
-import app from './index.js'
+afterAll((done) => {
+  server.close(done)
+})
 
 // Mock the route imports
-jest.mock('./routes/auth.js', () => jest.fn(() => express.Router()))
-jest.mock('./routes/user.js', () => jest.fn(() => express.Router()))
+jest.mock('./routes/auth.js', () =>
+  jest.fn(() => {
+    const router = express.Router()
+    router.post('/login', (req, res) => res.json({ token: 'mock-token' }))
+    return router
+  })
+)
+
+jest.mock('./routes/user.js', () =>
+  jest.fn(() => {
+    const router = express.Router()
+    router.get('/', (req, res) =>
+      res.json([
+        {
+          _id: '1',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          canWorkRemote: true,
+          skills: [
+            {
+              _id: '101',
+              skillPoints: 5,
+              skillCategory: 'TECHNOLOGY',
+              maxSkillPoints: 10,
+            },
+          ],
+          leaveIds: [],
+          officeLocation: 'New York',
+          roles: ['developer'],
+          contractId: {
+            _id: '201',
+            weeklyWorkingHours: 40,
+          },
+          targetSkills: [
+            {
+              _id: '301',
+              skillPoints: 7,
+              skillCategory: 'TECHNOLOGY',
+              maxSkillPoints: 10,
+            },
+          ],
+          numberOfProjectsLast3Months: 2,
+          projectWorkingHourDistributionInHours: { 'Project A': 80 },
+          projectWorkingHourDistributionInPercentage: { 'Project A': 100 },
+        },
+      ])
+    )
+    return router
+  })
+)
+
 jest.mock('./routes/project.js', () => jest.fn(() => express.Router()))
-jest.mock('./routes/skill.js', () => jest.fn(() => express.Router()))
+
+jest.mock('./routes/skill.js', () =>
+  jest.fn(() => {
+    const router = express.Router()
+    router.get('/', (req, res) =>
+      res.json({
+        message: 'Skill categories fetched successfully.',
+        data: [
+          {
+            _id: '1',
+            name: 'JavaScript',
+            maxPoints: 10,
+          },
+        ],
+      })
+    )
+    return router
+  })
+)
 
 // Mock mongoose to prevent actual database connections during testing
 jest.mock('mongoose', () => ({
-  connect: jest.fn(),
+  connect: jest.fn().mockResolvedValue(),
   connection: {
-    close: jest.fn(),
+    client: {
+      db: jest.fn().mockReturnValue({
+        listCollections: jest.fn().mockResolvedValue([]),
+      }),
+    },
   },
 }))
 
@@ -56,15 +124,53 @@ describe('Express App', () => {
     expect(response.body).toBeInstanceOf(Array)
     expect(response.body.length).toBeGreaterThan(0)
 
-    // Check the structure of the first user object
-    const user = response.body[0]
-    expect(user).toHaveProperty('_id')
-    expect(user).toHaveProperty('firstName')
-    expect(user).toHaveProperty('lastName')
-    expect(user).toHaveProperty('email')
-    expect(user).toHaveProperty('canWorkRemote')
-    expect(user).toHaveProperty('skills')
-    expect(user.skills).toBeInstanceOf(Array)
+    // Check the structure of each user object
+    response.body.forEach((user) => {
+      expect(user).toHaveProperty('_id')
+      expect(user).toHaveProperty('firstName')
+      expect(user).toHaveProperty('lastName')
+      expect(user).toHaveProperty('email')
+      expect(user).toHaveProperty('canWorkRemote')
+      expect(user).toHaveProperty('skills')
+      expect(user.skills).toBeInstanceOf(Array)
+      user.skills.forEach((skill) => {
+        expect(skill).toHaveProperty('_id')
+        expect(skill).toHaveProperty('skillPoints')
+        expect(skill).toHaveProperty('skillCategory')
+        expect(skill).toHaveProperty('maxSkillPoints')
+      })
+
+      expect(user).toHaveProperty('leaveIds')
+      expect(user.leaveIds).toBeInstanceOf(Array)
+
+      expect(user).toHaveProperty('officeLocation')
+      expect(user).toHaveProperty('roles')
+      expect(user.roles).toBeInstanceOf(Array)
+
+      if (user.contractId) {
+        expect(user.contractId).toHaveProperty('_id')
+        expect(user.contractId).toHaveProperty('weeklyWorkingHours')
+      }
+
+      expect(user).toHaveProperty('targetSkills')
+      expect(user.targetSkills).toBeInstanceOf(Array)
+      user.targetSkills.forEach((targetSkill) => {
+        expect(targetSkill).toHaveProperty('_id')
+        expect(targetSkill).toHaveProperty('skillPoints')
+        expect(targetSkill).toHaveProperty('skillCategory')
+        expect(targetSkill).toHaveProperty('maxSkillPoints')
+      })
+
+      expect(user).toHaveProperty('numberOfProjectsLast3Months')
+
+      expect(user).toHaveProperty('projectWorkingHourDistributionInHours')
+      expect(user.projectWorkingHourDistributionInHours).toBeInstanceOf(Object)
+
+      expect(user).toHaveProperty('projectWorkingHourDistributionInPercentage')
+      expect(user.projectWorkingHourDistributionInPercentage).toBeInstanceOf(
+        Object
+      )
+    })
   })
 
   // Test for GET /skill
@@ -73,7 +179,7 @@ describe('Express App', () => {
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty(
       'message',
-      'Skill categories fetched successfully'
+      'Skill categories fetched successfully.'
     )
     expect(response.body).toHaveProperty('data')
     expect(response.body.data).toBeInstanceOf(Array)
@@ -90,9 +196,8 @@ describe('Express App', () => {
 describe('Middleware', () => {
   it('should use JSON middleware', async () => {
     const response = await request(app).post('/').send({ test: 'data' })
-
     expect(response.status).not.toBe(400)
   })
 
-  // ... your other middleware tests
+  // You can add more middleware tests here
 })
