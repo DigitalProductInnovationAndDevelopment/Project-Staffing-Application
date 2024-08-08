@@ -7,7 +7,8 @@ on:
     branches: [ 99-realease-branch-via-aws ]
 
 jobs:
-  test:
+  backend-tests:  # This is the job name
+    name: Run Backend Tests
     runs-on: ubuntu-latest
 
     strategy:
