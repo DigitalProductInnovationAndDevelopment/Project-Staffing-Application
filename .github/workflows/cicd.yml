@@ -1,4 +1,4 @@
-name: Deploy MERN Application
+name: Deploy MERN Application to DEV server
 
 on:
   push:
