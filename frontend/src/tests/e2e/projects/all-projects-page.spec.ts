@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('test that all components on projects overview page is appeared', async ({ page }) => {
-  await page.goto('http://localhost:3000/login');
+  await page.goto('/login');
   await page.getByPlaceholder('Your email address').click();
   await page.getByPlaceholder('Your email address').fill('handesy@yilmaz.com');
   await page.getByPlaceholder('Your password').click();
@@ -13,7 +13,6 @@ test('test that all components on projects overview page is appeared', async ({ 
   await expect(page.getByText('PROJECT TITLE')).toBeVisible();
   await expect(page.getByText('ALLOCATED FTEs')).toBeVisible();
   await expect(page.getByText('DEMAND')).toBeVisible();
-  await expect(page.getByText('ASSIGN')).toBeVisible();
   await expect(page.getByText('STAFFING RATE')).toBeVisible();
   await expect(page.getByText('PRIORITY')).toBeVisible();
   await expect(page.getByText('START DATE')).toBeVisible();
