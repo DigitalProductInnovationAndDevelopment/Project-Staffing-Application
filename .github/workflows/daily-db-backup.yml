@@ -66,5 +66,5 @@ jobs:
           path: ./backups
           retention-days: 7  # Adjust as needed
 
-      # - name: Cleanup old backups
-      #   run: rm -rf ./backups
+      - name: Cleanup old backups after upload to GitHub Artifacts
+        run: rm -rf ./backups
