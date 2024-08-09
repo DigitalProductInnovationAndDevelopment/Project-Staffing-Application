@@ -9,7 +9,6 @@ name: Deploy MERN Application
 on:
   push:
     branches:
-      # - 150-create-dev-server-on-awsXXXX
       - 150-create-dev-server-on-aws
 
 jobs:
