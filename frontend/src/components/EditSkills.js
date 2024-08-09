@@ -33,7 +33,9 @@ const EditSkills = ({ open, onClose }) => {
   };
 
   const handleSaveClick = async (id) => {
-    await updateSkill( id, { name: editedName, maxPoints: editedPoints } );
+    console.log('edited name: ', editedName)
+    console.log('edited points: ', editedPoints) 
+    await updateSkill({ skillId: id, patchData: { name: editedName, maxPoints: editedPoints } });
     setEditingSkillId(null);
     refetch();
   };

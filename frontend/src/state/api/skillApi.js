@@ -13,7 +13,7 @@ export const skillApi = createApi({
             }),
         }),
         updateSkill: builder.mutation({
-          query: ( skillId, patchData ) => ({
+          query: ({ skillId, patchData }) => ({
             url: BackendRoutes.UPDATE_SKILL(skillId),
             method: 'PATCH',
             body: patchData,
