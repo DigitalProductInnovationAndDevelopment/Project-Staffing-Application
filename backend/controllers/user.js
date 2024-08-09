@@ -21,9 +21,10 @@ export const createNewUserController = async (req, res) => {
       message: 'User created successfully.',
       data: newUser,
     })
-  } catch (error) {
+  } catch (err) {
     return res.status(500).json({
-      message: error.message,
+      message: 'Failed to create new user.',
+      error: err.message,
     })
   }
 }
@@ -74,7 +75,8 @@ export const updateUserController = async (req, res) => {
   } catch (err) {
     if (err.message === 'User not found.') {
       return res.status(404).json({
-        message: err.message,
+        message: 'User not found.',
+        error: err.message,
       })
     }
 
@@ -82,13 +84,14 @@ export const updateUserController = async (req, res) => {
       err.message ===
       'Invalid target skill points. Target skill points should be greater than or equal to skill points.'
     ) {
-      return res.status(400).json({
-        message: err.message,
-      })
+      return res
+        .status(400)
+        .json({ message: 'Invalid target skill points.', error: err.message })
     }
 
     return res.status(500).json({
-      message: err.message,
+      message: 'Failed to update user.',
+      error: err.message,
     })
   }
 }
@@ -103,9 +106,9 @@ export const deleteUserController = async (req, res) => {
       message: 'User deleted successfully.',
       data: deletedUser,
     })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    })
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: 'Failed to delete user.', error: err.message })
   }
 }

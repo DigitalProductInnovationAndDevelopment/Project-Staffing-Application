@@ -28,12 +28,10 @@ export const getAllProfilesByProjectIdController = async (req, res) => {
         .json({ message: 'Failed to retrieve all profiles.' })
     }
 
-    res
-      .status(200)
-      .json({
-        message: 'Retrieved all profiles successfully.',
-        profiles: allProfiles,
-      })
+    res.status(200).json({
+      message: 'Retrieved all profiles successfully.',
+      profiles: allProfiles,
+    })
   } catch (err) {
     res.status(500).json({
       message: 'Failed to get all profiles by project id.',
@@ -131,14 +129,13 @@ export const getAssignmentsByProjectIdController = async (req, res) => {
       )
 
     res.status(200).json({
-      message: 'Assignment by profile id successfully retrieved',
+      message: 'Assignment by profile id successfully retrieved.',
       data: data,
     })
   } catch (err) {
     res.status(500).json({
-      message: 'Failed to get project assignment by profile id',
+      message: 'Failed to get project assignment by profile id.',
       error: err.message,
-      stack: err.stack,
     })
   }
 }
@@ -150,12 +147,12 @@ export const updateAssignmentController = async (req, res) => {
     const updateAssignments = await updateAssignmentsService(profiles)
 
     res.status(200).json({
-      message: 'Assignments successfully updated',
+      message: 'Assignments successfully updated.',
       data: updateAssignments,
     })
   } catch (err) {
     res.status(500).json({
-      message: 'Failed to update assignments by profile',
+      message: 'Failed to update assignments by profile.',
       error: err.message,
     })
   }
