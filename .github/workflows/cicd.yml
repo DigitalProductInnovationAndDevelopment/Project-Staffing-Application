@@ -1,4 +1,5 @@
 #cicd pipeline
+# 1. build-and-push-dev: Build and push the backend and frontend images to Docker Hub
 name: Deploy MERN Application
 
 on:
@@ -8,7 +9,7 @@ on:
 
 jobs:
   build-and-push-dev:
-    runs-on: [self-hosted, aws-dev]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,7 +38,7 @@ jobs:
 
   deploy-dev:
     needs: build-and-push-dev
-    runs-on: [self-hosted, aws-dev]
+    runs-on: aws-dev
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -115,7 +116,7 @@ jobs:
 
   e2e-tests-on-dev:
     needs: deploy-dev
-    runs-on: [self-hosted, aws-dev]
+    runs-on: aws-dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -150,7 +151,7 @@ jobs:
 
   build-and-push-prod:
     needs: e2e-tests-on-dev
-    runs-on: [self-hosted, aws-ec2]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -179,7 +180,7 @@ jobs:
 
   deploy-prod:
     needs: build-and-push-prod
-    runs-on: [self-hosted, aws-ec2]
+    runs-on: aws-ec2
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
