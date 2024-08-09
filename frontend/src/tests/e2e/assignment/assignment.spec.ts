@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Assignment Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Initial Login before every test + add project
-    await page.goto('http://localhost:3000/login');
+    await page.goto('/login');
     await page.getByPlaceholder('Your email address').fill('selin@yildiz.com');
     await page.getByPlaceholder('Your password').fill('0000');
     await page.getByRole('button', { name: 'Login' }).click();
