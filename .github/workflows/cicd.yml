@@ -23,7 +23,7 @@ jobs:
       - name: Run Playwright tests
         run: |
           cd frontend
-          npx playwright test --config=playwright.service.config.ts --workers=20
+          npx playwright test
         env:
           PLAYWRIGHT_TEST_BASE_URL: http://${{ secrets.EC2_PUBLIC_IP_DEV }}
 
