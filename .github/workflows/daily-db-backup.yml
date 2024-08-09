@@ -1,4 +1,4 @@
-name: Daily Database Backup
+name: Daily Database Backup and Restore
 
 on:
   schedule:
@@ -8,58 +8,92 @@ on:
 env:
   MONGO_USER: ${{ secrets.MONGO_USER }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
+  # dev environment
   MONGO_HOST: ${{ secrets.MONGO_HOST }}
   MONGO_DATABASE: ${{ secrets.MONGO_DATABASE }}
 
+  # prod environment
+  MONGO_HOST_PROD: ${{ secrets.MONGO_HOST_PROD }}
+  MONGO_DATABASE_PROD: ${{ secrets.MONGO_DATABASE_PROD }}
+
 jobs:
-  backup:
+  backup-and-restore:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up MongoDB tools
         run: |
+          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
           sudo apt-get update
-          sudo apt-get install -y mongodb-org-tools
+          sudo apt-get install -y mongodb-database-tools
 
       - name: Create backup script
         run: |
           cat << EOF > backup.sh
           #!/bin/bash
+          set -e
           
-          # Construct the MongoDB URI
-          uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}"
+          # Construct the MongoDB URI for production
+          uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST_PROD}/${MONGO_DATABASE_PROD}"
           
           # Backup directory
-          backupDir="./backups/${MONGO_DATABASE}-backup-\$(date +%Y%m%d-%H%M%S)"
+          backupDir="./backups/${MONGO_DATABASE_PROD}-backup-\$(date +%Y%m%d-%H%M%S)"
           
           # Perform backup
-          echo "Performing backup..."
-          mongodump --uri="\$uri" --out="\$backupDir"
+          echo "Performing backup of production database..."
+          if ! mongodump --uri="\$uri" --out="\$backupDir"; then
+            echo "Error: MongoDB backup failed"
+            exit 1
+          fi
           
-          echo "Backup completed."
+          echo "Backup completed successfully."
           EOF
           
           chmod +x backup.sh
 
+      - name: Create restore script
+        run: |
+          cat << EOF > restore.sh
+          #!/bin/bash
+          set -e
+
+          # Construct the MongoDB URI for development
+          uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}"
+
+          # Find the last (most recent) backup directory
+          lastBackupDir=\$(ls -td ./backups/*/ | head -1)
+
+          # Find the subdirectory that matches the database name
+          dataToRestoreDir="\${lastBackupDir}${MONGO_DATABASE_PROD}"
+
+          # Perform restore
+          echo "Restoring database to development environment from \${dataToRestoreDir}..."
+          if ! mongorestore --uri="\$uri" --drop --dir="\$dataToRestoreDir"; then
+            echo "Error: MongoDB restore failed"
+            exit 1
+          fi
+
+          echo "Restore completed successfully."
+          EOF
+          
+          chmod +x restore.sh
+
       - name: Run backup
         run: ./backup.sh
 
-      - name: Upload backup to GitHub Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: database-backup
-          path: ./backups
-          retention-days: 7  # Adjust as needed
+      - name: Run restore
+        run: ./restore.sh
 
-      - name: Cleanup old backups
+      - name: Cleanup backups
         run: rm -rf ./backups
 
-      - name: Send notification on failure
-        if: failure()
-        uses: 8398a7/action-slack@v3
+      - name: Upload backup logs
+        uses: actions/upload-artifact@v3
         with:
-          status: ${{ job.status }}
-          text: Database backup failed!
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          name: backup-restore-logs
+          path: ./*.log
+          retention-days: 7  # Adjust as needed

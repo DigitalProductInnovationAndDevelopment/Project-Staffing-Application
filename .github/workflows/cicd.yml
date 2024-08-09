@@ -9,8 +9,7 @@ name: Deploy MERN Application
 on:
   push:
     branches:
-      - 150-create-dev-server-on-awsXXXX
-      # - 150-create-dev-server-on-aws
+      - 150-create-dev-server-on-aws
 
 jobs:
   build-and-push-dev:
@@ -223,7 +222,7 @@ jobs:
           docker run -d --name nodejs-app-backend \
             --network app-network \
             -p 3001:3001 \
-            -e MONGO_URL='${{ secrets.MONGO_URL }}' \
+            -e MONGO_URL='${{ secrets.MONGO_URL_PROD }}' \
             -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
             -e FRONTEND_URL='http://${{ secrets.EC2_PUBLIC_IP }}' \
             lucatum/nodejs-app-aws-backend:latest
