@@ -97,7 +97,7 @@ const Overview = ({ user }) => {
     else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
     else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
     else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
-    else return ''
+    else return category;
   };
 
   return (

@@ -76,7 +76,7 @@ const Overview = ({ project, onFormDataChange }) => {
       case 'EMPLOYEE_LEADERSHIP':
         return 'employeeLeadership';
       default:
-        return '';
+        return skillCategory;
     }
   };
   

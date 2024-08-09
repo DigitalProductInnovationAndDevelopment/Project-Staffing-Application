@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { Typography, Box, List, ListItemButton, ListItemIcon, ListItemText, Divider, IconButton } from '@mui/material';
 import ProjectsIcon from '../assets/images/projects-icon.svg';
 import EmployeesIcon from '../assets/images/employees-icon.svg';
@@ -11,7 +11,8 @@ import { useLogoutMutation } from '../state/api/authApi';
 import FrontendRoutes from '../utils/FrontendRoutes';
 import SnackbarOptions from '../utils/SnackbarOptions';
 import { useSnackbar } from 'notistack';
-
+import EditSkills from './EditSkills';
+import { Settings } from '@mui/icons-material';
 
 function Sidebar({ setActiveItem, activeItem }) {
 
@@ -20,6 +21,7 @@ function Sidebar({ setActiveItem, activeItem }) {
   const dispatch = useDispatch();
   const [logoutMutation] = useLogoutMutation();
 
+  const [editSkillsOpen, setEditSkillsOpen] = useState(false);
 
   const handleItemClick = (itemKey) => {
     setActiveItem(itemKey); // Update activeItem in parent component
@@ -143,8 +145,30 @@ function Sidebar({ setActiveItem, activeItem }) {
           </ListItemButton>
         ))}
       </List>
+      {/* Skill Settings */}
+      <Box
+         sx={{ marginTop: 'auto', marginLeft: '12px', width: '100%', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+        onClick={() => setEditSkillsOpen(true)}
+      >
+        <Settings sx={{ color: '#718096', fontSize: 24 }} />
+        <Typography
+          sx={{
+            color: '#718096',
+            fontFamily: 'Helvetica, sans-serif',
+            fontWeight: 'Bold',
+            fontSize: '14px',
+            lineHeight: '150%',
+            letterSpacing: '0',
+            marginLeft: '10px',
+          }}
+        >
+          Skill Settings
+        </Typography>
+      </Box>
+      {/* Divider after Skill Settings */}
+      <Divider sx={{ width: '100%', mt: 2 }} />
       {/* Sign Out */}
-      <Box onClick={handleSignOut} sx={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+      <Box onClick={handleSignOut} sx={{ marginTop: 1.2, width: '100%', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
         <IconButton>
           <img src={SignOutIcon} alt="Sign Out" style={{ width: 24, height: 24 }} />
         </IconButton>
@@ -160,6 +184,14 @@ function Sidebar({ setActiveItem, activeItem }) {
           Sign Out
         </Typography>
       </Box>
+
+      {/* EditSkills Dialog */}
+      {editSkillsOpen && (
+        <EditSkills
+          open={editSkillsOpen}
+          onClose={() => setEditSkillsOpen(false)}
+        />
+      )}
     </Box>
   );
 }
