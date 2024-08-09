@@ -148,7 +148,7 @@ jobs:
   #         echo "E2E tests failed. Please check the playwright report for details."
 
   build-and-push-prod:
-    needs: e2e-tests-on-dev
+    # needs: e2e-tests-on-dev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
