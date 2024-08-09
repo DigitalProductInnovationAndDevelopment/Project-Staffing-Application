@@ -7,7 +7,7 @@ on:
 
 jobs:
   e2e-tests:
-    needs: deploy
+    # needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
