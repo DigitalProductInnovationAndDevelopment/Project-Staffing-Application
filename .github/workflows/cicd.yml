@@ -1,7 +1,7 @@
 # CI/CD pipeline
 # 1. build-and-push-dev     = build & push docker images (BE+FE) to docker hub
 # 2. deploy-dev             = deploy docker images (BE+FE) to AWS development server
-# 3. e2e-tests-on-dev       = run end-to-end tests on AWS development server
+# 3. e2e-tests-on-dev       = run end-to-end tests via playwright on AWS development server
 # 4. build-and-push-prod    = build & push docker images (BE+FE) to docker hub
 # 5. deploy-prod            = deploy docker images (BE+FE) to AWS production server
 name: Deploy MERN Application
@@ -9,7 +9,8 @@ name: Deploy MERN Application
 on:
   push:
     branches:
-      - 150-create-dev-server-on-aws
+      - 150-create-dev-server-on-awsXXXX
+      # - 150-create-dev-server-on-aws
 
 jobs:
   build-and-push-dev:
