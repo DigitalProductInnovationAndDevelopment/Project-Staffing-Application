@@ -120,7 +120,7 @@ jobs:
 
   e2e-tests-on-dev:
     needs: deploy-dev
-    runs-on: development
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
