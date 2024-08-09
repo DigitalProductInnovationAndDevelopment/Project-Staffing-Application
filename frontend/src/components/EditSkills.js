@@ -186,6 +186,7 @@ const EditSkills = ({ open, onClose }) => {
                         />
                         <TextField
                           variant="outlined"
+                          label="Maximum Points"
                           value={editedPoints}
                           onChange={(e) => setEditedPoints(e.target.value)}
                           type="number"
@@ -207,6 +208,7 @@ const EditSkills = ({ open, onClose }) => {
                           
                         <TextField
                           variant="outlined"
+                          label="Maximum Points"
                           value={skill.maxPoints}
                           InputProps={{
                             readOnly: true,
@@ -308,7 +310,7 @@ const EditSkills = ({ open, onClose }) => {
                 padding: 0,
                 marginRight: 2,
             }}>
-              Close
+              Save & Close
           </Button>
         </Box>
       </Box>
