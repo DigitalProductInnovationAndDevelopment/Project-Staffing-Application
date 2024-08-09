@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up MongoDB tools
         run: |
@@ -27,6 +27,7 @@ jobs:
         run: |
           cat << EOF > backup.sh
           #!/bin/bash
+          set -e
           
           # Construct the MongoDB URI
           uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}"
@@ -36,23 +37,27 @@ jobs:
           
           # Perform backup
           echo "Performing backup..."
-          mongodump --uri="\$uri" --out="\$backupDir"
+          if ! mongodump --uri="\$uri" --out="\$backupDir"; then
+            echo "Error: MongoDB backup failed"
+            exit 1
+          fi
           
-          echo "Backup completed."
+          echo "Backup completed successfully."
           EOF
           
           chmod +x backup.sh
 
       - name: Run backup
-        run: ./backup.sh
+        run: |
+          ./backup.sh
+        shell: bash
 
       - name: Upload backup to GitHub Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: database-backup
           path: ./backups
           retention-days: 7  # Adjust as needed
 
-      # - name: Cleanup old backups
-      #   run: rm -rf ./backups
-
+      - name: Cleanup old backups
+        run: rm -rf ./backups
