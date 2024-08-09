@@ -2,9 +2,9 @@ name: Run Backend Tests
 
 on:
   push:
-    branches: [ 99-realease-branch-via-aws ]
+    branches: [ main ]
   pull_request:
-    branches: [ 99-realease-branch-via-aws ]
+    branches: [ main ]
 
 jobs:
   backend-tests:  # This is the job name (for Github Actions)
