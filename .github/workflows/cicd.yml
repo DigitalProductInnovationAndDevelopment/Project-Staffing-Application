@@ -1,4 +1,5 @@
-name: Deploy MERN Application to DEV server
+#cicd pipeline
+name: Deploy MERN Application
 
 on:
   push:
