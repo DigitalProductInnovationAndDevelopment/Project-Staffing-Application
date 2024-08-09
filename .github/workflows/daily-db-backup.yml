@@ -1,4 +1,4 @@
-name: Daily Database Backup
+name: Daily Database Backup and Restore
 
 on:
   schedule:
@@ -8,20 +8,21 @@ on:
 env:
   MONGO_USER: ${{ secrets.MONGO_USER }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
+  # dev environment
   MONGO_HOST: ${{ secrets.MONGO_HOST }}
   MONGO_DATABASE: ${{ secrets.MONGO_DATABASE }}
 
+  # prod environment
+  MONGO_HOST_PROD: ${{ secrets.MONGO_HOST_PROD }}
+  MONGO_DATABASE_PROD: ${{ secrets.MONGO_DATABASE_PROD }}
+
 jobs:
-  backup:
+  backup-and-restore:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
 
       - name: Set up MongoDB tools
         run: |
@@ -36,14 +37,14 @@ jobs:
           #!/bin/bash
           set -e
           
-          # Construct the MongoDB URI
-          uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}"
+          # Construct the MongoDB URI for production
+          uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST_PROD}/${MONGO_DATABASE_PROD}"
           
           # Backup directory
-          backupDir="./backups/${MONGO_DATABASE}-backup-\$(date +%Y%m%d-%H%M%S)"
+          backupDir="./backups/${MONGO_DATABASE_PROD}-backup-\$(date +%Y%m%d-%H%M%S)"
           
           # Perform backup
-          echo "Performing backup..."
+          echo "Performing backup of production database..."
           if ! mongodump --uri="\$uri" --out="\$backupDir"; then
             echo "Error: MongoDB backup failed"
             exit 1
@@ -54,17 +55,45 @@ jobs:
           
           chmod +x backup.sh
 
-      - name: Run backup
+      - name: Create restore script
         run: |
-          ./backup.sh
-        shell: bash
+          cat << EOF > restore.sh
+          #!/bin/bash
+          set -e
 
-      - name: Upload backup to GitHub Artifacts
+          # Construct the MongoDB URI for development
+          uri="mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}"
+
+          # Find the last (most recent) backup directory
+          lastBackupDir=\$(ls -td ./backups/*/ | head -1)
+
+          # Find the subdirectory that matches the database name
+          dataToRestoreDir="\${lastBackupDir}${MONGO_DATABASE_PROD}"
+
+          # Perform restore
+          echo "Restoring database to development environment from \${dataToRestoreDir}..."
+          if ! mongorestore --uri="\$uri" --drop --dir="\$dataToRestoreDir"; then
+            echo "Error: MongoDB restore failed"
+            exit 1
+          fi
+
+          echo "Restore completed successfully."
+          EOF
+          
+          chmod +x restore.sh
+
+      - name: Run backup
+        run: ./backup.sh
+
+      - name: Run restore
+        run: ./restore.sh
+
+      - name: Cleanup backups
+        run: rm -rf ./backups
+
+      - name: Upload backup logs
         uses: actions/upload-artifact@v3
         with:
-          name: database-backup
-          path: ./backups
+          name: backup-restore-logs
+          path: ./*.log
           retention-days: 7  # Adjust as needed
-
-      - name: Cleanup old backups after upload to GitHub Artifacts
-        run: rm -rf ./backups
