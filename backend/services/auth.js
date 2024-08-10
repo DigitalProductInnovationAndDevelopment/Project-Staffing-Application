@@ -20,6 +20,6 @@ export const loginService = async (loginData) => {
     delete user.password // remove password before sending back response
     return user
   } catch (err) {
-    return { error: err.message }
+    throw new Error('Failed to log in user:' + err.message)
   }
 }

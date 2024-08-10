@@ -1,6 +1,5 @@
 import request from 'supertest'
 import { jest } from '@jest/globals'
-import express from 'express'
 import { app, startServer } from './index.js'
 
 let server
@@ -14,16 +13,18 @@ afterAll((done) => {
 })
 
 // Mock the route imports
-jest.mock('./routes/auth.js', () =>
-  jest.fn(() => {
+jest.mock('./routes/auth.js', () => {
+  const express = require('express')
+  return jest.fn(() => {
     const router = express.Router()
     router.post('/login', (req, res) => res.json({ token: 'mock-token' }))
     return router
   })
-)
+})
 
-jest.mock('./routes/user.js', () =>
-  jest.fn(() => {
+jest.mock('./routes/user.js', () => {
+  const express = require('express')
+  return jest.fn(() => {
     const router = express.Router()
     router.get('/', (req, res) =>
       res.json([
@@ -64,12 +65,16 @@ jest.mock('./routes/user.js', () =>
     )
     return router
   })
-)
+})
 
-jest.mock('./routes/project.js', () => jest.fn(() => express.Router()))
+jest.mock('./routes/project.js', () => {
+  const express = require('express')
+  return jest.fn(() => express.Router())
+})
 
-jest.mock('./routes/skill.js', () =>
-  jest.fn(() => {
+jest.mock('./routes/skill.js', () => {
+  const express = require('express')
+  return jest.fn(() => {
     const router = express.Router()
     router.get('/', (req, res) =>
       res.json({
@@ -85,7 +90,7 @@ jest.mock('./routes/skill.js', () =>
     )
     return router
   })
-)
+})
 
 // Mock mongoose to prevent actual database connections during testing
 jest.mock('mongoose', () => ({
