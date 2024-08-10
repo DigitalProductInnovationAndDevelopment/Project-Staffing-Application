@@ -317,13 +317,3 @@ export const getSkillCategoryByIdService = async (categoryId) => {
     throw new Error(`Failed to get the category: ${error.message}`)
   }
 }
-
-// export const getTargetSkillPointsBySkillId = (targetSkills, skillId) => {
-//   try{for (const targetSkill of targetSkills) {
-//     if (targetSkill.skillId === skillId) {
-//       return targetSkill.skillPoints
-//     }
-//   } }catch (error) {
-//     throw new Error(`Failed to get target skill: ${error.message}`)
-//   }
-// }

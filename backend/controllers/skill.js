@@ -69,6 +69,8 @@ export const deleteSkillCategoryController = async (req, res) => {
       data: deletedSkillCategory,
     })
   } catch (err) {
-    res.status(500).json({ message: 'Error deleting skill category.' })
+    res
+      .status(500)
+      .json({ message: 'Error deleting skill category.', error: err.message })
   }
 }
