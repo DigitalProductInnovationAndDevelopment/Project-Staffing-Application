@@ -282,7 +282,7 @@ export const updateSkillCategoryService = async (categoryId, categoryData) => {
     // if maxPoints changed -> scale all skills with this category
     if (categoryData.maxPoints) {
       const category = await getSkillCategoryByIdService(categoryId)
-      const skillsToUpdate = await Skill.find({ skillCategory: category.name })
+      const skillsToUpdate = await Skill.find({ skillCategory: categoryId })
       for (const skill of skillsToUpdate) {
         const scaledSkillPoints = Math.floor(
           (skill.skillPoints / category.maxPoints) * categoryData.maxPoints
