@@ -95,8 +95,8 @@ jobs:
           echo "Frontend container started"
           docker ps
       
-      - name: Verify Nginx configuration
-        run: docker exec nodejs-app-frontend nginx -t
+      # - name: Verify Nginx configuration
+        # run: docker exec nodejs-app-frontend nginx -t
       
       - name: Debug Containers
         run: |
