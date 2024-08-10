@@ -78,7 +78,7 @@ export const deleteProjectService = async (projectId) => {
     for (let i = 0; i < allProfileIds.length; i++) {
       const deletedProfile = await deleteProfileService(
         allProfileIds[i],
-        project._id
+        projectId
       )
       if (!deletedProfile) {
         throw new Error("Couldn't delete profile.")

@@ -22,10 +22,10 @@ export const getAllProfilesByProjectIdController = async (req, res) => {
 
     const allProfiles = await getInformationForProfilesService(allProfileIds)
 
-    if (allProfiles.length !== allProfileIds.length) {
+    if (allProfiles.length != allProfileIds.length) {
       return res
         .status(500)
-        .json({ message: 'Failed to retrieve all profiles.' })
+        .json({ message: 'Failed to retrieve all profile data.' })
     }
 
     res.status(200).json({
@@ -63,6 +63,9 @@ export const createNewProfilesController = async (req, res, next) => {
     const data = req.body
 
     const newProfiles = await createNewProfilesService(projectId, data)
+    if (!newProfiles) {
+      return res.status(500).json({ message: 'Failed to create profiles.' })
+    }
 
     return res.status(201).json({
       message: 'Profiles created successfully.',
@@ -82,14 +85,16 @@ export const updateProfileController = async (req, res) => {
 
     const updatedProfile = await updateProfileService(profileId, updateData)
     if (!updatedProfile) {
-      return res.status(500).json({ message: 'Failed to update profile.' })
+      return res
+        .status(500)
+        .json({ message: 'Failed to update profile (NULL).' })
     }
 
     res
       .status(200)
       .json({ message: 'Profile updated successfully.', data: updatedProfile })
   } catch (err) {
-    if (err.message === 'Profile not found') {
+    if (err.message === 'Profile not found.') {
       return res.status(404).json({ message: 'Profile not found.' })
     }
     res
@@ -108,6 +113,11 @@ export const deleteProfileController = async (req, res) => {
     }
 
     const deletedProfile = await deleteProfileService(profileId, projectId)
+    if (!deletedProfile) {
+      return res
+        .status(500)
+        .json({ message: 'Failed to delete profile (NULL).' })
+    }
 
     res
       .status(200)
@@ -127,6 +137,11 @@ export const getAssignmentsByProjectIdController = async (req, res) => {
       await getProfilesWithAssignedEmployeesAndSuitableEmployeesService(
         projectId
       )
+    if (!data) {
+      return res.status(500).json({
+        message: 'Failed to get profiles with employees.',
+      })
+    }
 
     res.status(200).json({
       message: 'Assignment by profile id successfully retrieved.',
@@ -145,6 +160,11 @@ export const updateAssignmentController = async (req, res) => {
     const profiles = req.body
 
     const updateAssignments = await updateAssignmentsService(profiles)
+    if (!updateAssignments) {
+      return res.status(500).json({
+        message: 'Failed to update assignments by profile (NULL).',
+      })
+    }
 
     res.status(200).json({
       message: 'Assignments successfully updated.',
