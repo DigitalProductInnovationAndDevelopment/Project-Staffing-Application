@@ -6,6 +6,7 @@
 # 5. deploy-prod            = deploy docker images (BE+FE) to AWS production server
 name: Deploy MERN Application
 
+# only on-push to branch 150-create-dev-server-on-aws
 on:
   push:
     branches:
