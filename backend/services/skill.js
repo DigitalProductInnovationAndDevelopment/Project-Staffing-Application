@@ -129,8 +129,11 @@ export const updateSkillPointsBySkillIdService = async (
 
 export const deleteSkillsService = async (skillId) => {
   try {
+    // console.log('SkillId', skillId)
     for (const id of skillId) {
-      await Skill.findByIdAndDelete(id)
+      // console.log('Id', id)
+      const success = await Skill.findByIdAndDelete(id)
+      // console.log('Success', success)
     }
   } catch (error) {
     throw new Error(`Failed to delete the skill: ${error.message}`)
@@ -227,51 +230,76 @@ export const getIdOfCategory = async (categoryName) => {
 
 export const deleteSkillCategoryService = async (categoryId) => {
   try {
-    const category = await SkillCategory.findByIdAndDelete(categoryId)
-    if (!category) {
-      throw new Error('Category not found')
-    }
+    const categories = await getSkillCategoryByIdService(categoryId)
+    // console.log('Categories', categories) -> works
+    const c = await getSkillCategoryByIdService(categoryId)
+    const categoryName = c.name
+    // console.log('Category name', categoryName) -> works
 
-    const categoryName = await getSkillCategoryByIdService(categoryId).name
-
-    // delete from all employees skills and targetSkills
+    // delete from all employees skills and targetSkills (except Admin since he has no skills)
     const allEmployees = (await getAllUsersService()).filter(
       (user) => user.firstName !== 'Admin'
     )
+    // console.log('All employees', allEmployees) -> works
+
     for (const employee of allEmployees) {
+      // console.log('Employee', employee) -> works
       const deleteSkill = employee.skills.find(
         (skill) => skill.skillCategory === categoryName
       )
+      // console.log('Delete skill', deleteSkill) -> works
       const deleteTargetSkill = employee.targetSkills.find(
         (skill) => skill.skillCategory === categoryName
       )
-      await deleteSkillsService([deleteSkill._id])
-      await deleteSkillsService([deleteTargetSkill._id])
-      await updateUserService(employee._id, {
-        skills: employee.skills.filter(
-          (skill) => skill.skillCategory !== categoryName
-        ),
-        targetSkills: employee.targetSkills.filter(
-          (skill) => skill.skillCategory !== categoryName
-        ),
-      })
+      // console.log('Delete target skill', deleteTargetSkill) -> works
+      await deleteSkillsService([deleteSkill._id, deleteTargetSkill._id])
+      const user = await User.findByIdAndUpdate(
+        employee._id,
+        {$pull: {skills: deleteSkill._id, targetSkills: deleteTargetSkill._id}},
+        {new: true, useFindAndModify: false}
+      )
+      // const user = await updateUserService(employee._id, {
+      //   skills: employee.skills.filter(
+      //     (skill) => skill.skillCategory !== categoryName
+      //   ),
+      //   targetSkills: employee.targetSkills.filter(
+      //     (skill) => skill.skillCategory !== categoryName
+      //   ),
+      // })
+      if (!user) {
+        throw new Error('Skills of skill category could not be deleted from user')
+      }
+      // console.log('User', user) -> works
     }
 
     // delete from all profiles
     const allProfiles = await getAllProfilesService()
     for (const profile of allProfiles) {
+      // console.log('Profile', profile) -> works
       const deleteSkill = profile.targetSkills.find(
         (skill) => skill.skillCategory === categoryName
       )
+      // console.log('Delete skill', deleteSkill) -> works
 
       await deleteSkillsService([deleteSkill._id])
 
-      await updateProfileService(profile._id, {
-        targetSkills: profile.targetSkills.filter(
-          (skill) => skill.skillCategory !== categoryName
-        ),
-      })
+      const modifiedprofile = await ProjectDemandProfile.findByIdAndUpdate(
+        profile._id,
+        {$pull: {targetSkills: deleteSkill._id}},
+        {new: true, useFindAndModify: false}
+      )
+      if (!modifiedprofile) {
+        throw new Error('Skill of skill category could not be deleted from profile')
+      }
+      // console.log('Profile end', modifiedProfile) -> works
     }
+
+    // delete the category (last so that transform can be used)
+    const category = await SkillCategory.findByIdAndDelete(categoryId)
+    if (!category) {
+      throw new Error('Category not found')
+    }
+
   } catch (error) {
     throw new Error(`Failed to delete the category: ${error.message}`)
   }
