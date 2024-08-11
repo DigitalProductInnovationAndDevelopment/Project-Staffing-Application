@@ -172,7 +172,10 @@ function ProjectOverview() {
                 <React.Fragment key={index}>
                   <Divider />
                   <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1 }}>
+                    <Box 
+                      onClick={() => handleOpenEditDialog(project)} 
+                      sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1, cursor: 'pointer'}}
+                    >
                       <Avatar src={project.icon || AvatarGreen} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                       <Typography sx={{ ml: '8px' }} variant="body2">{project.projectName}</Typography>
                     </Box>
