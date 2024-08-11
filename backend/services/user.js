@@ -473,16 +473,16 @@ export const deleteUserService = async (userId) => {
       }
     }
 
-    //delete the user from assignments
+    //delete the user from all assignments
     const allAssignments = await Assignment.find()
     if (!allAssignments) {
       throw new Error('Assignments not found')
     }
     for (const assignment of allAssignments) {
-      const updatedAssignment = Assignment.findByIdAndUpdate(
+      const updatedAssignment = await Assignment.findByIdAndUpdate(
         assignment._id,
         { $pull: { userId: userId } },
-        { new: true }
+        { new: true, useFindAndModify: false}
       )
       if (!updatedAssignment) {
         throw new Error('Assignment could not be updated')
@@ -491,7 +491,7 @@ export const deleteUserService = async (userId) => {
 
     const deletedUser = await User.findOneAndDelete({ _id: userId })
     if (!deletedUser) {
-      throw new Error('User not found')
+      throw new Error('User could not be deleted')
     }
 
     return deletedUser
