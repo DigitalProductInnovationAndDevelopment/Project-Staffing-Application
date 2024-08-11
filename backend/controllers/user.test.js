@@ -1,12 +1,12 @@
+/* eslint-disable no-import-assign */
+import * as user from '../services/user.js'
 import {
   createNewUserController,
+  deleteUserController,
   getAllUsersController,
   getUserByIdController,
   updateUserController,
-  deleteUserController,
 } from '../controllers/user.js'
-import SkillCategory from '../models/SkillCategory.js'
-import * as user from '../services/user.js'
 
 describe('User Controller Tests', () => {
   // Test createNewUserController
@@ -27,14 +27,12 @@ describe('User Controller Tests', () => {
       }
 
       // Mock createNewUserService to return a new user
-      user.createNewUserService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@doe.com',
-        })
+      user.createNewUserService = jest.fn().mockResolvedValue({
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@doe.com',
+      })
 
       await createNewUserController(req, res)
 
@@ -188,14 +186,12 @@ describe('User Controller Tests', () => {
       }
 
       // Mock getUserByUserIdService to return a user
-      user.getUserByUserIdService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@doe.com',
-        })
+      user.getUserByUserIdService = jest.fn().mockResolvedValue({
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@doe.com',
+      })
 
       await getUserByIdController(req, res)
 
@@ -274,14 +270,12 @@ describe('User Controller Tests', () => {
       }
 
       // Mock updateUserService to return updated user
-      user.updateUserService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@doe.com',
-        })
+      user.updateUserService = jest.fn().mockResolvedValue({
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@doe.com',
+      })
 
       await updateUserController(req, res)
 
@@ -317,14 +311,14 @@ describe('User Controller Tests', () => {
       // Mock updateUserService to throw "User not found." error
       user.updateUserService = jest
         .fn()
-        .mockRejectedValue(new Error('User not found.'))
+        .mockRejectedValue(new Error('User not found'))
 
       await updateUserController(req, res)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({
         message: 'User not found.',
-        error: 'User not found.',
+        error: 'User not found',
       })
     })
 
@@ -357,7 +351,7 @@ describe('User Controller Tests', () => {
         .fn()
         .mockRejectedValue(
           new Error(
-            'Invalid target skill points. Target skill points should be greater than or equal to skill points.'
+            'Invalid target skill points. Target skill points should be greater than or equal to skill points'
           )
         )
 
@@ -367,7 +361,7 @@ describe('User Controller Tests', () => {
       expect(res.json).toHaveBeenCalledWith({
         message: 'Invalid target skill points.',
         error:
-          'Invalid target skill points. Target skill points should be greater than or equal to skill points.',
+          'Invalid target skill points. Target skill points should be greater than or equal to skill points',
       })
     })
 
@@ -417,14 +411,12 @@ describe('User Controller Tests', () => {
       }
 
       // Mock deleteUserService to return deleted user
-      user.deleteUserService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@doe.com',
-        })
+      user.deleteUserService = jest.fn().mockResolvedValue({
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@doe.com',
+      })
 
       await deleteUserController(req, res)
 

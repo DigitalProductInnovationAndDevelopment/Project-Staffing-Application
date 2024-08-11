@@ -1,9 +1,9 @@
 import {
+  createNewUserService,
+  deleteUserService,
   getAllUsersService,
   getUserByUserIdService,
   updateUserService,
-  deleteUserService,
-  createNewUserService,
 } from '../services/user.js'
 
 export const createNewUserController = async (req, res) => {
@@ -44,7 +44,7 @@ export const getAllUsersController = async (_, res) => {
   }
 }
 
-export const getUserByIdController = async (req, res, next) => {
+export const getUserByIdController = async (req, res) => {
   try {
     const { userId } = req.params
 
@@ -73,7 +73,7 @@ export const updateUserController = async (req, res) => {
       data: updatedUser,
     })
   } catch (err) {
-    if (err.message === 'User not found.') {
+    if (err.message === 'User not found') {
       return res.status(404).json({
         message: 'User not found.',
         error: err.message,
@@ -82,7 +82,7 @@ export const updateUserController = async (req, res) => {
 
     if (
       err.message ===
-      'Invalid target skill points. Target skill points should be greater than or equal to skill points.'
+      'Invalid target skill points. Target skill points should be greater than or equal to skill points'
     ) {
       return res
         .status(400)

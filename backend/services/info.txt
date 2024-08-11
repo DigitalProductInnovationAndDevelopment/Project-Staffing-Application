@@ -6,3 +6,5 @@ difference between 📁 controllers and 📁 services:
 - a controller should worry about the request itself: receive HTTP request, validate request data (check headers, path & query parameters), initial data validation, ...
 - a controller then coordinates one or more services which handle the actual specific tasks (database query, ...) and then sends back a response
 - a service really only performs business logic (interact with 📁 models and the database)
+
+Note: Most controllers communicate with mainly one service who coordinates the calling of other services.

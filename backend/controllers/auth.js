@@ -20,8 +20,8 @@ export const loginController = async (req, res) => {
     res.status(200).json({ token, user })
   } catch (err) {
     if (
-      err.message === 'User does not exist.' ||
-      err.message === 'Invalid credentials.'
+      err.message === 'User does not exist' ||
+      err.message === 'Invalid credentials'
     ) {
       res.status(400).json({ error: err.message })
     }

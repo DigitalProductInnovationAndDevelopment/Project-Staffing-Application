@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
 import OfficeLocation from './enums/OfficeLocation.js'
 import Role from './enums/Role.js'
+import mongoose from 'mongoose'
 
 const UserSchema = new mongoose.Schema(
   {

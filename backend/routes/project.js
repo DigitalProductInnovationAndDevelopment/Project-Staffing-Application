@@ -1,20 +1,21 @@
-import express from 'express'
+import {
+  createNewProfilesController,
+  deleteProfileController,
+  getAllProfilesByProjectIdController,
+  getAssignmentsByProjectIdController,
+  getProfileByIdController,
+  updateAssignmentController,
+  updateProfileController,
+} from '../controllers/profile.js'
 import {
   createNewProjectController,
+  deleteProjectController,
   getAllProjectsController,
   getProjectByIdController,
   updateProjectController,
-  deleteProjectController,
 } from '../controllers/project.js'
-import {
-  createNewProfilesController,
-  getAllProfilesByProjectIdController,
-  getProfileByIdController,
-  updateProfileController,
-  deleteProfileController,
-  getAssignmentsByProjectIdController,
-  updateAssignmentController,
-} from '../controllers/profile.js'
+import express from 'express'
+
 import { verifyToken } from '../middleware/auth.js'
 
 const router = express.Router()
