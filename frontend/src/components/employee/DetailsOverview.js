@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper, Radio, RadioGroup, FormControlLabel} from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { projectApi } from "../../state/api/projectApi.js";
+import TargetLevelIcon from '../../assets/images/assign/target_level.svg';
 
 const initialSkills = [
     { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
@@ -276,6 +277,7 @@ const Overview = ({ user }) => {
               borderRadius: "15px",
             }}
           >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography
               sx={{
                 fontFamily: "Inter, sans-serif",
@@ -289,6 +291,22 @@ const Overview = ({ user }) => {
             >
               Skill Point Categories
             </Typography>
+            <Typography
+                sx={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "12px",
+                  lineHeight: "150%",
+                  letterSpacing: "0",
+                  fontWeight: "medium",
+                  color: "#2D3748",
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+            >
+                <img src={TargetLevelIcon} alt="Target" style={{ marginLeft: '2px', marginRight: '6px' }} />
+                Target Level
+            </Typography>
+            </Box>
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
             >
