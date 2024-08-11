@@ -1,3 +1,6 @@
+
+<img width="200" alt="great_staff_logo" src="https://github.com/user-attachments/assets/a100330a-4faa-483b-a33a-ab66a9493761">
+
 # Project-Staffing-Application
 
 itestra x TUM Fortiss
