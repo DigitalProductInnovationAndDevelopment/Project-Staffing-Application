@@ -310,7 +310,7 @@ const EditSkills = ({ open, onClose }) => {
                 padding: 0,
                 marginRight: 2,
             }}>
-              Save & Close
+               Close
           </Button>
         </Box>
       </Box>
