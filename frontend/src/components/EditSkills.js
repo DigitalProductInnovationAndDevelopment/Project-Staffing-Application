@@ -111,7 +111,7 @@ const EditSkills = ({ open, onClose }) => {
               backgroundColor: 'white',
               boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
               borderRadius: '12px',
-              marginTop: '-66px',
+              marginTop: '-86px',
               ml: 25, mr: 25,
               padding: 4,
               display: 'flex',
