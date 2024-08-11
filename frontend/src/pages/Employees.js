@@ -20,8 +20,6 @@ import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
 function EmployeeOverview() {
 
   const { data: employeesData, error, isLoading, isSuccess, refetch} = useGetAllEmployeesQuery();
-
-  console.log('employees: ', employeesData)
   
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
