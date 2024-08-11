@@ -6,22 +6,20 @@ import backgroundImage from './../assets/images/edit_background.svg';
 import OverviewIcon from './../assets/images/overview-icon.svg';
 import AssignTeamIcon from './../assets/images/assign-icon.svg';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
-import deleteIcon from './../assets/images/delete-icon.svg';
-import { useGetProjectByIdQuery, useUpdateProjectMutation, useDeleteProjectMutation} from '../state/api/projectApi';
+import { useGetProjectByIdQuery, useUpdateProjectMutation } from '../state/api/projectApi';
 import { useUpdateProjectAssignmentByProfileIdMutation } from '../state/api/profileApi';
 import '../style.scss';
 
 const EditProject = ({ open, onClose, project }) => {
-  const projectId  = project.projectId;
-  const [activeTab, setActiveTab] = useState(0);
+  const projectId  = project?.projectId;
+  const [activeTab, setActiveTab] = useState(project?.tab);
   const { data: projectData, error, isLoading, refetch } = useGetProjectByIdQuery(projectId);
   const [updateProject] = useUpdateProjectMutation();
-  const [deleteProject] = useDeleteProjectMutation();
   const [assignEmployees] = useUpdateProjectAssignmentByProfileIdMutation();
   const [formData, setFormData] = useState({});
   const [formDataAssignment, setFormDataAssignment] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [projectName, setProjectName] = useState(project.name);
+  const [projectName, setProjectName] = useState(project?.name);
   const [checkForAssignment, setCheckForAssignment] = useState(false); 
 
   useEffect(() => {
@@ -34,7 +32,8 @@ const EditProject = ({ open, onClose, project }) => {
         projectName: projectData.projectName, 
       });
     }
-  }, [projectData]);
+    setActiveTab(project?.tab);
+  }, [projectData, project?.tab]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -73,21 +72,13 @@ const EditProject = ({ open, onClose, project }) => {
     setFormData((prevData) => ({ ...prevData, projectName: projectName }));
   };
 
-  const handleDelete = async () => {
-   try {
-      await deleteProject(projectId);
-      onClose();
-    } catch (err) {
-      console.error('Failed to delete user:', err);
-    }
-  };
 
   if (isLoading) {
     return <CircularProgress />;
   }
 
   if (error) {
-    return <Typography color="error">Error fetching user: {error.message}</Typography>;
+   return <Typography color="error">Error fetching user: {error.message}</Typography>;
   }
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
@@ -149,7 +140,7 @@ const EditProject = ({ open, onClose, project }) => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={project.name} src={AvatarGreen} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
+              <Avatar alt={project?.name} src={AvatarGreen} sx={{ width: 78, height: 78, borderRadius: '15px', overflow: 'hidden', mr: 2 }} />
               <Box>
                 {isEditing ? (
                   <TextField
@@ -192,7 +183,7 @@ const EditProject = ({ open, onClose, project }) => {
                     color: '#718096',
                   }}
                 >
-                  {project.company}
+                  {project?.company}
                 </Typography>
               </Box>
             </Box>
@@ -272,28 +263,6 @@ const EditProject = ({ open, onClose, project }) => {
             >
               Save & Close
             </Button>
-            {/* <Button
-                variant="contained"
-                color="error"
-                fullWidth
-                sx={{
-                  textTransform: 'none',
-                  bgcolor: '#E10050',
-                  borderRadius: '8px',
-                  color: 'white',
-                  height: '40px',
-                  fontFamily: 'Halvetica, sans-serif',
-                  fontWeight: 'Bold',
-                  fontSize: '14px',
-                  lineHeight: '150%',
-                  letterSpacing: '0',
-                  width: '124px',
-                  padding: 0,
-                }}
-                onClick={handleDelete}
-              >
-               <img src={deleteIcon} alt="Delete" style={{ marginLeft: '2px', marginRight: '4px' }} /> Delete Project
-            </Button> */}
           </Box>
         </Box>
       </Box>
