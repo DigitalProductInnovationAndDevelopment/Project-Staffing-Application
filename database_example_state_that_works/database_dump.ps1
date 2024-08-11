@@ -12,7 +12,7 @@ $mongoDumpPath = "path\to\mongodumb"  # Update this path to where mongodump is i
 $uri = "mongodb+srv://${user}:${password}@${dbHost}/${database}"  # Updated $host to $dbHost
 
 # Backup directory
-$backupDir = "path\to\project\Project-Staffing-Application\database_example_state_that_works\${database}-backup-$(Get-Date -Format 'yyyyMMddHHmmss')"
+$backupDir = "path\to\project\database_example_state_that_works\${database}-backup-$(Get-Date -Format 'yyyyMMddHHmmss')"
 
 # Perform backup
 Write-Host "Performing backup..."

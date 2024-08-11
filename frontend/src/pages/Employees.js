@@ -3,9 +3,13 @@ import {
   Box,
   Typography,
   Avatar,
-  Divider,
- //LinearProgress,
-  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   IconButton,
   CircularProgress,
   Button
@@ -15,14 +19,13 @@ import EditProfile from './../components/EditProfile';
 import CreateProfile from "../components/employee/create/CreateProfile";
 import AvatarBlue from "./../assets/images/icons/blue_avatar.svg";
 import { useGetAllEmployeesQuery } from '../state/api/employeeApi';
-
+import { useGetSkillsQuery } from '../state/api/skillApi';
 
 function EmployeeOverview() {
 
   const { data: employeesData, error, isLoading, isSuccess, refetch} = useGetAllEmployeesQuery();
+  const { data: skillsData, errorLoadingSkill, isLoadingSkill } = useGetSkillsQuery();
 
-  console.log('employees: ', employeesData)
-  
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -72,7 +75,7 @@ function EmployeeOverview() {
 //   };
 
 
-  if (isLoading) {
+  if (isLoading || isLoadingSkill) {
     return (
         <Box
           sx={{
@@ -87,7 +90,7 @@ function EmployeeOverview() {
     );
   }
 
-  if (error) {
+  if (error || errorLoadingSkill) {
     return (
         <Box
           sx={{
@@ -97,31 +100,44 @@ function EmployeeOverview() {
             boxShadow: 'none',
           }}
         > 
-          <Typography color="error">Error fetching employees: {error.message}</Typography>
+          <Typography color="error">Error fetching employees: {error.message + ' ' + errorLoadingSkill.message}</Typography>
         </Box>
     );
   }
 
 if (isSuccess) {
-  return (
-    <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#F5F7FA", boxShadow: "none", }}>
-      <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3}}>
+ return (
+      <Box
+        sx={{
+          display: "flex",
+          height: "100vh",
+          backgroundColor: "#F5F7FA",
+          boxShadow: "none",
+        }}
+      >
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mb: 3,
+            }}
+          >
             <Button
               variant="contained"
               color="profBlue"
               fullWidth
               sx={{
-                textTransform: 'none',
-                borderRadius: '8px',
-                color: 'white',
-                height: '40px',
-                fontFamily: 'Helvetica, sans-serif',
-                fontWeight: 'Bold',
-                fontSize: '14px',
-                lineHeight: '150%',
-                letterSpacing: '0',
-                width: '140px',
+                textTransform: "none",
+                borderRadius: "8px",
+                color: "white",
+                height: "40px",
+                fontFamily: "Helvetica, sans-serif",
+                fontWeight: "Bold",
+                fontSize: "14px",
+                lineHeight: "150%",
+                letterSpacing: "0",
+                width: "140px",
                 padding: 0,
               }}
               onClick={handleAddEmployee}
@@ -129,7 +145,7 @@ if (isSuccess) {
               + Add Employee
             </Button>
           </Box>
-        <Box sx={{ bgcolor: "white", borderRadius: "12px", p: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)" }}>
+          <Box sx={{ bgcolor: "white", borderRadius: "12px", pt: 2, pr: 2, pl: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)", maxWidth: "158vh", overflowX: "auto"}}>
           <Typography
             sx={{
               fontFamily: 'Helvetica, sans-serif',
@@ -138,148 +154,141 @@ if (isSuccess) {
               letterSpacing: '0',
               fontWeight: 'bold',
               color: '#2D3748',
-              marginBottom: 2,
-              marginLeft: '6px'
+              marginLeft: '14px'
             }}
           >
             Employee Overview
           </Typography>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p:1, maxHeight: '80vh', overflowY: 'auto'}}>
-            <Box sx={{ display: 'flex', color: '#A0AEC0', fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>
-              <Grid container>
-                <Grid item xs={2.5}>
-                  <Typography className="table-title">PERSON</Typography>
-                </Grid>
-                {/* <Grid item xs={2}>
-                  <Typography className="table-title">CURRENT UTILIZATION</Typography>
-                </Grid> */}
-                <Grid item xs={1}>
-                  <Typography className="table-title"># PROJECTS</Typography>
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography className="table-title">Technology</Typography>
-                </Grid>
-                <Grid item xs={1.2}>
-                  <Typography className="table-title">Solution Engineering</Typography>
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography className="table-title">Self Management</Typography>
-                </Grid>
-                <Grid item xs={1.2}>
-                  <Typography className="table-title">Communication Skills</Typography>
-                </Grid>
-                <Grid item xs={1.6}>
-                  <Typography className="table-title">Employee Leadership</Typography>
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography className="table-title">LOCATION</Typography>
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography className="table-title">EDIT</Typography>
-                </Grid>
-              </Grid>
-            </Box>
-            {employeesData.map((employee, index) => (
-              <React.Fragment key={index}>
-                <Divider />
-                <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
-                  <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Grid item xs={2.5}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar src={employee.avatar || AvatarBlue} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
-                        <Box sx={{ ml: 2 }}>
-                          <Typography variant="body2">{employee.firstName + ' ' + employee.lastName}</Typography>
-                          <Typography sx={{
-                            fontFamily: 'Halvetica, sans-serif',
-                            fontSize: '14px',
-                            lineHeight: '140%',
-                            letterSpacing: '0px',
-                            color: '#718096'
-                          }}>{employee.email}</Typography>
+          <TableContainer
+            component={Paper}
+            sx={{ boxShadow: "none" }}
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell><Typography className="table-title">PERSON</Typography></TableCell>
+                  <TableCell><Typography className="table-title"># PROJECTS</Typography></TableCell>
+                  {skillsData &&
+                    skillsData.data.map((skill) => (
+                      <TableCell key={skill._id}>
+                        <Typography className="table-title">
+                          {skill.name.replace('_', ' ')}
+                        </Typography>
+                      </TableCell>
+                    ))}
+                  <TableCell><Typography className="table-title">LOCATION</Typography></TableCell>
+                  <TableCell><Typography className="table-title">EDIT</Typography></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {employeesData.map((employee, index) => (
+                  <React.Fragment key={index}>
+                    <TableRow>
+                      <TableCell>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Avatar
+                            src={employee.avatar || AvatarBlue}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: "10px",
+                              overflow: "hidden",
+                            }}
+                          />
+                          <Box sx={{ ml: 2 }}>
+                            <Typography variant="body2">
+                              {employee.firstName + " " + employee.lastName}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontFamily: "Halvetica, sans-serif",
+                                fontSize: "14px",
+                                lineHeight: "140%",
+                                letterSpacing: "0px",
+                                color: "#718096",
+                              }}
+                            >
+                              {employee.email}
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
-                    </Grid>
-                    {/* <Grid item xs={2}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column'}}>
-                        <Typography sx={{ mr: 1, fontSize: '14px', color: "#36C5F0", fontFamily: 'Helvetica, sans-serif', fontWeight: 'bold' }}>{calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}%</Typography>
-                        <LinearProgress
-                          variant="determinate"
-                          value={calculateUtilization(employee.projectWorkingHourDistributionInPercentage)}
-                          sx={{
-                            width: "60%",
-                            height: '6px',
-                            borderRadius: 5,
-                            "& .MuiLinearProgress-bar": {
-                              backgroundColor: "#36C5F0",
-                            },
-                          }}
-                        />
-                      </Box>
-                    </Grid> */}
-                    <Grid item xs={1}>
-                        <Typography variant="body2" >{employee.numberOfProjectsLast3Months || 0}</Typography>
-                    </Grid>
-                    <Grid item xs={1.2}>
-                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
-                        employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY').skillPoints : 0}/
-                        {employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY') ?
-                        employee.skills.find(skill => skill.skillCategory === 'TECHNOLOGY').maxSkillPoints : 0}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={1.2}>
-                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING') ?
-                        employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING').skillPoints : 0}/
-                        {employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING') ?
-                        employee.skills.find(skill => skill.skillCategory === 'SOLUTION_ENGINEERING').maxSkillPoints : 0}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={1.2}>
-                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT') ?
-                        employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT').skillPoints : 0}/
-                        {employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT') ?
-                        employee.skills.find(skill => skill.skillCategory === 'SELF_MANAGEMENT').maxSkillPoints : 0}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={1.2}>
-                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS') ?
-                        employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS').skillPoints : 0}/
-                        {employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS') ?
-                        employee.skills.find(skill => skill.skillCategory === 'COMMUNICATION_SKILLS').maxSkillPoints : 0}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={1.2}>
-                      <Typography className="table-skillset-body">{employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP') ?
-                        employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP').skillPoints : 0}/
-                        {employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP') ?
-                        employee.skills.find(skill => skill.skillCategory === 'EMPLOYEE_LEADERSHIP').maxSkillPoints : 0}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={1}>
-                      <Typography variant="body2">{capitalizeFirstLetter(employee.officeLocation)}</Typography>
-                    </Grid>
-                    <Grid item xs={1}>
-                      <IconButton size="small" onClick={() => handleOpenEditDialog(employee)}>
-                        <MoreVertIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </React.Fragment>
-            ))}
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {employee.numberOfProjectsLast3Months || 0}
+                        </Typography>
+                      </TableCell>
+                      {skillsData &&
+                        skillsData.data.map((skill) => {
+                          const employeeSkill = employee.skills.find(
+                            (s) => s.skillCategory === skill.name
+                          );
+                          return (
+                            <TableCell 
+                              key={skill._id}
+                              sx={{
+                                borderBottom: '1px solid #E0E0E0', 
+                                borderTop: 0,
+                                borderLeft: 0,
+                                borderRight: 0,
+                              }}
+                            >
+                              <Typography className="table-skillset-body">
+                                {employeeSkill
+                                  ? employeeSkill.skillPoints
+                                  : 0}
+                                /
+                                {employeeSkill
+                                  ? employeeSkill.maxSkillPoints
+                                  : 0}
+                              </Typography>
+                            </TableCell>
+                          );
+                        })}
+                      <TableCell>
+                        <Typography variant="body2">
+                          {capitalizeFirstLetter(employee.officeLocation)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleOpenEditDialog(employee)}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           </Box>
         </Box>
-      </Box>
-      {selectedEmployee && (
-        <EditProfile open={open} onClose={handleCloseEditDialog}
-          employee={{ userId: selectedEmployee._id, name: concatName(selectedEmployee.firstName, selectedEmployee.lastName), email: selectedEmployee.email}} 
-          source="Employees"
+        {selectedEmployee && (
+          <EditProfile
+            open={open}
+            onClose={handleCloseEditDialog}
+            employee={{
+              userId: selectedEmployee._id,
+              name: concatName(
+                selectedEmployee.firstName,
+                selectedEmployee.lastName
+              ),
+              email: selectedEmployee.email,
+            }}
+            source="Employees"
+          />
+        )}
+        <CreateProfile
+          openCreate={openCreate}
+          onCloseCreate={handleCloseCreateDialog}
+          onBackCreate={handleOnBack}
         />
-      )}
-      <CreateProfile openCreate={openCreate} onCloseCreate={handleCloseCreateDialog} onBackCreate={handleOnBack}/>
-    </Box>
-  );
- }
+      </Box>
+    );
+  }
 }
 
 export default EmployeeOverview;

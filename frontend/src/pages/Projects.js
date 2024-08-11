@@ -13,8 +13,6 @@ function ProjectOverview() {
   const [openCreate, setOpenCreate] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  console.log('project', projectData)
-
   const handleAddProject = () => {
     setOpenCreate(true);
   };

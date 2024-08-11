@@ -4,6 +4,7 @@ import {
   deleteSkillsService,
   updateSkillsService,
 } from './skill.js'
+import Assignment from '../models/Assignment.js'
 import Contract from '../models/Contract.js'
 import Leave from '../models/Leave.js'
 import ProjectWorkingHours from '../models/ProjectWorkingHours.js'
@@ -469,6 +470,22 @@ export const deleteUserService = async (userId) => {
       const leave = await Leave.findByIdAndDelete(id)
       if (!leave) {
         throw new Error('Leave not found')
+      }
+    }
+
+    //delete the user from assignments
+    const allAssignments = await Assignment.find()
+    if (!allAssignments) {
+      throw new Error('Assignments not found')
+    }
+    for (const assignment of allAssignments) {
+      const updatedAssignment = Assignment.findByIdAndUpdate(
+        assignment._id,
+        { $pull: { userId: userId } },
+        { new: true }
+      )
+      if (!updatedAssignment) {
+        throw new Error('Assignment could not be updated')
       }
     }
 

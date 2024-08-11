@@ -314,13 +314,8 @@ export const getIdOfCategory = async (categoryName) => {
 // requirement: to avoid holes in the data, all employees (skills and targetSkills) and profiles (targetSkills) need to have the skills of the category deleted
 export const deleteSkillCategoryService = async (categoryId) => {
   try {
-    const category = await SkillCategory.findByIdAndDelete(categoryId)
-    if (!category) {
-      throw new Error('Category not found')
-    }
-
-    // get the name of the category
-    const categoryName = await getSkillCategoryByIdService(categoryId).name
+    const category = await getSkillCategoryByIdService(categoryId)
+    const categoryName = category.name
 
     // delete from all employees skills and targetSkills
     // exclude admin since he has no skills
@@ -338,19 +333,16 @@ export const deleteSkillCategoryService = async (categoryId) => {
       const deleteTargetSkill = employee.targetSkills.find(
         (skill) => skill.skillCategory === categoryName
       )
-
-      // delete the skills and targetSkills of the category
-      await deleteSkillsService([deleteSkill._id])
-      await deleteSkillsService([deleteTargetSkill._id])
-      // update the employee with new sets of skills and targetSkills
-      await updateUserService(employee._id, {
-        skills: employee.skills.filter(
-          (skill) => skill.skillCategory !== categoryName
-        ),
-        targetSkills: employee.targetSkills.filter(
-          (skill) => skill.skillCategory !== categoryName
-        ),
-      })
+      // delete the skills and targetSkills of the category from the employee
+      await deleteSkillsService([deleteSkill._id, deleteTargetSkill._id])
+      const user = await User.findByIdAndUpdate(
+        employee._id,
+        {$pull: {skills: deleteSkill._id, targetSkills: deleteTargetSkill._id}},
+        {new: true, useFindAndModify: false}
+      )
+      if (!user) {
+        throw new Error('Skills of skill category could not be deleted from user')
+      }
     }
 
     // delete from all profiles
@@ -360,21 +352,28 @@ export const deleteSkillCategoryService = async (categoryId) => {
       const deleteSkill = profile.targetSkills.find(
         (skill) => skill.skillCategory === categoryName
       )
-
       // delete the targetSkills of the category
       await deleteSkillsService([deleteSkill._id])
-
-      // update the profile with new sets of targetSkills
-      await updateProfileService(profile._id, {
-        targetSkills: profile.targetSkills.filter(
-          (skill) => skill.skillCategory !== categoryName
-        ),
-      })
+      //delete the targetSkills of the category from the profile
+      const modifiedProfile = await ProjectDemandProfile.findByIdAndUpdate(
+        profile._id,
+        {$pull: {targetSkills: deleteSkill._id}},
+        {new: true, useFindAndModify: false}
+      )
+      if (!modifiedProfile) {
+        throw new Error('Skills of skill category could not be deleted from profile')
+      }
+    }
+    
+    // delete the category
+    const deletedCategory = await SkillCategory.findByIdAndDelete(categoryId)
+    if (!category) {
+      throw new Error('Category not found')
     }
 
-    return category
-  } catch (err) {
-    throw new Error(`Failed to delete the category: ${err.message}`)
+    return deletedCategory
+  } catch (error) {
+    throw new Error(`Failed to delete the category: ${error.message}`)
   }
 }
 
@@ -389,7 +388,7 @@ export const updateSkillCategoryService = async (categoryId, categoryData) => {
 
       // update all skills with this category by scaling the skill points
       const skillsToUpdate = await Skill.find({
-        skillCategory: category.name,
+        skillCategory: categoryId,
       })
       for (const skill of skillsToUpdate) {
         // scale the skill points by dividing the current skill points by the old maxPoints and multiplying by the new maxPoints

@@ -136,7 +136,7 @@ const Overview = ({ user, onFormDataChange }) => {
     else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
     else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
     else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
-    else return ''
+    else return category;
   };
 
   return (
@@ -315,6 +315,8 @@ const Overview = ({ user, onFormDataChange }) => {
               backgroundColor: "white",
               boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
               borderRadius: "15px",
+              maxHeight: '55.5vh',
+              overflowY: 'auto'
             }}
         >
             {/* Flex container for the headers */}

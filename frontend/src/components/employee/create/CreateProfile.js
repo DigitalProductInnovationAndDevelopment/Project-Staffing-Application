@@ -27,7 +27,6 @@ const CreateProfile = ({ openCreate, onCloseCreate, onBackCreate}) => {
   }, []);
 
   const handleCreateAndClose = async () => {
-    console.log('formdata: ', formData)
    try {
       await createUser(formData);
       setFullName('Click & Enter Employee Name');
