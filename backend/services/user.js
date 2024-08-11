@@ -161,7 +161,7 @@ export const getAllUsersService = async () => {
             },
     })
 
-  // enrich the user object with additional valu delta //TODO
+  // enrich the user object with additional value delta and targetSkillPoints
   for (let i = 0; i < all_users.length; i++) {
     const user = all_users[i]
     const skills = user.skills
@@ -172,7 +172,7 @@ export const getAllUsersService = async () => {
         (targetSkill) => targetSkill.skillCategory === skill.skillCategory
       )
       if (targetSkill) {
-        // skill.targetSkillPoints = targetSkill.skillPoints
+        skill.targetSkillPoints = targetSkill.skillPoints
         skill.delta = targetSkill.skillPoints - skill.skillPoints
       }
     }
@@ -267,7 +267,7 @@ export const getUserByUserIdService = async (userId) => {
       throw new Error('User not found')
     }
 
-    // enrich the user object with additional value delta //TODO
+    // enrich the user object with additional value delta and targetSkillPoints
     const skills = user.skills
     const targetSkills = user.targetSkills
     for (let i = 0; i < skills.length; i++) {
@@ -276,7 +276,7 @@ export const getUserByUserIdService = async (userId) => {
         (targetSkill) => targetSkill.skillCategory === skill.skillCategory
       )
       if (targetSkill) {
-        // skill.targetSkillPoints = targetSkill.skillPoints
+        skill.targetSkillPoints = targetSkill.skillPoints
         skill.delta = targetSkill.skillPoints - skill.skillPoints
       }
     }
