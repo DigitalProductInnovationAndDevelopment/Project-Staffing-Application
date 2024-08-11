@@ -112,7 +112,7 @@ const EditSkills = ({ open, onClose }) => {
               boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
               borderRadius: '12px',
               marginTop: '-66px',
-              ml: 27, mr: 27,
+              ml: 25, mr: 25,
               padding: 4,
               display: 'flex',
               flexDirection: 'column',
