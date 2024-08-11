@@ -272,7 +272,7 @@ const EditProject = ({ open, onClose, project }) => {
             >
               Save & Close
             </Button>
-            <Button
+            {/* <Button
                 variant="contained"
                 color="error"
                 fullWidth
@@ -293,7 +293,7 @@ const EditProject = ({ open, onClose, project }) => {
                 onClick={handleDelete}
               >
                <img src={deleteIcon} alt="Delete" style={{ marginLeft: '2px', marginRight: '4px' }} /> Delete Project
-            </Button>
+            </Button> */}
           </Box>
         </Box>
       </Box>
