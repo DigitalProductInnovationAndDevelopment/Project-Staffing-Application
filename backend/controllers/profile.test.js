@@ -1,14 +1,15 @@
-import {
-  getAllProfilesByProjectIdController,
-  getProfileByIdController,
-  createNewProfilesController,
-  updateProfileController,
-  deleteProfileController,
-  getAssignmentsByProjectIdController,
-  updateAssignmentController,
-} from '../controllers/profile.js'
-import * as projectDemandProfile from '../services/projectDemandProfile.js'
+/* eslint-disable no-import-assign */
 import * as assignment from '../services/assignment.js'
+import * as projectDemandProfile from '../services/projectDemandProfile.js'
+import {
+  createNewProfilesController,
+  deleteProfileController,
+  getAllProfilesByProjectIdController,
+  getAssignmentsByProjectIdController,
+  getProfileByIdController,
+  updateAssignmentController,
+  updateProfileController,
+} from '../controllers/profile.js'
 
 describe('Profile Controller Tests', () => {
   describe('getAllProfilesByProjectIdController', () => {
@@ -157,13 +158,11 @@ describe('Profile Controller Tests', () => {
         json: jest.fn(),
       }
 
-      projectDemandProfile.getProfileByIdService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 'sampleProfileId',
-          name: 'sampleProfile',
-          targetDemandId: 'demandId',
-        })
+      projectDemandProfile.getProfileByIdService = jest.fn().mockResolvedValue({
+        id: 'sampleProfileId',
+        name: 'sampleProfile',
+        targetDemandId: 'demandId',
+      })
 
       await getProfileByIdController(req, res)
 
@@ -340,7 +339,7 @@ describe('Profile Controller Tests', () => {
 
       projectDemandProfile.updateProfileService = jest
         .fn()
-        .mockRejectedValue(new Error('Profile not found.'))
+        .mockRejectedValue(new Error('Profile not found'))
 
       await updateProfileController(req, res)
 
@@ -363,13 +362,11 @@ describe('Profile Controller Tests', () => {
         json: jest.fn(),
       }
 
-      projectDemandProfile.updateProfileService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 'sampleProfileId',
-          name: 'updatedName',
-          targetDemandId: 'updatedDemandId',
-        })
+      projectDemandProfile.updateProfileService = jest.fn().mockResolvedValue({
+        id: 'sampleProfileId',
+        name: 'updatedName',
+        targetDemandId: 'updatedDemandId',
+      })
 
       await updateProfileController(req, res)
 
@@ -448,21 +445,17 @@ describe('Profile Controller Tests', () => {
         json: jest.fn(),
       }
 
-      projectDemandProfile.getProfileByIdService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 'sampleProfileId',
-          name: 'sampleProfile',
-          targetDemandId: 'demandId',
-        })
+      projectDemandProfile.getProfileByIdService = jest.fn().mockResolvedValue({
+        id: 'sampleProfileId',
+        name: 'sampleProfile',
+        targetDemandId: 'demandId',
+      })
 
-      projectDemandProfile.deleteProfileService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 'sampleProfileId',
-          name: 'sampleProfile',
-          targetDemandId: 'demandId',
-        })
+      projectDemandProfile.deleteProfileService = jest.fn().mockResolvedValue({
+        id: 'sampleProfileId',
+        name: 'sampleProfile',
+        targetDemandId: 'demandId',
+      })
 
       await deleteProfileController(req, res)
 
@@ -489,13 +482,11 @@ describe('Profile Controller Tests', () => {
         json: jest.fn(),
       }
 
-      projectDemandProfile.getProfileByIdService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 'sampleProfileId',
-          name: 'sampleProfile',
-          targetDemandId: 'demandId',
-        })
+      projectDemandProfile.getProfileByIdService = jest.fn().mockResolvedValue({
+        id: 'sampleProfileId',
+        name: 'sampleProfile',
+        targetDemandId: 'demandId',
+      })
 
       projectDemandProfile.deleteProfileService = jest
         .fn()
@@ -522,13 +513,11 @@ describe('Profile Controller Tests', () => {
         json: jest.fn(),
       }
 
-      projectDemandProfile.getProfileByIdService = jest
-        .fn()
-        .mockResolvedValue({
-          id: 'sampleProfileId',
-          name: 'sampleProfile',
-          targetDemandId: 'demandId',
-        })
+      projectDemandProfile.getProfileByIdService = jest.fn().mockResolvedValue({
+        id: 'sampleProfileId',
+        name: 'sampleProfile',
+        targetDemandId: 'demandId',
+      })
 
       projectDemandProfile.deleteProfileService = jest
         .fn()

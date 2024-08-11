@@ -1,10 +1,10 @@
 import {
+  createNewProfilesService,
+  deleteProfileService,
   getAllProfileIdsByProjectIdService,
+  getInformationForProfilesService,
   getProfileByIdService,
   updateProfileService,
-  deleteProfileService,
-  getInformationForProfilesService,
-  createNewProfilesService,
 } from '../services/projectDemandProfile.js'
 import {
   getProfilesWithAssignedEmployeesAndSuitableEmployeesService,
@@ -57,7 +57,7 @@ export const getProfileByIdController = async (req, res) => {
   }
 }
 
-export const createNewProfilesController = async (req, res, next) => {
+export const createNewProfilesController = async (req, res) => {
   try {
     const { projectId } = req.params
     const data = req.body
@@ -94,7 +94,7 @@ export const updateProfileController = async (req, res) => {
       .status(200)
       .json({ message: 'Profile updated successfully.', data: updatedProfile })
   } catch (err) {
-    if (err.message === 'Profile not found.') {
+    if (err.message === 'Profile not found') {
       return res.status(404).json({ message: 'Profile not found.' })
     }
     res
