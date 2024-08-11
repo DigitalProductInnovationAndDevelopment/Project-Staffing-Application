@@ -1,38 +1,47 @@
-import User from '../models/User.js'
-import ProjectWorkingHours from '../models/ProjectWorkingHours.js'
-import { getProjectWorkingHourDistributionByUserId } from '../utils/projectWorkingHoursHelper.js'
-import Contract from '../models/Contract.js'
-import Leave from '../models/Leave.js'
-import { updateContractService } from './contract.js'
 import {
   addSkillsToUserService,
-  deleteSkillsService,
   createNewSkillsService,
+  deleteSkillsService,
   updateSkillsService,
 } from './skill.js'
+import Assignment from '../models/Assignment.js'
+import Contract from '../models/Contract.js'
+import Leave from '../models/Leave.js'
+import ProjectWorkingHours from '../models/ProjectWorkingHours.js'
+import User from '../models/User.js'
+import { getProjectWorkingHourDistributionByUserId } from '../utils/projectWorkingHoursHelper.js'
+import { updateContractService } from './contract.js'
 
+// Function to create a new user
 export const createNewUserService = async (userData) => {
   try {
+    // create a new user object
     let newUser = new User({
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: userData.email,
-      password: userData.password,
+      password: userData.password, //TODO: hash password (temporary complicated password)
       canWorkRemote: userData.canWorkRemote || false,
       officeLocation: userData.officeLocation || null,
       roles: userData.roles || [],
     })
     await newUser.save()
 
+    // create a new contract object if data provided
     if (userData.contract) {
       const newContract = new Contract(userData.contract)
       await newContract.save()
-      newUser = await updateUserFieldsService(newUser._id, {
-        //TODO
-        contractId: newContract._id,
-      })
+      try {
+        newUser = await updateUserFieldsService(newUser._id, {
+          contractId: newContract._id,
+        })
+      } catch (err) {
+        await Contract.findByIdAndDelete(newContract._id)
+        throw new Error(`Failed to create contract: ${err.message}`)
+      }
     }
 
+    // create new leave objects if data provided
     if (userData.leaves) {
       const leaveIds = []
       for (const leave of userData.leaves) {
@@ -40,26 +49,35 @@ export const createNewUserService = async (userData) => {
         await newLeave.save()
         leaveIds.push(newLeave._id)
       }
-      newUser = await updateUserFieldsService(newUser._id, {
-        leaveIds: leaveIds,
-      }) //TODO
+      try {
+        newUser = await updateUserFieldsService(newUser._id, {
+          leaveIds: leaveIds,
+        })
+      } catch (err) {
+        for (const id of leaveIds) {
+          await Leave.findByIdAndDelete(id)
+        }
+        throw new Error(`Failed to create leave: ${err.message}`)
+      }
     }
 
+    // check if targetSkillPoints is greater than skillPoints else throw error
     for (const userSkill of userData.skills) {
       if (
         userSkill.targetSkillPoints &&
         userSkill.targetSkillPoints < userSkill.skillPoints
       ) {
-        return res.status(400).json({
-          message:
-            'Invalid target skill points. Target skill points should be greater than or equal to skill points.',
-        })
+        throw new Error(
+          'Invalid target skill points. Target skill points should be greater than or equal to skill points'
+        )
       }
     }
 
+    // create new skills objects
     const newSkill = await createNewSkillsService(userData.skills)
     const newSkillIds = newSkill.map((skill) => skill._id)
 
+    // if targetSkillPoints is not provided, use skillPoints as targetSkillPoints
     const targetSkillsInformation = userData.skills.map((skill) => {
       if (!skill.targetSkillPoints) {
         return {
@@ -74,6 +92,7 @@ export const createNewUserService = async (userData) => {
       }
     })
 
+    // create new targetSkills objects
     const newTargetSkill = await createNewSkillsService(targetSkillsInformation)
     const newTargetSkillIds = newTargetSkill.map((skill) => skill._id)
 
@@ -84,16 +103,19 @@ export const createNewUserService = async (userData) => {
     )
 
     return newUserWithSkills
-  } catch (error) {
-    throw new Error(`Failed to create user: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to create user: ${err.message}`)
   }
 }
 
+// Function to get all users
 // enriches the returned user object with 3 additional values: "numberOfProjectsLast3Months", "projectWorkingHourDistributionInHours", "projectWorkingHourDistributionInPercentage" <-> based on ProjectWorkingHours
 export const getAllUsersService = async () => {
   // get all users
   const all_users = await User.find()
     .select('-password')
+    // populate skills, contractId, targetSkills fields
+    // transform the populated fields skills and targetSkills to the required format (skillPoints, skillCategory, maxSkillPoints)
     .populate({
       path: 'skills',
       populate: {
@@ -140,6 +162,7 @@ export const getAllUsersService = async () => {
             },
     })
 
+  // enrich the user object with additional value delta and targetSkillPoints
   for (let i = 0; i < all_users.length; i++) {
     const user = all_users[i]
     const skills = user.skills
@@ -184,6 +207,7 @@ export const getAllUsersService = async () => {
   return all_users
 }
 
+// Function to get a user by userId
 // enriches the returned user object with project history based on ProjectWorkingHours for 4 time spans
 // (1) last 7 days (current) -> "numberOfProjectsLast7Days" + "projectWorkingHourDistributionInPercentageLast7Days"
 // (2) last 3 months <-> "numberOfProjectsLast3Months" + "projectWorkingHourDistributionInPercentageLast3Months"
@@ -193,6 +217,8 @@ export const getUserByUserIdService = async (userId) => {
   try {
     const user = await User.findById(userId)
       .select('-password')
+      // populate skills, contractId, targetSkills fields
+      // transform the populated fields skills and targetSkills to the required format (skillPoints, skillCategory, maxSkillPoints)
       .populate({
         path: 'skills',
         populate: {
@@ -242,6 +268,7 @@ export const getUserByUserIdService = async (userId) => {
       throw new Error('User not found')
     }
 
+    // enrich the user object with additional value delta and targetSkillPoints
     const skills = user.skills
     const targetSkills = user.targetSkills
     for (let i = 0; i < skills.length; i++) {
@@ -317,36 +344,42 @@ export const getUserByUserIdService = async (userId) => {
     userObject.projectWorkingHourDistributionInPercentageLast5Years =
       pwdPast5Years.percentageDistribution
 
+    if (!userObject) {
+      throw new Error('User Object not found')
+    }
+
     return userObject
-  } catch (error) {
-    throw new Error(`Failed to get user: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to get user: ${err.message}`)
   }
 }
 
 //mongoose will only update the specified fields within "updateData" and leave the other fields unchanged
+// Function to update a user
 export const updateUserService = async (userId, updateData) => {
   try {
+    // check if the user exists
     const user = await getUserByUserIdService(userId)
-    if (!user) {
-      throw new Error('User not found')
-    }
 
+    // update the contract object if contractId is part of the update
     if (updateData.contractId) {
       const contractId = user.contractId
       const updatedContract = await updateContractService(
         contractId,
         updateData.contractId
       )
-      const _ = await updateUserFieldsService(userId, {
+      await updateUserFieldsService(userId, {
         contractId: updatedContract._id,
-      }) //TODO
+      })
     }
 
+    // update the leave objects if leaves is part of the update
+    // requires all existing leaves to be passed in the request
+    // deletes all existing leaves and creates new leaves
     if (updateData.leaves) {
-      // requires all existing leaves to be passed in the request
       const leaveIds = user.leaveIds
       for (const id of leaveIds) {
-        await Leave.findByIdAndDelete(id) //TODO
+        await Leave.findByIdAndDelete(id)
       }
       const newLeaveIds = []
       for (const leave of updateData.leaves) {
@@ -354,43 +387,45 @@ export const updateUserService = async (userId, updateData) => {
         await newLeave.save()
         newLeaveIds.push(newLeave._id)
       }
-      const _ = await updateUserFieldsService(userId, { leaveIds: newLeaveIds }) //TODO
+      await updateUserFieldsService(userId, {
+        leaveIds: newLeaveIds,
+      })
     }
 
+    // update the skills objects if skills is part of the update
     if (updateData.skills) {
+      // check if targetSkillPoints is greater than skillPoints else throw error
       for (const userSkill of updateData.skills) {
         if (userSkill.targetSkillPoints < userSkill.skillPoints) {
           throw new Error(
-            'Invalid target skill points. Target skill points should be greater than or equal to skill points.'
+            'Invalid target skill points. Target skill points should be greater than or equal to skill points'
           )
         }
       }
-      await updateSkillsService(updateData.skills, user.skills) //TODO
+      await updateSkillsService(updateData.skills, user.skills)
+      // update targetSkills objects with the new targetSkillPoints //TODO
       const targetSkillsInformation = updateData.skills.map((skill) => {
         return {
           skillCategory: skill.skillCategory,
           skillPoints: skill.targetSkillPoints,
         }
       })
-      await updateSkillsService(targetSkillsInformation, user.targetSkills) //TODO
+      await updateSkillsService(targetSkillsInformation, user.targetSkills)
     }
 
+    // eslint-disable-next-line no-unused-vars
     const { skills = [], leave = [], contractId = [], ...rest } = updateData
 
     //find the user by ID and update the document with the new data
     const updatedUser = await updateUserFieldsService(userId, rest)
-    if (!updatedUser) {
-      throw new Error('User fields could not be updated.')
-    }
-    // { new: true } => return updated document
-    // update skills objects
 
     return updatedUser
-  } catch (error) {
-    throw new Error(`Failed to update user: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to update user: ${err.message}`)
   }
 }
 
+// Function to update user fields
 export const updateUserFieldsService = async (userId, updateData) => {
   try {
     const user = await getUserByUserIdService(userId)
@@ -401,40 +436,66 @@ export const updateUserFieldsService = async (userId, updateData) => {
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
     })
+    if (!updatedUser) {
+      throw new Error('User fields could not be updated')
+    }
 
     return updatedUser
-  } catch (error) {
-    throw new Error(`Failed to update user fields: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to update user fields: ${err.message}`)
   }
 }
 
+// Function to delete a user
 export const deleteUserService = async (userId) => {
   try {
-    const user = await getUserByUserIdService(userId) //TODO
-    if (!user) {
-      throw new Error('User not found')
-    }
+    // get the user by userId
+    const user = await getUserByUserIdService(userId)
 
+    // delete all associated skills
     const skillIds = user.skills.map((skill) => skill._id)
-    await deleteSkillsService(skillIds) //TODO
+    await deleteSkillsService(skillIds)
 
     const targetSkillPoints = user.targetSkills.map((skill) => skill._id)
-    await deleteSkillsService(targetSkillPoints) //TODO
+    await deleteSkillsService(targetSkillPoints)
 
     const contractId = user.contractId
-    await Contract.findByIdAndDelete(contractId) //TODO
+    const contract = await Contract.findByIdAndDelete(contractId)
+    if (!contract) {
+      throw new Error('Contract not found')
+    }
 
     const leaveIds = user.leaveIds
     for (const id of leaveIds) {
-      await Leave.findByIdAndDelete(id) //TODO
+      const leave = await Leave.findByIdAndDelete(id)
+      if (!leave) {
+        throw new Error('Leave not found')
+      }
+    }
+
+    //delete the user from assignments
+    const allAssignments = await Assignment.find()
+    if (!allAssignments) {
+      throw new Error('Assignments not found')
+    }
+    for (const assignment of allAssignments) {
+      const updatedAssignment = Assignment.findByIdAndUpdate(
+        assignment._id,
+        { $pull: { userId: userId } },
+        { new: true }
+      )
+      if (!updatedAssignment) {
+        throw new Error('Assignment could not be updated')
+      }
     }
 
     const deletedUser = await User.findOneAndDelete({ _id: userId })
     if (!deletedUser) {
       throw new Error('User not found')
     }
+
     return deletedUser
-  } catch (error) {
-    throw new Error(`Failed to delete user: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to delete user: ${err.message}`)
   }
 }

@@ -1,9 +1,10 @@
+import AppError from '../utils/AppError.js'
 import jwt from 'jsonwebtoken'
 
 export const verifyToken = async (req, res, next) => {
   try {
     // access jwt_token from cookies
-    const token = req.cookies.jwt_token
+    let token = req.cookies.jwt_token
 
     // if no token, return 403 Forbidden
     if (!token) {
@@ -22,6 +23,7 @@ export const verifyToken = async (req, res, next) => {
     req.user = verified
 
     next()
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
     res.clearCookie('jwt_token')
     return next(new AppError('You are not logged in', 401))

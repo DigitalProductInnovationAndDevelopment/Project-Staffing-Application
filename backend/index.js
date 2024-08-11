@@ -10,6 +10,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import config from 'config'
 import cookieParser from 'cookie-parser'
+
 // import routes
 import authRoutes from './routes/auth.js'
 import userRoutes from './routes/user.js'
@@ -20,7 +21,7 @@ import skillRoutes from './routes/skill.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 dotenv.config()
-const app = express()
+export const app = express()
 
 app.use(express.json())
 app.use(cookieParser())
@@ -29,24 +30,24 @@ app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }))
 app.use(morgan('common'))
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
-app.use('/assets', express.static(path.join(__dirname, 'public/assets'))) // set directory of where to store our assets (i.e. images) (in this case locally)
+app.use('/assets', express.static(path.join(__dirname, 'public/assets')))
 
 /* MIDDLEWARE */
 //cors set-up
-app.use(cors({ origin: await config.get('origin'), credentials: true }))
-
-// app.use(csrf({cookie: {httpOnly: true}}));
-// app.use((req, res, next) => {
-//   res.cookie('X-XSRF-TOKEN', req.csrfToken());
-//   next();
-// });
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  })
+)
 
 /* ROUTES */
 app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
 app.use('/project', projectRoutes)
 app.use('/skill', skillRoutes)
-//home route (remove later)
+
+//home route
 app.get('/', (req, res) => {
   res.send('Hello World! This is the GREAT STAFF server!')
 })
@@ -70,18 +71,31 @@ app.use((err, req, res, next) => {
 })
 
 /* MONGOOSE SETUP */
-const PORT = process.env.PORT || 6001
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+export function startServer(port) {
+  return new Promise((resolve) => {
+    mongoose
+      .connect(process.env.MONGO_URL, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      .then(async () => {
+        const db = mongoose.connection.client.db()
+        const collections = await db.listCollections().toArray()
+        const collectionNames = collections.map((collection) => collection.name)
+        console.log('current database collections (tables):', collectionNames)
+
+        const server = app.listen(port, '0.0.0.0', () => {
+          console.log(`Server running on port ${port}`)
+          resolve(server)
+        })
+      })
+      .catch((error) => console.log(`${error} did not connect`))
   })
-  .then(async () => {
-    //list current database collections
-    const db = mongoose.connection.client.db()
-    const collections = await db.listCollections().toArray()
-    const collectionNames = collections.map((collection) => collection.name)
-    console.log('current database collections (tables):', collectionNames)
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`))
-  })
-  .catch((error) => console.log(`${error} did not connect`))
+}
+
+// Only start the server if this file is run directly
+if (process.env.NODE_ENV !== 'test') {
+  startServer(process.env.PORT || 3001)
+}
+
+export default app

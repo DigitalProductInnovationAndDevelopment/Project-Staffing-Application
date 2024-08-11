@@ -1,5 +1,5 @@
 const FrontendRoutes = {
-    BASE:'http://localhost:3000',
+    BASE: process.env.FRONTEND_URL || 'http://localhost:3000',
     LOGIN: '/login',
     PROJECTS: '/projects',
 };

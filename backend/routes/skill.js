@@ -1,23 +1,24 @@
-import express from 'express'
 import {
   createNewSkillCategoryController,
+  deleteSkillCategoryController,
   getSkillCategoriesController,
   updateSkillCategoryController,
-  deleteSkillCategoryController,
 } from '../controllers/skill.js'
+import express from 'express'
+import { verifyToken } from '../middleware/auth.js'
 
 const router = express.Router()
 
 // CREATE
-router.post('/', createNewSkillCategoryController)
+router.post('/', verifyToken, createNewSkillCategoryController)
 
 // READ
-router.get('/', getSkillCategoriesController)
+router.get('/', verifyToken, getSkillCategoriesController)
 
 // UPDATE
-router.patch('/:skillId', updateSkillCategoryController)
+router.patch('/:skillId', verifyToken, updateSkillCategoryController)
 
 // DELETE
-router.delete('/:skillId', deleteSkillCategoryController)
+router.delete('/:skillId', verifyToken, deleteSkillCategoryController)
 
 export default router

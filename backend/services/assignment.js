@@ -1,48 +1,62 @@
-import Assignment from '../models/Assignment.js'
-import { removeDuplicateObjectIDs } from '../utils/helper.js'
-import { getUserByUserIdService, getAllUsersService } from './user.js'
 import {
   getAllProfileIdsByProjectIdService,
   getProfileByIdService,
 } from './projectDemandProfile.js'
+import { getAllUsersService, getUserByUserIdService } from './user.js'
+import Assignment from '../models/Assignment.js'
+import { removeDuplicateObjectIDs } from '../utils/helper.js'
 
 // Function to get assignments by profile ID
 export const getAssignmentByProfileIdService = async (profileId) => {
-  return Assignment.findOne({ projectDemandProfileId: profileId }) //TODO
+  const assignment = await Assignment.findOne({
+    projectDemandProfileId: profileId,
+  })
+  if (!assignment) {
+    throw new Error('Assignment by ProfileId not found')
+  }
+  return assignment
 }
 
+// Function to get all employees for given profile IDs (array)
 export const getAllEmployeesByProfileIdsService = async (profileIds) => {
-  const assignmentIds = []
-  for (let i = 0; i < profileIds.length; i++) {
-    const assignment = await getAssignmentByProfileIdService(profileIds[i])
-    if (!assignment) {
-      throw new Error('Assignment not found')
+  try {
+    const assignmentIds = []
+    const allEmployeesIds = []
+    const allEmployees = []
+
+    //get assignments by profile ids
+    for (let i = 0; i < profileIds.length; i++) {
+      const assignment = await getAssignmentByProfileIdService(profileIds[i])
+      assignmentIds.push(assignment)
     }
-    assignmentIds.push(assignment)
-  }
-  //get people from assignment
-  const allEmployeesIds = []
-  for (let i = 0; i < assignmentIds.length; i++) {
-    allEmployeesIds.push(...assignmentIds[i].userId) //TODO
-  }
-  // tranform ids to objects or there like
 
-  //no duplicates in allemployeeids
-  const uniqueAllEmployeesIds = await removeDuplicateObjectIDs(allEmployeesIds) //TODO
-
-  const allEmployees = []
-  for (let i = 0; i < uniqueAllEmployeesIds.length; i++) {
-    const user = await getUserByUserIdService(uniqueAllEmployeesIds[i])
-    if (!user) {
-      throw new Error('User not found')
+    //get userIds from assignment as single elements and push them to allEmployeesIds
+    for (let i = 0; i < assignmentIds.length; i++) {
+      allEmployeesIds.push(...assignmentIds[i].userId)
     }
-    allEmployees.push(user)
-  }
 
-  return allEmployees
+    //no duplicates in allEmployeesIds
+    const uniqueAllEmployeesIds = removeDuplicateObjectIDs(allEmployeesIds)
+
+    //get user data by userIds
+    for (let i = 0; i < uniqueAllEmployeesIds.length; i++) {
+      const user = await getUserByUserIdService(uniqueAllEmployeesIds[i])
+      allEmployees.push(user)
+    }
+
+    if (!allEmployees) {
+      throw new Error('Employees not found')
+    }
+
+    return allEmployees
+  } catch (err) {
+    throw new Error(
+      `Failed to get all employees by profile IDs: ${err.message}`
+    )
+  }
 }
 
-// Function to update an assignment service
+// Function to update an assignment by assignment ID and patch data
 export const updateAssignmentService = async (assignmentId, updatedData) => {
   try {
     const assignment = await Assignment.findByIdAndUpdate(
@@ -51,62 +65,74 @@ export const updateAssignmentService = async (assignmentId, updatedData) => {
       { new: true }
     )
     if (!assignment) {
-      throw new Error('Assignment not found')
+      throw new Error('Assignment could not be updated')
     }
+
     return assignment
-  } catch (error) {
-    throw new Error(`Failed to update assignment: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to update assignment: ${err.message}`)
   }
 }
 
-//TODO profile id
+// Function to create a new assignment
 export const createNewAssignmentService = async (assignmentData) => {
   try {
     const newAssignment = new Assignment({
       projectDemandProfileId: assignmentData,
     })
+    if (!newAssignment) {
+      throw new Error('New assignment could not be created')
+    }
     await newAssignment.save()
+
     return newAssignment
-  } catch (error) {
-    throw new Error(`Failed to create new assignment: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to create new assignment: ${err.message}`)
   }
 }
 
+// Function to delete an assignment by assignment ID
 export const deleteAssignmentService = async (assignmentId) => {
   try {
     const assignment = await Assignment.findByIdAndDelete(assignmentId)
     if (!assignment) {
       throw new Error('Assignment not found')
     }
-  } catch (error) {
-    throw new Error(`Failed to delete assignment: ${error.message}`)
+
+    return assignment
+  } catch (err) {
+    throw new Error(`Failed to delete assignment: ${err.message}`)
   }
 }
 
+// Function to get all profiles with assigned employees and suitable employees as additional data
 export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
   async (projectId) => {
     try {
       let payload = []
 
+      // get all profile ids by project id
       const profileIds = await getAllProfileIdsByProjectIdService(projectId)
-      if (!profileIds) {
-        throw new Error('Profile ids not found')
-      }
 
+      // for each profile, get the profile data, assigned employees data, and suitable employees data
       for (const profileId of profileIds) {
-        const profile = await getProfileByIdService(profileId) //TODO
+        // get profile data
+        const profile = await getProfileByIdService(profileId)
         const assignment = await getAssignmentByProfileIdService(profileId)
-        if (!assignment) {
-          throw new Error('Assignment not found')
-        }
+
+        // get assigned employees data
         const assignedEmployees = assignment.userId
         const assignedEmployeesData = await Promise.all(
           assignedEmployees.map(async (userId) => {
-            const user = await getUserByUserIdService(userId) //TODO
+            const user = await getUserByUserIdService(userId)
             return user
           })
         )
+
+        // get suitable employees data
         const suitableEmployees = await getAllUsersService()
+
+        // filter out assigned employees from suitable employees
         const suitableEmployeesFilteredByAssigned = suitableEmployees.filter(
           (user) => !assignedEmployees.includes(user._id)
         )
@@ -132,6 +158,7 @@ export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
               (skill) => skill.skillCategory === targetSkill.skillCategory
             )
 
+            // if the user has the skill, calculate the difference
             if (userSkill) {
               const difference = userSkill.skillPoints - targetSkill.skillPoints
               totalDifference += difference
@@ -140,59 +167,54 @@ export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
               totalDifference -= targetSkill.skillPoints
             }
           }
+
           return totalDifference
         }
 
-        // // debug log: before sorting
-        // console.log("Suitable employees before sorting:", suitableEmployeesFilteredByAssigned.map(user => ({
-        //   name: user.firstName + ' ' + user.lastName,
-        //   skills: user.skills
-        // })));
-
-        // debug log: after sorting
-        // console.log(
-        //   'Suitable employees after sorting:',
-        //   suitableEmployeesSorted.map((user) => ({
-        //     name: user.firstName + ' ' + user.lastName,
-        //     score: calculateSkillDifferenceScore(user, profile),
-        //   }))
-        // )
-
+        // push profile data, assigned employees data, and suitable employees data to the iteratively constructed payload
         payload.push({
           profile: profile,
           assignedEmployees: assignedEmployeesData,
           suitableEmployees: suitableEmployeesSorted,
         })
       }
+
       return payload
-    } catch (error) {
+    } catch (err) {
       throw new Error(
-        `Failed to get profiles with assigned and suitable employees: ${error.message}`
+        `Failed to get profiles with assigned and suitable employees: ${err.message}`
       )
     }
   }
 
+// Function to update assignments for all profiles
 export const updateAssignmentsService = async (profiles) => {
   try {
+    // check if profiles is an array or an object
     const profilesArray = Array.isArray(profiles)
       ? profiles
       : Object.values(profiles)
 
+    // update assignments for all profiles
     const updatePromises = profilesArray.map(async (profile) => {
       const { profileId, assignedEmployees } = profile
+
+      // get the assignment by profile ID
       const assignment = await getAssignmentByProfileIdService(profileId)
-      if (!assignment) {
-        throw new Error('Assignment not found')
-      }
+
+      // update the assignment with the new assigned employees
       const updatedAssignment = await updateAssignmentService(assignment._id, {
         userId: assignedEmployees,
       })
+
       return { profileId, data: updatedAssignment }
     })
 
+    // wait for all updates to complete
     const updatedAssignments = await Promise.all(updatePromises)
+
     return updatedAssignments
-  } catch (error) {
-    throw new Error(`Failed to update assignments: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to update assignments: ${err.message}`)
   }
 }

@@ -1,15 +1,18 @@
 import {
-  getProjectByProjectIdService,
   createNewProjectService,
-  updateProjectService,
   deleteProjectService,
   getAllProjectsWithProfilesEmployeesAndDemandService,
+  getProjectByProjectIdService,
+  updateProjectService,
 } from '../services/project.js'
 
 export const getAllProjectsController = async (_, res) => {
   try {
     const all_projects =
       await getAllProjectsWithProfilesEmployeesAndDemandService()
+    if (!all_projects) {
+      return res.status(404).json({ message: 'Projects not found.' })
+    }
 
     res.status(200).json({ projects: all_projects })
   } catch (err) {
@@ -41,14 +44,14 @@ export const createNewProjectController = async (req, res) => {
     const projectData = req.body
 
     const project = await createNewProjectService(projectData)
+    if (!project) {
+      return res.status(500).json({ message: 'Project could not be created.' })
+    }
 
     res
       .status(201)
       .json({ message: 'Project created successfully.', data: project })
   } catch (err) {
-    // if (err.message === 'Project already exists') {
-    //   return res.status(400).json({ message: 'Project already exists.' })
-    // }
     res
       .status(500)
       .json({ message: 'Failed to create new project.', error: err.message })
@@ -87,7 +90,9 @@ export const deleteProjectController = async (req, res) => {
 
     const deletedProject = await deleteProjectService(project._id)
     if (!deletedProject) {
-      return res.status(500).json({ message: 'Failed to delete project.' })
+      return res
+        .status(500)
+        .json({ message: 'Failed to delete project (NULL).' })
     }
 
     res
