@@ -117,7 +117,20 @@ const AssignTeam = ({ project, onFormDataChange }) => {
 
   const handleRemove = (employee) => {
     const updatedAssignedFor = assignedFor.filter((e) => e.email !== employee.email);
-    const updatedSuitableEmployees = [...suitableEmployees, employee];
+
+    // Find the original index of the employee in the suitableEmployees array
+    const originalIndex = allDataForAssignment.data[activeTab].suitableEmployees.findIndex((e) => e.email === employee.email);
+    
+    // Clone the suitableEmployees array to make updates
+    const updatedSuitableEmployees = [...suitableEmployees];
+    
+    // Insert the employee back into their original index
+    if (originalIndex !== -1) {
+        updatedSuitableEmployees.splice(originalIndex, 0, employee);
+    } else {
+        // If somehow the index is not found (which shouldn't happen), add to the end
+        updatedSuitableEmployees.push(employee);
+    }
 
     setAssignedFor(updatedAssignedFor);
     setSuitableEmployees(updatedSuitableEmployees);
@@ -128,7 +141,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     updatedFormData[activeTab].assignedEmployees = updatedAssignedFor;
     updatedFormData[activeTab].suitableEmployees = updatedSuitableEmployees;
     setFormData(updatedFormData);
-  };
+};
   
   const getColor = (employeePoints, targetPoints) => {
     const third = targetPoints / 3;
