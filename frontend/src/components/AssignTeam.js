@@ -35,14 +35,20 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     refetch();
 
     if (allDataForAssignment) {
-      const tabs = allDataForAssignment.data.map(profileData => ({
-        profileId: profileData.profile._id,
-        name: profileData.profile.name,
-        assignedEmployees: profileData.assignedEmployees,
-        suitableEmployees: profileData.suitableEmployees,
-        targetSkills: profileData.profile.targetSkills,
-        demand: profileData.profile.targetDemandId.now,
-      }));
+      const tabs = allDataForAssignment.data.map(profileData => {
+        // Filter out skill categories with zero skill points
+        const nonZeroSkills = profileData.profile.targetSkills.filter(skill => skill.skillPoints > 0);
+        
+        return {
+          profileId: profileData.profile._id,
+          name: profileData.profile.name,
+          assignedEmployees: profileData.assignedEmployees,
+          suitableEmployees: profileData.suitableEmployees,
+          targetSkills: nonZeroSkills,
+          demand: profileData.profile.targetDemandId.now,
+        };
+      });
+
       setFormData(tabs);
 
       const tabLabels = tabs.map(tab => tab.name);
@@ -51,26 +57,40 @@ const AssignTeam = ({ project, onFormDataChange }) => {
       if (tabs.length > 0) {
         const initialAssigned = tabs[0].assignedEmployees || [];
         const initialSuitable = tabs[0].suitableEmployees || [];
-        setAssignedFor(initialAssigned);
-        setSuitableEmployees(initialSuitable);
+        const filteredAssigned = initialAssigned.filter(employee =>
+          employee.skills.some(skill => tabs[0].targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+        );
+        const filteredSuitable = initialSuitable.filter(employee =>
+          employee.skills.some(skill => tabs[0].targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+        );
+
+        setAssignedFor(filteredAssigned);
+        setSuitableEmployees(filteredSuitable);
         setCurrentSkillsetsFor(tabs[0].targetSkills);
         setTotalSlotsFor(tabs[0].demand);
-        setAssignedNum(initialAssigned.length);
-        setSliderValueFor((initialAssigned.length / tabs[0].demand) * 100);
+        setAssignedNum(filteredAssigned.length);
+        setSliderValueFor((filteredAssigned.length / tabs[0].demand) * 100);
       }
     }
   }, [allDataForAssignment, refetch]);
 
-  // Update state when activeTab changes
-  useEffect(() => {
+ // Update state when activeTab changes
+ useEffect(() => {
     if (formData.length > 0) {
       const currentProfile = formData[activeTab];
+      const filteredAssigned = currentProfile.assignedEmployees.filter(employee =>
+        employee.skills.some(skill => currentProfile.targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+      );
+      const filteredSuitable = currentProfile.suitableEmployees.filter(employee =>
+        employee.skills.some(skill => currentProfile.targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+      );
+
       setCurrentSkillsetsFor(currentProfile.targetSkills);
-      setAssignedFor(currentProfile.assignedEmployees);
-      setSuitableEmployees(currentProfile.suitableEmployees);
+      setAssignedFor(filteredAssigned);
+      setSuitableEmployees(filteredSuitable);
       setTotalSlotsFor(currentProfile.demand);
-      setAssignedNum(currentProfile.assignedEmployees.length);
-      setSliderValueFor((currentProfile.assignedEmployees.length / currentProfile.demand) * 100);
+      setAssignedNum(filteredAssigned.length);
+      setSliderValueFor((filteredAssigned.length / currentProfile.demand) * 100);
     }
   }, [activeTab, formData]);
  
