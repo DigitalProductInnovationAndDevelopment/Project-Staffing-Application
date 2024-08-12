@@ -217,7 +217,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
             key={label}
             label={
              <Badge
-                badgeContent={formData[index]?.assignedEmployees.length || 0}
+                badgeContent={formData[index]?.demand - formData[index]?.assignedEmployees.length || 0}
                 color="profBlue"
                 anchorOrigin={{
                    vertical: 'top',
@@ -232,8 +232,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       minWidth: '20px',
                       borderRadius: '10px',
                       padding: '0 6px',
-                      ml: 1,
-                      mb: 1,
+                      transform: 'translate(50%, -75%)',
                     },
                 }}
              >
