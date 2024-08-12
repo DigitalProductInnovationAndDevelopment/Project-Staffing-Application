@@ -216,6 +216,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
           <Tab
             key={label}
             label={
+                formData[index]?.demand - formData[index]?.assignedEmployees.length > 0 ? (
              <Badge
                 badgeContent={formData[index]?.demand - formData[index]?.assignedEmployees.length || 0}
                 color="profBlue"
@@ -238,6 +239,9 @@ const AssignTeam = ({ project, onFormDataChange }) => {
              >
                 {label}
              </Badge>
+             ) : (
+                label
+             )
             }
          />
         ))}
