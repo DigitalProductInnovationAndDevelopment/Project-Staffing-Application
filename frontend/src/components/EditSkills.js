@@ -16,6 +16,8 @@ const EditSkills = ({ open, onClose }) => {
   const [editingSkillId, setEditingSkillId] = useState(null);
   const [editedName, setEditedName] = useState('');
   const [editedPoints, setEditedPoints] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState(null);
 
   const handleAddSkill = async () => {
     if (newSkillName && newSkillPoints) {
@@ -38,9 +40,22 @@ const EditSkills = ({ open, onClose }) => {
     refetch();
   };
 
-  const handleDeleteSkill = async (id) => {
-    await deleteSkill(id);
-    refetch();
+  const handleOpenDeleteDialog = (skillId) => {
+    setSkillToDelete(skillId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteSkill = async () => {
+    try {
+      if (skillToDelete) {
+        await deleteSkill(skillToDelete);
+        setDeleteDialogOpen(false);
+        refetch();
+      }
+    } 
+    catch (error) {
+      console.error("Failed to delete skill:", error);
+    }
   };
 
   const getCategory = (category) => {
@@ -280,7 +295,7 @@ const EditSkills = ({ open, onClose }) => {
                           bgcolor: '#CB074D',
                         },
                       }}
-                      onClick={() => handleDeleteSkill(skill._id)}
+                      onClick={() => handleOpenDeleteDialog(skill._id)}
                     >
                       Delete <img src={deleteIcon} alt="Delete" style={{ marginLeft: '10px' }} />
                     </Button>
@@ -314,6 +329,63 @@ const EditSkills = ({ open, onClose }) => {
           </Button>
         </Box>
       </Box>
+      <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          aria-labelledby="delete-project-dialog"
+          aria-describedby="delete-project-dialog-description"
+        >
+          <Box sx={{ padding: 4 }}>
+            <Typography id="delete-project-dialog-title" variant="h6">
+              Confirm Deletion
+            </Typography>
+            <Typography id="delete-project-dialog-description" sx={{ mt: 2 }}>
+              Are you sure you want to delete this skill category?
+            </Typography>
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => setDeleteDialogOpen(false)} 
+                variant="contained"
+                color="secondary"
+                sx={{
+                    textTransform: 'none',
+                    color: 'white',
+                    height: '40px',
+                    fontFamily: 'Halvetica, sans-serif',
+                    fontWeight: 'Bold',
+                    fontSize: '12px',
+                    lineHeight: '24px',
+                    letterSpacing: '0.16px',
+                    padding: '6px 14px',
+                }}>
+                  Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteSkill}
+                variant="contained"
+                color="error"
+                sx={{
+                  textTransform: 'none',
+                  fontSize: "12px",
+                  bgcolor: '#E10050',
+                  color: 'white',
+                  fontFamily: 'Halvetica, sans-serif',
+                  fontWeight: 'Bold',
+                  lineHeight: '24px',
+                  letterSpacing: '0.16px',
+                  padding: '6px 14px',
+                  boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+                  '&:hover': {
+                    bgcolor: '#CB074D',
+                  },
+                  ml: '8px',
+                }}
+              >
+                Delete
+              </Button>
+            </Box>
+          </Box>
+        </Dialog>
     </Dialog>
   );
 };
