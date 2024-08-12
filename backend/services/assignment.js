@@ -35,8 +35,9 @@ export const getAllEmployeesByProfileIdsService = async (profileIds) => {
       allEmployeesIds.push(...assignmentIds[i].userId)
     }
 
-    //no duplicates in allEmployeesIds
-    const uniqueAllEmployeesIds = removeDuplicateObjectIDs(allEmployeesIds)
+    //no duplicates in allEmployeesIds -> for avatars maybe necessary
+    // const uniqueAllEmployeesIds = removeDuplicateObjectIDs(allEmployeesIds)
+    const uniqueAllEmployeesIds = allEmployeesIds
 
     //get user data by userIds
     for (let i = 0; i < uniqueAllEmployeesIds.length; i++) {
