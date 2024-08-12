@@ -323,7 +323,9 @@ const AssignTeam = ({ project, onFormDataChange }) => {
           boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
           display: 'grid',
           gridTemplateColumns: `repeat(${currentSkillsetsFor.length + 1}, auto)`,
-          gap: 1,
+          maxWidth: '1072px',
+          overflowX: 'auto',
+          gap: 1
         }}
       >
         <Typography
@@ -353,10 +355,12 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 border: '1px solid #BDBDBD',
                 borderRadius: '100px',
                 padding: '4px 8px',
-                textAlign: 'center',
                 margin: '0',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               }}
             >
               <img src={TargetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
@@ -391,7 +395,6 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 border: '1px solid #BDBDBD',
                 borderRadius: '100px',
                 padding: '4px 8px',
-                textAlign: 'center',
                 margin: '0',
                 display: 'inline-block',
               }}
@@ -402,7 +405,13 @@ const AssignTeam = ({ project, onFormDataChange }) => {
         ))}
       </Box>
 
-      <Box>
+      <Box 
+        sx={{
+          display: 'grid',
+          maxWidth: '2002px',
+          overflowX: 'auto',
+        }}
+      >
       <Box sx={{ marginTop: 4}}>
         <Typography sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '18px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBottom: 2 }}>
           Assigned {tabLabelsFor[activeTab]}s ({assignedNum})
@@ -443,10 +452,13 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       border: `1px solid ${color}`,
                       borderRadius: '100px',
                       padding: '4px 8px',
-                      textAlign: 'center',
                       margin: '0 4px 4px 0',
                       display: 'flex',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    
                     }}
                   >
                     <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
@@ -513,10 +525,12 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       border: `1px solid ${color}`,
                       borderRadius: '100px',
                       padding: '4px 8px',
-                      textAlign: 'center',
                       margin: '0 4px 4px 0',
                       display: 'flex',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
