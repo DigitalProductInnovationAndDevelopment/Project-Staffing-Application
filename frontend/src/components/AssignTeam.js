@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Slider, Avatar, Button } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Slider, Avatar, Button, Badge} from '@mui/material';
 import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
@@ -212,8 +212,35 @@ const AssignTeam = ({ project, onFormDataChange }) => {
             },
           }}
         >
-        {tabLabelsFor.map((label) => (
-          <Tab key={label} label={label} />
+        {tabLabelsFor.map((label, index) => (
+          <Tab
+            key={label}
+            label={
+             <Badge
+                badgeContent={formData[index]?.assignedEmployees.length || 0}
+                color="profBlue"
+                anchorOrigin={{
+                   vertical: 'top',
+                   horizontal: 'right',
+                }}
+                sx={{
+                    '& .MuiBadge-badge': {
+                      backgroundColor: '#4FD1C5',
+                      color: 'white',
+                      fontSize: '12px',
+                      height: '20px',
+                      minWidth: '20px',
+                      borderRadius: '10px',
+                      padding: '0 6px',
+                      ml: 1,
+                      mb: 1,
+                    },
+                }}
+             >
+                {label}
+             </Badge>
+            }
+         />
         ))}
         </Tabs>
       </Box>

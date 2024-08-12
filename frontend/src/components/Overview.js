@@ -11,6 +11,7 @@ import {
   MenuItem,
   Select,
   Paper,
+  Dialog,
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
@@ -45,6 +46,8 @@ const Overview = ({ project, onFormDataChange }) => {
   const [updateProfile] = useUpdateProfileByIdMutation();
   const [createProfile] = useCreateProfileForProjectMutation();
   const [deleteProfile] = useDeleteProfileByIdMutation();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [profileToDelete, setProfileToDelete] = useState(null);
 
   const capitalizeFirstLetter = useCallback((letter) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
@@ -177,12 +180,18 @@ const Overview = ({ project, onFormDataChange }) => {
     }
   };
 
-  const handleDeleteProfile = async (profile) => {
-    try {
-        if (!!profile) {
-          await deleteProfile({ projectId: project._id, profileId: profile._id });
-          refetch();
+  const handleOpenDeleteDialog = (profile) => {
+    setProfileToDelete(profile);
+    setDeleteDialogOpen(true);
+  };
 
+  const handleDeleteProfile = async () => {
+    try {
+        if (profileToDelete) {
+          await deleteProfile({ projectId: project._id, profileId: profileToDelete._id });
+          refetch();
+          setDeleteDialogOpen(false);
+          setProfileToDelete(null);
           // Clear the selected profile after saving
           resetForm();
         }
@@ -465,7 +474,7 @@ const Overview = ({ project, onFormDataChange }) => {
                           bgcolor: '#CB074D',
                         },
                       }}
-                      onClick={() => handleDeleteProfile(profile)}
+                      onClick={() => handleOpenDeleteDialog(profile)}
                     >
                       Delete <img src={deleteIcon} alt="Delete" style={{ marginLeft: '10px' }} />
                     </Button>
@@ -607,6 +616,64 @@ const Overview = ({ project, onFormDataChange }) => {
           </Paper>
         </Box>
       </LocalizationProvider>
+
+      <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          aria-labelledby="delete-project-dialog"
+          aria-describedby="delete-project-dialog-description"
+        >
+          <Box sx={{ padding: 4 }}>
+            <Typography id="delete-project-dialog-title" variant="h6">
+              Confirm Deletion
+            </Typography>
+            <Typography id="delete-project-dialog-description" sx={{ mt: 2 }}>
+              Are you sure you want to delete this profile?
+            </Typography>
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => setDeleteDialogOpen(false)} 
+                variant="contained"
+                color="secondary"
+                sx={{
+                    textTransform: 'none',
+                    color: 'white',
+                    height: '40px',
+                    fontFamily: 'Halvetica, sans-serif',
+                    fontWeight: 'Bold',
+                    fontSize: '12px',
+                    lineHeight: '24px',
+                    letterSpacing: '0.16px',
+                    padding: '6px 14px',
+                }}>
+                  Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteProfile}
+                variant="contained"
+                color="error"
+                sx={{
+                  textTransform: 'none',
+                  fontSize: "12px",
+                  bgcolor: '#E10050',
+                  color: 'white',
+                  fontFamily: 'Halvetica, sans-serif',
+                  fontWeight: 'Bold',
+                  lineHeight: '24px',
+                  letterSpacing: '0.16px',
+                  padding: '6px 14px',
+                  boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+                  '&:hover': {
+                    bgcolor: '#CB074D',
+                  },
+                  ml: '8px',
+                }}
+              >
+                Delete
+              </Button>
+            </Box>
+          </Box>
+        </Dialog>
     </Box>
   );
 };
