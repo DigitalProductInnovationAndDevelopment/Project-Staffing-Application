@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useCallback} from 'react';
 import { Box, Typography, Select, MenuItem, Checkbox, TextField, Slider, Paper} from '@mui/material';
 import TargetLevelIcon from '../../../assets/images/assign/target_level.svg';
+import { useGetSkillsQuery } from './../../../state/api/skillApi';
 
-const initialSkills = [
-  { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
-  { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
-  { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
-  { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
-  { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
-];
 const Overview = ({ onFormDataChange }) => {
   const [location, setLocation] = useState("");
   const [canWorkRemote, setCanWorkRemote] = useState(false);
   const [workingHours, setWorkingHours] = useState(0);
-  const [skills, setSkills] = useState(initialSkills);
+  const { data: skillsData } = useGetSkillsQuery();
+  const [skills, setSkills] = useState([]);
   const [locations, setLocations] = useState(["Munich", "Stuttgart", "Cologne", "Stockholm", "Berlin", "Nuremberg", "Madrid"]);
   
   const normalizeLocation = useCallback((location) => {
@@ -42,6 +37,17 @@ const Overview = ({ onFormDataChange }) => {
       })),
     });
   }, [location, canWorkRemote, normalizeLocation, onFormDataChange, workingHours, skills]);
+
+  useEffect(() => {
+    if (skillsData) {
+      setSkills(skillsData.data.map(skill => ({
+        _id: skill._id,
+        skillCategory: skill.name,
+        maxSkillPoints: skill.maxPoints,
+        skillPoints: 0,
+      })));
+    }
+  }, [skillsData]);
 
   const handleRemoteChange = (event) => {
     setCanWorkRemote(event.target.checked);
@@ -178,6 +184,8 @@ const Overview = ({ onFormDataChange }) => {
               backgroundColor: "white",
               boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
               borderRadius: "15px",
+              maxHeight: '48vh',
+              overflowY: 'auto'
             }}
           >
             {/* Flex container for the headers */}

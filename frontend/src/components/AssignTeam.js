@@ -164,35 +164,32 @@ const AssignTeam = ({ project, onFormDataChange }) => {
 };
   
   const getColor = (employeePoints, targetPoints) => {
-    const third = targetPoints / 3;
-
-    if (employeePoints < third) {
-      //red
+    const normalizedScore = employeePoints / targetPoints;
+  
+    if (normalizedScore < 0.6) {
+      // Red
       return '#D32F2F';
-    } else if (employeePoints < 2 * third) {
-      //yellow
+    } else if (normalizedScore < 1) {
+      // Yellow
       return '#ECB22E';
     } else {
-      //green
+      // Green
       return '#2E7D32';
     }
   };
 
   const getTargetIcon = (employeePoints, targetPoints, delta) => {
-    const third = targetPoints / 3;
-
-    if (employeePoints < third) {
-      //red
-      if(delta > 0) return RedUp;
-      else return RedEq;
-    } else if (employeePoints < 2 * third) {
-      //yellow
-      if(delta > 0) return YellowUp;
-      else return YellowEq;
+    const normalizedScore = employeePoints / targetPoints;
+  
+    if (normalizedScore < 0.6) {
+      // Red
+      return delta > 0 ? RedUp : RedEq;
+    } else if (normalizedScore < 1) {
+      // Yellow
+      return delta > 0 ? YellowUp : YellowEq;
     } else {
-      //green
-      if(delta > 0) return GreenUp;
-      else return GreenEq;
+      // Green
+      return delta > 0 ? GreenUp : GreenEq;
     }
   };
 

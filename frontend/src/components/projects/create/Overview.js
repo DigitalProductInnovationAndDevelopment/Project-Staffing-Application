@@ -15,24 +15,15 @@ import {
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import deleteIcon from './../../../assets/images/delete-icon.svg';
-
-const initialSkills = [
-    { skillCategory: 'TECHNOLOGY', skillPoints: 0, maxSkillPoints: 20,},
-    { skillCategory: 'SOLUTION_ENGINEERING', skillPoints: 0,  maxSkillPoints: 15,},
-    { skillCategory: 'SELF_MANAGEMENT', skillPoints: 0,  maxSkillPoints: 15,},
-    { skillCategory: 'COMMUNICATION_SKILLS', skillPoints: 0,  maxSkillPoints: 20,},
-    { skillCategory: 'EMPLOYEE_LEADERSHIP', skillPoints: 0,  maxSkillPoints: 18,},
-];
-
-const skillCategoryMap = {
-    TECHNOLOGY: "technology",
-    SOLUTION_ENGINEERING: "solutionEngineering",
-    SELF_MANAGEMENT: "selfManagement",
-    COMMUNICATION_SKILLS: "communicationSkills",
-    EMPLOYEE_LEADERSHIP: "employeeLeadership"
-};
+import { useGetSkillsQuery } from './../../../state/api/skillApi';
 
 const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
+  const initializeSliders = (skillsData) => {
+    return skillsData?.data.reduce((acc, skill) => {
+      acc[skill.name] = 0;
+        return acc;
+    }, {});
+  };
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [priority, setPriority] = useState("");
@@ -41,36 +32,37 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
   const [profileName, setProfileName] = useState("");
   const [fteNumber, setFteNumber] = useState("");
   const [profiles, setProfiles] = useState([]);
-  const [skills, setSkills] = useState(initialSkills);
+  const [sliders, setSliders] = useState(initializeSliders({ data: [] }));
+  const { data: skillsData } = useGetSkillsQuery();
+  const [skills, setSkills] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
-  const [sliders, setSliders] = useState({
-    technology: 0,
-    solutionEngineering: 0,
-    selfManagement: 0,
-    communicationSkills: 0,
-    employeeLeadership: 0,
-  });
 
   const capitalizeFirstLetter = useCallback((letter) => {
     if(letter) return letter.charAt(0).toUpperCase() + letter.slice(1).toLowerCase();
     else return '';
   }, []);
-  const getSkillFieldName = (skillCategory) => {
-    switch (skillCategory) {
-      case 'TECHNOLOGY':
-        return 'technology';
-      case 'SOLUTION_ENGINEERING':
-        return 'solutionEngineering';
-      case 'SELF_MANAGEMENT':
-        return 'selfManagement';
-      case 'COMMUNICATION_SKILLS':
-        return 'communicationSkills';
-      case 'EMPLOYEE_LEADERSHIP':
-        return 'employeeLeadership';
-      default:
-        return skillCategory;
-    }
+ 
+  const getCategory = (category) => {
+    if(category  === 'TECHNOLOGY') return 'Technology';
+    else if (category  === 'SOLUTION_ENGINEERING') return 'Solution Engineering';
+    else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
+    else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
+    else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
+    else return category
   };
+
+  useEffect(() => {
+    if (skillsData) {
+      setSkills(skillsData.data.map(skill => ({
+        _id: skill._id,
+        skillCategory: skill.name,
+        maxSkillPoints: skill.maxPoints,
+        skillPoints: 0,
+      })));
+
+      setSliders(initializeSliders(skillsData));
+    }
+  }, [skillsData]);
 
   useEffect(() => {
       const normalizedLocation = capitalizeFirstLetter(location);
@@ -101,20 +93,19 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
     setFteNumber(profile.targetDemandId.now);
     setSkills(profile.targetSkills);
 
-    //set sliders according to targetSkills from backend, set the value from skillPoints
-    const newSliders = profile.targetSkills.reduce((acc, skill) => {
-        const field = skillCategoryMap[skill.skillCategory];
-        if (field) {
-          acc[field] = skill.skillPoints;
-        }
+    // Set sliders according to targetSkills from backend, set the value from skillPoints
+    if (skillsData && skillsData.data) {
+      const newSliders = skillsData.data.reduce((acc, skill) => {
+        const targetSkill = profile.targetSkills.find(s => s.skillCategory === skill.name);
+        acc[skill.name] = targetSkill ? targetSkill.skillPoints : 0;
         return acc;
       }, {});
-    
-    setSliders(newSliders);
+      setSliders(newSliders);
+    }
   };
 
-  const handleSliderChange = (field, newValue) => {
-    setSliders({ ...sliders, [field]: newValue });
+  const handleSliderChange = (skillName, newValue) => {
+    setSliders((prevSliders) => ({ ...prevSliders, [skillName]: newValue }));
   };
 
   const handleSaveProfile = async () => {
@@ -124,7 +115,7 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
       targetDemandId: { now: fteNumber || 0},
       targetSkills: skills.map(skill => ({
         ...skill,
-        skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
+        skillPoints: sliders[skill.skillCategory]
       }))
 
     };
@@ -137,16 +128,7 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
     );
 
     // Clear the selected profile after saving
-    setSelectedProfile(null);
-    setProfileName("");
-    setFteNumber("");
-    setSliders({
-      technology: 0,
-      solutionEngineering: 0,
-      selfManagement: 0,
-      communicationSkills: 0,
-      employeeLeadership: 0,
-    });
+    resetForm();
   };
 
   const handleAddProfile = () => {
@@ -156,26 +138,49 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
       targetDemandId: { now: fteNumber || 0 },
       targetSkills: skills.map(skill => ({
         ...skill,
-        skillPoints: sliders[getSkillFieldName(skill.skillCategory)]
+        skillPoints: sliders[skill.skillCategory]
       }))
     };
 
     setProfiles([...profiles, newProfile]);
 
-    setProfileName("");
-    setFteNumber("");
-    setSliders({
-      technology: 0,
-      solutionEngineering: 0,
-      selfManagement: 0,
-      communicationSkills: 0,
-      employeeLeadership: 0,
-    });
+    resetForm();
   };
 
   const handleDeleteProfile = (profileId) => {
     setProfiles(profiles.filter(profile => profile.id !== profileId));
   };
+
+  const resetForm = useCallback(() => {
+    setSelectedProfile(null);
+    setProfileName("");
+    setFteNumber("");
+  
+    // Initialize sliders with a default value of 0 for each skill
+    if (skillsData) {
+      const transformedSkills = skillsData.data.map(skill => ({
+        _id: skill._id,
+        skillCategory: skill.name,         // Rename 'name' to 'skillCategory'
+        maxSkillPoints: skill.maxPoints,   // Rename 'maxPoints' to 'maxSkillPoints'
+        skillPoints: 0                     // Initialize skillPoints to 0 or any default value
+      }));
+      
+      // Set the transformed skills data
+      setSkills(transformedSkills);
+
+      const initialSliders = skillsData.data.reduce((acc, skill) => {
+        acc[skill.name] = 0;
+        return acc;
+      }, {});
+
+      setSliders(initialSliders);
+    }
+  }, [skillsData]);
+
+  // Use useEffect to reset state when profilesData changes (after refetch)
+  useEffect(() => {
+    resetForm();
+  }, [resetForm]);
 
   return (
     <Box sx={{ display: "flex", gap: 5, padding: 0, mt: 2 }}>
@@ -437,6 +442,8 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
               backgroundColor: "white",
               boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)",
               borderRadius: "15px",
+              maxHeight: '51vh',
+              overflowY: 'auto'
             }}
           >
             <Typography
@@ -519,33 +526,7 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
                   {selectedProfile ? "SAVE" : "ADD"}
                 </Button>
               </Box>
-            {[
-            { title: "Technology", field: "technology", min: 0, max: 15 },
-            {
-                title: "Solution Engineering",
-                field: "solutionEngineering",
-                min: 0,
-                max: 8,
-            },
-            {
-                title: "Self Management",
-                field: "selfManagement",
-                min: 0,
-                max: 25,
-            },
-            {
-                title: "Communication Skills",
-                field: "communicationSkills",
-                min: 0,
-                max: 18,
-            },
-            {
-                title: "Employee Leadership",
-                field: "employeeLeadership",
-                min: 0,
-                max: 30,
-            },
-            ].map((skill, index) => (
+              {skillsData && skillsData.data.map((skill, index) => (
             <Box
                 key={index}
                 sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}
@@ -559,17 +540,17 @@ const Overview = ({ onFormDataChange, onFormDataChangeProfiles}) => {
                     lineHeight: "150%",
                     letterSpacing: "0%",
                   }}>
-                  {skill.title}
+                  {getCategory(skill.name)}
                 </Typography>
                 <Slider
-                  value={sliders[skill.field]}
+                  value={sliders[skill.name] || 0}
                   step={1}
                   marks
-                  min={skill.min}
-                  max={skill.max}
+                  min={0}
+                  max={skill.maxPoints}
                   valueLabelDisplay="auto"
                   onChange={(event, newValue) =>
-                    handleSliderChange(skill.field, newValue)
+                    handleSliderChange(skill.name, newValue)
                   }
                   aria-labelledby={`slider-${index}`}
                   sx={{ color: "#2684FF", flex: 1 }}

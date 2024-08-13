@@ -64,16 +64,9 @@ function EmployeeOverview() {
     return name + ' ' + surname;
   };
 
-//   const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
-//     const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
-//       value: parseFloat(percentage),
-//     }));
-  
-//     const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
-
-//     return allocatedHours;
-//   };
-
+  const capitalizeAllLetters = (text) => {
+    return text.toUpperCase();
+  };
 
   if (isLoading || isLoadingSkill) {
     return (
@@ -145,7 +138,8 @@ if (isSuccess) {
               + Add Employee
             </Button>
           </Box>
-          <Box sx={{ bgcolor: "white", borderRadius: "12px", pt: 2, pr: 2, pl: 2, boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)", maxWidth: "158vh", overflowX: "auto"}}>
+          <Box sx={{ bgcolor: "white", borderRadius: "12px", pt: 2, pr: 2, pl: 2, 
+               boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.1)", maxHeight: '83vh', overflowY: 'auto', maxWidth: "158vh", overflowX: "auto"}}>
           <Typography
             sx={{
               fontFamily: 'Helvetica, sans-serif',
@@ -172,7 +166,7 @@ if (isSuccess) {
                     skillsData.data.map((skill) => (
                       <TableCell key={skill._id}>
                         <Typography className="table-title">
-                          {skill.name.replace('_', ' ')}
+                          {capitalizeAllLetters(skill.name.replace('_', ' '))}
                         </Typography>
                       </TableCell>
                     ))}
