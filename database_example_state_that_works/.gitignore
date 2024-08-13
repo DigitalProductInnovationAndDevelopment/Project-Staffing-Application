@@ -1,6 +1,0 @@
-#database-backups
-/great-staff-database-backup-*
-
-# Ignore files
-*.ps1
-*.sh
