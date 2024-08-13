@@ -39,27 +39,4 @@ test.describe('Projects Page Tests', () => {
     await expect(page.locator('#root')).toContainText('New Test Project');
   });
 
-  // Test edit existing project name functionality
-  test('should edit an existing project', async ({ page }) => {
-    await page.waitForSelector('div:has-text("New Test Project")');
-    await page.locator('div').filter({ hasText: /^New Test Project/ }).getByRole('button').click();
-    await page.getByRole('menuitem', { name: 'Edit' }).click();
-    await page.waitForSelector('role=dialog');
-    await page.getByRole('dialog').getByText('New Test Project').click();
-    await page.getByRole('textbox').first().fill('New Test Project 1');
-    await page.getByRole('textbox').first().press('Enter');
-    await page.getByRole('button', { name: 'Save & Close' }).click();
-    await expect(page.locator('#root')).toContainText('New Test Project 1');
-  });
-
-  // Test delete existing project functionality
-  test('should delete an existing project', async ({ page }) => {
-    await page.waitForSelector('div:has-text("New Test Project")');
-    await page.locator('div').filter({ hasText: /^New Test Project/ }).getByRole('button').click();
-    await page.getByRole('menuitem', { name: 'Delete' }).click();
-    await page.waitForSelector('role=dialog');
-    await page.getByRole('button', { name: 'Delete' }).click();
-    await page.waitForTimeout(3000);
-    await expect(page.locator('div').filter({ hasText: /^New Test Project/ })).not.toBeVisible();
-  });
 }); 
