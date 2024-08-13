@@ -3,11 +3,6 @@ import mongoose from 'mongoose'
 const SkillSchema = new mongoose.Schema(
   {
     skillPoints: { type: Number, required: true },
-    // profileId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'Profile',
-    //   required: true,
-    // },
     skillCategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'SkillCategory',
