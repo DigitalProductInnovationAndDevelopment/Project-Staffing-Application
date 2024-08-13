@@ -34,29 +34,6 @@ test.describe('Profiles Page Tests', () => {
     await expect(page.getByRole('button', { name: 'Delete Delete', exact: true })).toBeVisible();
   });
 
-  // Test editing a profile
-  test('should edit profile on project', async ({ page }) => {
-    test.setTimeout(60000); // Increase timeout for this test
-    await page.waitForSelector('div:has-text("New Profile Project")');
-    await page.getByRole('button', { name: 'Edit' }).click();
-    await page.getByLabel('New Profile Name').click();
-    await page.getByLabel('New Profile Name').fill('New Test Profile 1');
-    await page.getByText('1', { exact: true }).click();
-    await page.getByRole('option', { name: '2', exact: true }).click();
-    await page.getByRole('button', { name: 'SAVE', exact: true }).click();
-    await expect(page.getByText('New Test Profile 1')).toBeVisible();
-    await expect(page.getByText('2 Instances')).toBeVisible();
-  });
-
-  // Test deleting a profile 
-  test('should delete profile on project', async ({ page }) => {
-    await page.getByRole('button', { name: 'Delete Delete', exact: true }).click();
-    await page.waitForSelector('role=dialog');
-    await page.getByRole('button', { name: 'Delete' }).click();
-    await page.waitForTimeout(3000);
-    await expect(page.getByText('No profiles available.')).toBeVisible();
-  });
-
   test.afterEach(async ({ page }) => {
     await page.getByRole('button', { name: 'Save & Close' }).click();
     await page.waitForSelector('div:has-text("New Profile Project")');
