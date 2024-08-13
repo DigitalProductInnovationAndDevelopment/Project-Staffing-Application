@@ -5,33 +5,9 @@
 
 Welcome to GREAT STAFF - the project staffing application.
 
-Feel free to check out the latest Prototyp release on AWS: [GREAT STAFF](http://51.20.104.180/login)
-
 ## WIKI 🗂️
 
-For a detailed documentation, please refer to our comprehensive [WIKI](https://github.com/DigitalProductInnovationAndDevelopment/Project-Staffing-Application/wiki).
-
-
-## Tech Stack 🚀
-
-This is a MERN based project:
-
-- [MongoDB](https://www.mongodb.com/)
-- [Express](https://expressjs.com/)
-- [React](https://react.dev/)
-- [Node.js](https://nodejs.org/)
-
-Furthermore, the following technologies are utilized:
-
-##### Backend
-- [Mongoose](https://mongoosejs.com/) for MongoDB object modeling
-- [JWT (JsonWebToken)](https://de.wikipedia.org/wiki/JSON_Web_Token) for authentication
-- [CORS](https://www.npmjs.com/package/cors) for handling cross-origin resource sharing threats
-
-##### Frontend
-- [Redux Toolkit](https://redux-toolkit.js.org/) for persistent state management
-- [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) for data fetching and caching
-- [MUI](https://mui.com/) for UI components
+This application uses the MERN tech stack. For a detailed documentation, please refer to our comprehensive [WIKI](https://github.com/DigitalProductInnovationAndDevelopment/Project-Staffing-Application/wiki).
 
 ## Getting Started 🎬
 Feel free to check out the latest release on AWS: [GREAT STAFF](http://51.20.104.180/login)
