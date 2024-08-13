@@ -1,29 +1,38 @@
-import ProjectDemandProfile from '../models/ProjectDemandProfile.js'
-import Project from '../models/Project.js'
-import Demand from '../models/Demand.js'
-import Skill from '../models/Skill.js'
-import { getProjectByProjectIdService } from './project.js'
 import {
-  getAssignmentByProfileIdService,
-  deleteAssignmentService,
-  createNewAssignmentService,
-} from './assignment.js'
-import {
+  addSkillsToProfileService,
   createNewSkillsService,
   updateSkillsService,
-  addSkillsToProfileService,
 } from './skill.js'
+import {
+  createNewAssignmentService,
+  deleteAssignmentService,
+  getAssignmentByProfileIdService,
+} from './assignment.js'
+import Demand from '../models/Demand.js'
+import Project from '../models/Project.js'
+import ProjectDemandProfile from '../models/ProjectDemandProfile.js'
+import Skill from '../models/Skill.js'
+import { getProjectByProjectIdService } from './project.js'
 
+// Service to get all profile IDs by project ID
 export const getAllProfileIdsByProjectIdService = async (projectId) => {
   try {
     const project = await getProjectByProjectIdService(projectId)
+    if (!project) {
+      throw new Error('Project not found')
+    }
     const profileIds = project.demandProfiles
+    if (!profileIds) {
+      throw new Error('Profile IDs not found')
+    }
+
     return profileIds
-  } catch (error) {
-    throw new Error(`Failed to get profile IDs by project ID: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to get profile IDs by project ID: ${err.message}`)
   }
 }
 
+// Service to get all profile information by profile Ids
 export const getInformationForProfilesService = async (profileIds) => {
   try {
     const profiles = await Promise.all(
@@ -32,14 +41,18 @@ export const getInformationForProfilesService = async (profileIds) => {
         return profile
       })
     )
+
     return profiles
-  } catch (error) {
-    throw new Error(`Failed to get profile information: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to get profile information: ${err.message}`)
   }
 }
 
+// Service to get all profiles
 export const getAllProfilesService = async () => {
   try {
+    // populate the target demand (only now) and target skills
+    // transform the target skills to only include the skill points, skill category and max points (later ones if given)
     const profiles = await ProjectDemandProfile.find().populate([
       { path: 'targetDemandId', select: 'now' },
       {
@@ -63,14 +76,21 @@ export const getAllProfilesService = async () => {
               },
       },
     ])
+    if (!profiles) {
+      throw new Error('Profiles not found')
+    }
+
     return profiles
-  } catch (error) {
-    throw new Error(`Failed to get all profiles: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to get all profiles: ${err.message}`)
   }
 }
 
+// Service to get all profiles by ID
 export const getProfileByIdService = async (profileId) => {
   try {
+    // populate the target demand (only now) and target skills
+    // transform the target skills to only include the skill points, skill category and max points (later ones if given)
     let profile = await ProjectDemandProfile.findById(profileId).populate([
       { path: 'targetDemandId', select: 'now' },
       {
@@ -94,96 +114,104 @@ export const getProfileByIdService = async (profileId) => {
               },
       },
     ])
+    if (!profile) {
+      throw new Error('Profile not found')
+    }
 
     return profile
-  } catch (error) {
-    throw new Error(`Failed to get profile by ID: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to get profile by ID: ${err.message}`)
   }
 }
 
+// Service to create new profiles (multiple)
 export const createNewProfilesService = async (projectId, profilesData) => {
   try {
     const profiles = []
 
     for (const p of profilesData) {
       const profile = await createNewProfileService(p)
-      if (!profile) {
-        throw new Error('Profile could not be created')
-      }
-      await addProfileIdToProjectService(projectId, profile._id) //TODO
-      await createNewAssignmentService(profile._id) //TODO
-      try {
-        const newSkill = await createNewSkillsService(
-          p.targetSkills ? p.targetSkills : []
-        )
-        const newSkillIds = newSkill.map((skill) => skill._id)
-        const profileWithSkills = await addSkillsToProfileService(
-          profile._id,
-          newSkillIds
-        )
-        profiles.push(profileWithSkills)
-      } catch (error) {
-        deleteProfileService(profile._id) // TODO: delete all profiles
-        throw new Error(`Failed to create new skills: ${error.message}`)
-      }
+      await addProfileIdToProjectService(projectId, profile._id)
+      await createNewAssignmentService(profile._id)
+
+      // create new skills and add them to the profile
+      const newSkill = await createNewSkillsService(
+        p.targetSkills ? p.targetSkills : []
+      )
+      const newSkillIds = newSkill.map((skill) => skill._id)
+      const profileWithSkills = await addSkillsToProfileService(
+        profile._id,
+        newSkillIds
+      )
+      profiles.push(profileWithSkills)
     }
     return profiles
-  } catch (error) {
-    throw new Error(`Failed to create new profiles: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to create new profiles: ${err.message}`)
   }
 }
 
+// Service to create new profile
 export const createNewProfileService = async (profileData) => {
   try {
     // create a target demand object
     const newTargetDemand = new Demand(profileData.targetDemandId)
     await newTargetDemand.save()
     const newTargetDemandId = newTargetDemand._id
+
+    // create a new profile
     const newProfile = new ProjectDemandProfile({
       name: profileData.name,
       targetDemandId: newTargetDemandId,
     })
+    if (!newProfile) {
+      throw new Error('Failed to create a new profile')
+    }
     await newProfile.save()
+
     return newProfile
-  } catch (error) {
-    throw new Error(`Failed to create a new profile: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to create a new profile: ${err.message}`)
   }
 }
 
+// Service to update profile
 export const updateProfileService = async (profileId, updateData) => {
-  // console.log('updateData', updateData)
   try {
-    // Find the existing profile to get the current targetDemandId
+    // Find the existing profile
     const existingProfile = await getProfileByIdService(profileId)
-    if (!existingProfile) {
-      throw new Error('Profile not found')
-    }
 
-    // Update the Demand object if targetDemandId is part of the update
+    // Update the Demand object if targetDemandId is part of the update and now is defined
     if (
       updateData.targetDemandId &&
       updateData.targetDemandId.now !== undefined
     ) {
-      await Demand.findByIdAndUpdate(
+      const demand = await Demand.findByIdAndUpdate(
         existingProfile.targetDemandId,
         {
           now: updateData.targetDemandId.now,
         },
         { new: true }
       )
+      if (!demand) {
+        throw new Error('Demand not found')
+      }
     }
 
+    // Update the Skills objects if targetSkills is part of the update
     if (updateData.targetSkills) {
       await updateSkillsService(
         updateData.targetSkills,
         existingProfile.targetSkills
-      ) //TODO
+      )
     }
 
     // Remove targetDemandId from updatedData as it is already updated
+    // Remove targetSkills from updatedData as it is already updated
     delete updateData.targetDemandId
     delete updateData.targetSkills
 
+    // Update the profile with the remaining data
     const updatedProfile = await ProjectDemandProfile.findByIdAndUpdate(
       profileId,
       updateData,
@@ -194,18 +222,20 @@ export const updateProfileService = async (profileId, updateData) => {
     }
 
     return updatedProfile
-  } catch (error) {
-    throw new Error(`Failed to update the profile: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to update the profile: ${err.message}`)
   }
 }
 
+// Service to delete profile
 export const deleteProfileService = async (profileId, projectId) => {
   try {
-    // get the minimal demand, target demand, and skills
+    // get the target demand and skills
     const profile = await ProjectDemandProfile.findById(profileId)
     const targetDemandId = profile.targetDemandId
     const targetSkillsIds = profile.targetSkills
 
+    // delete the profile
     const deletedProfile =
       await ProjectDemandProfile.findByIdAndDelete(profileId)
     if (!deletedProfile) {
@@ -213,75 +243,92 @@ export const deleteProfileService = async (profileId, projectId) => {
     }
 
     // delete the target demand
-    await Demand.findByIdAndDelete(targetDemandId._id)
+    const demand = await Demand.findByIdAndDelete(targetDemandId._id)
+    if (!demand) {
+      throw new Error('Demand not found')
+    }
+
     // delete the target skills
     await Promise.all(
       targetSkillsIds.map(async (skillId) => {
-        await Skill.findByIdAndDelete(skillId)
+        const skill = await Skill.findByIdAndDelete(skillId)
+        if (!skill) {
+          throw new Error('Skill not found')
+        }
       })
     )
-    try {
-      await removeProfileIdFromProjectService(projectId, profileId)
-    } catch (err) {
-      throw new Error(
-        `Failed to remove profile id from project: ${err.message}`
-      )
-    }
+
+    // remove the profile ID from the project
+    await removeProfileIdFromProjectService(projectId, profileId)
+
+    // delete the assignment
     const assignment = await getAssignmentByProfileIdService(profileId)
     await deleteAssignmentService(assignment._id)
 
-    // delete demands and skills
     return deletedProfile
-  } catch (error) {
-    throw new Error(`Failed to delete the profile: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to delete the profile: ${err.message}`)
   }
 }
 
+// Service to add profile ID to project
 export const addProfileIdToProjectService = async (projectId, profileId) => {
   try {
-    await Project.findByIdAndUpdate(
+    const project = await Project.findByIdAndUpdate(
       projectId,
       { $push: { demandProfiles: profileId } },
       { new: true, useFindAndModify: false }
     )
-  } catch (error) {
-    throw new Error(`Failed to add profile ID to project: ${error.message}`)
+    if (!project) {
+      throw new Error('Project not found')
+    }
+
+    return project
+  } catch (err) {
+    throw new Error(`Failed to add profile ID to project: ${err.message}`)
   }
 }
 
+// Service to remove profile ID from project
 export const removeProfileIdFromProjectService = async (
   projectId,
   profileId
 ) => {
   try {
+    // find the project
     const project = await Project.findById(projectId)
     if (!project) {
       throw new Error('Project not found')
     }
+
+    // remove the profile ID from the project
     project.demandProfiles = project.demandProfiles.filter(
       (dP) => dP._id.toString() !== profileId
     )
+
     await project.save()
-  } catch (error) {
-    throw new Error(
-      `Failed to remove profile ID from project: ${error.message}`
-    )
+
+    return project
+  } catch (err) {
+    throw new Error(`Failed to remove profile ID from project: ${err.message}`)
   }
 }
 
+// Service to get demand by profile IDs
 export const getDemandByProfileIdsService = async (profileIds) => {
   try {
+    // default demand is 0
     let demand = 0
+
+    // get the demand for each profile and sum them up
     for (const profileId of profileIds) {
       const profile = await getProfileByIdService(profileId)
-      if (!profile) {
-        throw new Error('Profile not found')
-      }
       const d = await Demand.findById(profile.targetDemandId)
       demand += d.now
     }
+
     return demand
-  } catch (error) {
-    throw new Error(`Failed to get demands by profile IDs: ${error.message}`)
+  } catch (err) {
+    throw new Error(`Failed to get demands by profile IDs: ${err.message}`)
   }
 }

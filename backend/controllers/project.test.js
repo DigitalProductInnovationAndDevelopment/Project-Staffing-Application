@@ -1,18 +1,12 @@
+/* eslint-disable no-import-assign */
+import * as projectService from '../services/project.js'
 import {
-  getAllProjectsWithProfilesEmployeesAndDemandService,
-  getProjectByProjectIdService,
-  createNewProjectService,
-  updateProjectService,
-  deleteProjectService,
-} from '../services/project.js'
-import {
+  createNewProjectController,
+  deleteProjectController,
   getAllProjectsController,
   getProjectByIdController,
-  createNewProjectController,
   updateProjectController,
-  deleteProjectController,
 } from '../controllers/project.js'
-import * as projectService from '../services/project.js'
 
 describe('Project Controller Tests', () => {
   // Test getAllProjectsController

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Slider, Avatar, Button } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Slider, Avatar, Button, Badge} from '@mui/material';
 import EditProfile from './EditProfile';
 import addIcon from './../assets/images/add-icon.svg';
 import removeIcon from './../assets/images/remove-icon.svg';
@@ -35,14 +35,20 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     refetch();
 
     if (allDataForAssignment) {
-      const tabs = allDataForAssignment.data.map(profileData => ({
-        profileId: profileData.profile._id,
-        name: profileData.profile.name,
-        assignedEmployees: profileData.assignedEmployees,
-        suitableEmployees: profileData.suitableEmployees,
-        targetSkills: profileData.profile.targetSkills,
-        demand: profileData.profile.targetDemandId.now,
-      }));
+      const tabs = allDataForAssignment.data.map(profileData => {
+        // Filter out skill categories with zero skill points
+        const nonZeroSkills = profileData.profile.targetSkills.filter(skill => skill.skillPoints > 0);
+        
+        return {
+          profileId: profileData.profile._id,
+          name: profileData.profile.name,
+          assignedEmployees: profileData.assignedEmployees,
+          suitableEmployees: profileData.suitableEmployees,
+          targetSkills: nonZeroSkills,
+          demand: profileData.profile.targetDemandId.now,
+        };
+      });
+
       setFormData(tabs);
 
       const tabLabels = tabs.map(tab => tab.name);
@@ -51,26 +57,40 @@ const AssignTeam = ({ project, onFormDataChange }) => {
       if (tabs.length > 0) {
         const initialAssigned = tabs[0].assignedEmployees || [];
         const initialSuitable = tabs[0].suitableEmployees || [];
-        setAssignedFor(initialAssigned);
-        setSuitableEmployees(initialSuitable);
+        const filteredAssigned = initialAssigned.filter(employee =>
+          employee.skills.some(skill => tabs[0].targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+        );
+        const filteredSuitable = initialSuitable.filter(employee =>
+          employee.skills.some(skill => tabs[0].targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+        );
+
+        setAssignedFor(filteredAssigned);
+        setSuitableEmployees(filteredSuitable);
         setCurrentSkillsetsFor(tabs[0].targetSkills);
         setTotalSlotsFor(tabs[0].demand);
-        setAssignedNum(initialAssigned.length);
-        setSliderValueFor((initialAssigned.length / tabs[0].demand) * 100);
+        setAssignedNum(filteredAssigned.length);
+        setSliderValueFor((filteredAssigned.length / tabs[0].demand) * 100);
       }
     }
   }, [allDataForAssignment, refetch]);
 
-  // Update state when activeTab changes
-  useEffect(() => {
+ // Update state when activeTab changes
+ useEffect(() => {
     if (formData.length > 0) {
       const currentProfile = formData[activeTab];
+      const filteredAssigned = currentProfile.assignedEmployees.filter(employee =>
+        employee.skills.some(skill => currentProfile.targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+      );
+      const filteredSuitable = currentProfile.suitableEmployees.filter(employee =>
+        employee.skills.some(skill => currentProfile.targetSkills.some(ts => ts.skillCategory === skill.skillCategory))
+      );
+
       setCurrentSkillsetsFor(currentProfile.targetSkills);
-      setAssignedFor(currentProfile.assignedEmployees);
-      setSuitableEmployees(currentProfile.suitableEmployees);
+      setAssignedFor(filteredAssigned);
+      setSuitableEmployees(filteredSuitable);
       setTotalSlotsFor(currentProfile.demand);
-      setAssignedNum(currentProfile.assignedEmployees.length);
-      setSliderValueFor((currentProfile.assignedEmployees.length / currentProfile.demand) * 100);
+      setAssignedNum(filteredAssigned.length);
+      setSliderValueFor((filteredAssigned.length / currentProfile.demand) * 100);
     }
   }, [activeTab, formData]);
  
@@ -117,7 +137,20 @@ const AssignTeam = ({ project, onFormDataChange }) => {
 
   const handleRemove = (employee) => {
     const updatedAssignedFor = assignedFor.filter((e) => e.email !== employee.email);
-    const updatedSuitableEmployees = [...suitableEmployees, employee];
+
+    // Find the original index of the employee in the suitableEmployees array
+    const originalIndex = allDataForAssignment.data[activeTab].suitableEmployees.findIndex((e) => e.email === employee.email);
+    
+    // Clone the suitableEmployees array to make updates
+    const updatedSuitableEmployees = [...suitableEmployees];
+    
+    // Insert the employee back into their original index
+    if (originalIndex !== -1) {
+        updatedSuitableEmployees.splice(originalIndex, 0, employee);
+    } else {
+        // If somehow the index is not found (which shouldn't happen), add to the end
+        updatedSuitableEmployees.push(employee);
+    }
 
     setAssignedFor(updatedAssignedFor);
     setSuitableEmployees(updatedSuitableEmployees);
@@ -128,7 +161,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     updatedFormData[activeTab].assignedEmployees = updatedAssignedFor;
     updatedFormData[activeTab].suitableEmployees = updatedSuitableEmployees;
     setFormData(updatedFormData);
-  };
+};
   
   const getColor = (employeePoints, targetPoints) => {
     const third = targetPoints / 3;
@@ -169,7 +202,7 @@ const AssignTeam = ({ project, onFormDataChange }) => {
     else if (category  === 'COMMUNICATION_SKILLS') return 'Communication Skills';
     else if (category  === 'SELF_MANAGEMENT') return 'Self Management';
     else if (category  === 'EMPLOYEE_LEADERSHIP') return 'Employee Leadership';
-    else return ''
+    else return category
   };
   return (
     <Box>
@@ -212,8 +245,38 @@ const AssignTeam = ({ project, onFormDataChange }) => {
             },
           }}
         >
-        {tabLabelsFor.map((label) => (
-          <Tab key={label} label={label} />
+        {tabLabelsFor.map((label, index) => (
+          <Tab
+            key={label}
+            label={
+                formData[index]?.demand - formData[index]?.assignedEmployees.length > 0 ? (
+             <Badge
+                badgeContent={formData[index]?.demand - formData[index]?.assignedEmployees.length || 0}
+                color="profBlue"
+                anchorOrigin={{
+                   vertical: 'top',
+                   horizontal: 'right',
+                }}
+                sx={{
+                    '& .MuiBadge-badge': {
+                      backgroundColor: '#4FD1C5',
+                      color: 'white',
+                      fontSize: '12px',
+                      height: '20px',
+                      minWidth: '20px',
+                      borderRadius: '10px',
+                      padding: '0 6px',
+                      transform: 'translate(50%, -75%)',
+                    },
+                }}
+             >
+                {label}
+             </Badge>
+             ) : (
+                label
+             )
+            }
+         />
         ))}
         </Tabs>
       </Box>
@@ -293,7 +356,9 @@ const AssignTeam = ({ project, onFormDataChange }) => {
           boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
           display: 'grid',
           gridTemplateColumns: `repeat(${currentSkillsetsFor.length + 1}, auto)`,
-          gap: 1,
+          maxWidth: '1072px',
+          overflowX: 'auto',
+          gap: 1
         }}
       >
         <Typography
@@ -323,10 +388,12 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 border: '1px solid #BDBDBD',
                 borderRadius: '100px',
                 padding: '4px 8px',
-                textAlign: 'center',
                 margin: '0',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               }}
             >
               <img src={TargetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
@@ -361,7 +428,6 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                 border: '1px solid #BDBDBD',
                 borderRadius: '100px',
                 padding: '4px 8px',
-                textAlign: 'center',
                 margin: '0',
                 display: 'inline-block',
               }}
@@ -372,7 +438,13 @@ const AssignTeam = ({ project, onFormDataChange }) => {
         ))}
       </Box>
 
-      <Box>
+      <Box 
+        sx={{
+          display: 'grid',
+          maxWidth: '2002px',
+          overflowX: 'auto',
+        }}
+      >
       <Box sx={{ marginTop: 4}}>
         <Typography sx={{ fontFamily: 'Helvetica, sans-serif', fontSize: '18px', lineHeight: '140%', letterSpacing: '0', fontWeight: 'bold', color: '#2D3748', marginBottom: 2 }}>
           Assigned {tabLabelsFor[activeTab]}s ({assignedNum})
@@ -413,10 +485,13 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       border: `1px solid ${color}`,
                       borderRadius: '100px',
                       padding: '4px 8px',
-                      textAlign: 'center',
                       margin: '0 4px 4px 0',
                       display: 'flex',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    
                     }}
                   >
                     <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>
@@ -483,10 +558,12 @@ const AssignTeam = ({ project, onFormDataChange }) => {
                       border: `1px solid ${color}`,
                       borderRadius: '100px',
                       padding: '4px 8px',
-                      textAlign: 'center',
                       margin: '0 4px 4px 0',
                       display: 'flex',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     <img src={targetIcon} alt="Target" style={{ marginLeft:'2px', marginRight: '6px'}}/>

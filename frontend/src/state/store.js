@@ -9,6 +9,7 @@ import { employeeApi } from './api/employeeApi';
 import { userApi } from './api/userApi';
 import { profileApi } from './api/profileApi';
 import { authApi } from './api/authApi';
+import { skillApi } from './api/skillApi';
 
 // combine multiple reducers into one
 const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   [employeeApi.reducerPath]: employeeApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
+  [skillApi.reducerPath]: skillApi.reducer,
 });
 
 //Need to blacklist the RTK-Query APIs from the persistence store
@@ -30,7 +32,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: [authApi.reducerPath, projectApi.reducerPath, employeeApi.reducerPath, userApi.reducerPath, profileApi.reducerPath],
+  blacklist: [authApi.reducerPath, projectApi.reducerPath, employeeApi.reducerPath, userApi.reducerPath, profileApi.reducerPath, skillApi.reducerPath],
 };
 
 // wraps the root reducer with persistReducer using the persistConfig.
@@ -52,6 +54,7 @@ export const store = configureStore({
       .concat(employeeApi.middleware)
       .concat(userApi.middleware)
       .concat(profileApi.middleware)
+      .concat(skillApi.middleware)
 });
 
 export const persistor = persistStore(store);

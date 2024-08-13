@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
 import Priority from './enums/Priority.js'
+import mongoose from 'mongoose'
 
 const ProjectSchema = new mongoose.Schema(
   {

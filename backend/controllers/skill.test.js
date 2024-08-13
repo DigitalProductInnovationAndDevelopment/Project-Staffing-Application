@@ -1,10 +1,11 @@
+/* eslint-disable no-import-assign */
+import * as skill from '../services/skill.js'
 import {
   createNewSkillCategoryController,
+  deleteSkillCategoryController,
   getSkillCategoriesController,
   updateSkillCategoryController,
-  deleteSkillCategoryController,
 } from '../controllers/skill.js'
-import * as skill from '../services/skill.js'
 
 describe('Skill Controller Tests', () => {
   // Test createNewSkillCategoryController
@@ -132,13 +133,11 @@ describe('Skill Controller Tests', () => {
       }
 
       // Mock updateSkillCategoryService
-      skill.updateSkillCategoryService = jest
-        .fn()
-        .mockResolvedValue({
-          _id: '123',
-          name: 'Updated Skill Category',
-          maxPoints: 150,
-        })
+      skill.updateSkillCategoryService = jest.fn().mockResolvedValue({
+        _id: '123',
+        name: 'Updated Skill Category',
+        maxPoints: 150,
+      })
 
       await updateSkillCategoryController(req, res)
 
@@ -194,13 +193,11 @@ describe('Skill Controller Tests', () => {
       }
 
       // Mock deleteSkillCategoryService
-      skill.deleteSkillCategoryService = jest
-        .fn()
-        .mockResolvedValue({
-          _id: '123',
-          name: 'Test Skill Category',
-          maxPoints: 100,
-        })
+      skill.deleteSkillCategoryService = jest.fn().mockResolvedValue({
+        _id: '123',
+        name: 'Test Skill Category',
+        maxPoints: 100,
+      })
 
       await deleteSkillCategoryController(req, res)
 

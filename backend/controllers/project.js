@@ -1,9 +1,9 @@
 import {
-  getProjectByProjectIdService,
   createNewProjectService,
-  updateProjectService,
   deleteProjectService,
   getAllProjectsWithProfilesEmployeesAndDemandService,
+  getProjectByProjectIdService,
+  updateProjectService,
 } from '../services/project.js'
 
 export const getAllProjectsController = async (_, res) => {
@@ -52,9 +52,6 @@ export const createNewProjectController = async (req, res) => {
       .status(201)
       .json({ message: 'Project created successfully.', data: project })
   } catch (err) {
-    // if (err.message === 'Project already exists') {
-    //   return res.status(400).json({ message: 'Project already exists.' })
-    // }
     res
       .status(500)
       .json({ message: 'Failed to create new project.', error: err.message })

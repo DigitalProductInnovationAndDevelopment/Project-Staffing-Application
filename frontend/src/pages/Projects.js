@@ -1,19 +1,39 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, Divider, Avatar, AvatarGroup, IconButton, LinearProgress, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Divider,
+  Avatar,
+  AvatarGroup,
+  IconButton,
+  LinearProgress,
+  CircularProgress,
+  Menu,
+  MenuItem,
+  Dialog,
+  ListItemIcon,
+} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { projectApi } from "../state/api/projectApi.js";
 import EditProject from './../components/EditProject';
 import AvatarGreen from "./../assets/images/icons/green_avatar.svg";
 import CreateProject from "../components/projects/create/CreateProjects.js";
+import { useDeleteProjectMutation} from '../state/api/projectApi.js';
+import EditIcon from "@mui/icons-material/Edit";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function ProjectOverview() {
   const { data: projectData, error, isLoading, isSuccess, refetch } = projectApi.endpoints.getAllProjects.useQuery();
+  const [deleteProject] = useDeleteProjectMutation();
 
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-
-  console.log('project', projectData)
+  const [contextMenu, setContextMenu] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleAddProject = () => {
     setOpenCreate(true);
@@ -28,15 +48,44 @@ function ProjectOverview() {
     setOpenCreate(false);
   };
 
-  const handleOpenEditDialog = (project) => {
-    setSelectedProject(project);
-    setOpen(true);
+  const handleOpenEditDialog = (project, tab) => {
+    if (project) {
+      setActiveTab(tab);
+      setSelectedProject({ ...project, tab });
+      setOpen(true);
+    } else {
+      console.error('No project selected for editing');
+    }
   };
 
   const handleCloseEditDialog = () => {
     refetch();
+    setActiveTab(0);
     setOpen(false);
     setSelectedProject(null);
+  };
+
+  const handleContextMenuClick = (event, project) => {
+    setSelectedProject(project);
+    setContextMenu(event.currentTarget);
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  };
+
+  const handleDeleteProject = async () => {
+    if (selectedProject && selectedProject._id) {
+      try {
+        await deleteProject(selectedProject._id);
+        setDeleteDialogOpen(false);
+        refetch();
+      } catch (err) {
+        console.error('Failed to delete project:', err);
+      }
+    } else {
+      console.error('No project selected for deletion');
+    }
   };
 
   const calculateDaysLeft = (kickoffDate) => {
@@ -174,7 +223,10 @@ function ProjectOverview() {
                 <React.Fragment key={index}>
                   <Divider />
                   <Box sx={{ display: 'flex', alignItems: 'center', paddingY: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1 }}>
+                    <Box 
+                      onClick={() => handleOpenEditDialog(project, 0)} 
+                      sx={{ display: 'flex', alignItems: 'center', width: '25%', paddingLeft: 1, cursor: 'pointer'}}
+                    >
                       <Avatar src={project.icon || AvatarGreen} sx={{ width: 40, height: 40, borderRadius: '10px', overflow: 'hidden' }} />
                       <Typography sx={{ ml: '8px' }} variant="body2">{project.projectName}</Typography>
                     </Box>
@@ -231,11 +283,61 @@ function ProjectOverview() {
                     </Box>
                     <Box sx={{ width: '10%' }}>
                       <IconButton
-                        size="small"
-                        onClick={() => handleOpenEditDialog(project)}
+                        onClick={(event) => handleContextMenuClick(event, project)}
+                        aria-controls="project-context-menu"
+                        aria-haspopup="true"
                       >
                         <MoreVertIcon />
                       </IconButton>
+
+                      <Menu
+                        id="project-context-menu"
+                        anchorEl={contextMenu}
+                        open={Boolean(contextMenu)}
+                        onClose={handleContextMenuClose}
+                        PaperProps={{
+                          style: {
+                            borderRadius: 8,
+                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                          },
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            handleOpenEditDialog(selectedProject, 0);
+                            handleContextMenuClose();
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: '25px !important' }}>
+                            <EditIcon fontSize="small" />
+                          </ListItemIcon>
+                          Edit
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            handleOpenEditDialog(selectedProject, 1);
+                            handleContextMenuClose();
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: '25px !important'}}>
+                            <AssignmentIcon fontSize="small" />
+                          </ListItemIcon> 
+                          Assign
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setDeleteDialogOpen(true);
+                            handleContextMenuClose();
+                          }}
+                          sx={{ color: "#E10050" }}
+                        >
+                          <ListItemIcon sx={{ minWidth: '25px !important', color: "#E10050" }}>
+                            <DeleteIcon fontSize="small" />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+
                     </Box>
                   </Box>
                 </React.Fragment>
@@ -243,10 +345,68 @@ function ProjectOverview() {
             </Box>
           </Box>
         </Box>
+        
         {selectedProject && (
-          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company }} />
+          <EditProject open={open} onClose={handleCloseEditDialog} project={{ projectId: selectedProject._id, name: selectedProject.projectName, company: selectedProject.company, tab: activeTab}} />
         )}
         <CreateProject openCreate={openCreate} onCloseCreate={handleCloseCreateDialog} onBackCreate={handleOnBack}/>
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          aria-labelledby="delete-project-dialog"
+          aria-describedby="delete-project-dialog-description"
+        >
+          <Box sx={{ padding: 4 }}>
+            <Typography id="delete-project-dialog-title" variant="h6">
+              Confirm Deletion
+            </Typography>
+            <Typography id="delete-project-dialog-description" sx={{ mt: 2 }}>
+              Are you sure you want to delete this project?
+            </Typography>
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => setDeleteDialogOpen(false)} 
+                variant="contained"
+                color="secondary"
+                sx={{
+                    textTransform: 'none',
+                    color: 'white',
+                    height: '40px',
+                    fontFamily: 'Halvetica, sans-serif',
+                    fontWeight: 'Bold',
+                    fontSize: '12px',
+                    lineHeight: '24px',
+                    letterSpacing: '0.16px',
+                    padding: '6px 14px',
+                }}>
+                  Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteProject}
+                variant="contained"
+                color="error"
+                sx={{
+                  textTransform: 'none',
+                  fontSize: "12px",
+                  bgcolor: '#E10050',
+                  color: 'white',
+                  fontFamily: 'Halvetica, sans-serif',
+                  fontWeight: 'Bold',
+                  lineHeight: '24px',
+                  letterSpacing: '0.16px',
+                  padding: '6px 14px',
+                  boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+                  '&:hover': {
+                    bgcolor: '#CB074D',
+                  },
+                  ml: '8px',
+                }}
+              >
+                Delete
+              </Button>
+            </Box>
+          </Box>
+        </Dialog>
       </Box>
     );
   }

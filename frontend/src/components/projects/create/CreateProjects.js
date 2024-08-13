@@ -37,13 +37,10 @@ const CreateProject = ({ openCreate, onCloseCreate, onBackCreate }) => {
 
   const handleCreateAndClose = async () => {
     const updatedProfiles = formDataProfiles.profiles.map(({ id, ...rest }) => rest);
-    console.log('formdata profiles: ', updatedProfiles)
 
     try {
       const response = await createProject(formData);
-      console.log('response: ', response)
       const projectId = response.data.data._id;
-      console.log('data id: ', projectId)
 
       if(projectId) await createProfile({projectId: projectId, payload: updatedProfiles});
 

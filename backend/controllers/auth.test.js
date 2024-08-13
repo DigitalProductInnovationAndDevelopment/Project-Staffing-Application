@@ -1,5 +1,6 @@
-import { loginController, logoutController } from '../controllers/auth.js'
+/* eslint-disable no-import-assign */
 import * as auth from '../services/auth.js'
+import { loginController, logoutController } from '../controllers/auth.js'
 import jwt from 'jsonwebtoken'
 
 describe('Auth Controller Tests', () => {
@@ -60,7 +61,7 @@ describe('Auth Controller Tests', () => {
       })
     })
 
-    it('should return 400 if loginService throws "User does not exist." error', async () => {
+    it('should return 400 if loginService throws "User does not exist" error', async () => {
       const req = {
         body: {
           // Provide valid user data here
@@ -76,15 +77,15 @@ describe('Auth Controller Tests', () => {
       // Mock loginService to throw "User does not exist." error
       auth.loginService = jest
         .fn()
-        .mockRejectedValue(new Error('User does not exist.'))
+        .mockRejectedValue(new Error('User does not exist'))
 
       await loginController(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'User does not exist.' })
+      expect(res.json).toHaveBeenCalledWith({ error: 'User does not exist' })
     })
 
-    it('should return 400 if loginService throws "Invalid credentials." error', async () => {
+    it('should return 400 if loginService throws "Invalid credentials" error', async () => {
       const req = {
         body: {
           // Provide valid user data here
@@ -100,12 +101,12 @@ describe('Auth Controller Tests', () => {
       // Mock loginService to throw "Invalid credentials." error
       auth.loginService = jest
         .fn()
-        .mockRejectedValue(new Error('Invalid credentials.'))
+        .mockRejectedValue(new Error('Invalid credentials'))
 
       await loginController(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Invalid credentials.' })
+      expect(res.json).toHaveBeenCalledWith({ error: 'Invalid credentials' })
     })
 
     it('should return 500 if any other error occurs', async () => {
