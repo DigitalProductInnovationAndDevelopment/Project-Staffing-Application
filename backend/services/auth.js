@@ -13,10 +13,6 @@ export const loginService = async (loginData) => {
     // check if password is correct
     if (password !== user.password) throw new Error('Invalid credentials')
 
-    // TODO LATER: advanced password hashing
-    // const isMatch = await bcrypt.compare(password, user.password);
-    // if (!isMatch) return res.status(400).json({ msg: "Invalid credentials. " });
-
     // send response
     delete user.password // remove password before sending back response
 

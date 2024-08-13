@@ -20,7 +20,7 @@ export const createNewUserService = async (userData) => {
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: userData.email,
-      password: userData.password, //TODO: hash password (temporary complicated password)
+      password: userData.password,
       canWorkRemote: userData.canWorkRemote || false,
       officeLocation: userData.officeLocation || null,
       roles: userData.roles || [],
@@ -403,7 +403,7 @@ export const updateUserService = async (userId, updateData) => {
         }
       }
       await updateSkillsService(updateData.skills, user.skills)
-      // update targetSkills objects with the new targetSkillPoints //TODO
+      // update targetSkills objects with the new targetSkillPoints
       const targetSkillsInformation = updateData.skills.map((skill) => {
         return {
           skillCategory: skill.skillCategory,
