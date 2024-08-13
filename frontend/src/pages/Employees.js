@@ -64,16 +64,9 @@ function EmployeeOverview() {
     return name + ' ' + surname;
   };
 
-//   const calculateUtilization = (projectWorkingHourDistributionInPercentage) => {
-//     const projectData = Object.entries(projectWorkingHourDistributionInPercentage).map(([projectId, percentage]) => ({
-//       value: parseFloat(percentage),
-//     }));
-  
-//     const allocatedHours = projectData.reduce((sum, project) => sum + project.value, 0);
-
-//     return allocatedHours;
-//   };
-
+  const capitalizeAllLetters = (text) => {
+    return text.toUpperCase();
+  };
 
   if (isLoading || isLoadingSkill) {
     return (
@@ -172,7 +165,7 @@ if (isSuccess) {
                     skillsData.data.map((skill) => (
                       <TableCell key={skill._id}>
                         <Typography className="table-title">
-                          {skill.name.replace('_', ' ')}
+                          {capitalizeAllLetters(skill.name.replace('_', ' '))}
                         </Typography>
                       </TableCell>
                     ))}
