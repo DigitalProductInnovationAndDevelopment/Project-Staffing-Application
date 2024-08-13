@@ -106,7 +106,6 @@ export const deleteAssignmentService = async (assignmentId) => {
   }
 }
 
-// Function to get all profiles with assigned employees and suitable employees as additional data
 export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
   async (projectId) => {
     try {
@@ -139,21 +138,38 @@ export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
         )
 
         // SORT SUITABLE EMPLOYEES (<=> augmented matching)
-        // 1st in the list = employee with lowest total difference between their currentSkillPoints and the targetSkillPoints of the profile
+        // 1st sorting criteria: highest color score
+        // 2nd sorting criteria (tiebreaker): highest total numerical score
+        // 3rd sorting criteria (tiebreaker): highest number of skillCategories in which employee wants to improve
 
-        // sort suitable employees by total difference between their skillPoints and the profile target skillPoints
+        // sort suitable employees according to 3 sorting criteria
         const suitableEmployeesSorted =
           suitableEmployeesFilteredByAssigned.sort((a, b) => {
             const scoreA = calculateSkillDifferenceScore(a, profile)
             const scoreB = calculateSkillDifferenceScore(b, profile)
-            return scoreB - scoreA // sort in descending order (highest difference first)
+
+            // (1st sorting criteria) sort by highest color score
+            if (scoreA.colorScore !== scoreB.colorScore) {
+              return scoreB.colorScore - scoreA.colorScore
+            }
+            
+            // (2nd sorting criteria) If color scores are tied, use the numerical difference
+            if (scoreA.numericalScore !== scoreB.numericalScore) {
+              return scoreB.numericalScore - scoreA.numericalScore
+            }
+
+            // (3rd sorting criteria) If numericalScore is also tied, use the number of skill categories to improve
+            return scoreB.skillCategoriesToImprove - scoreA.skillCategoriesToImprove
           })
 
         function calculateSkillDifferenceScore(user, profile) {
-          let totalDifference = 0
+          let colorScore = 0
+          let numericalScore = 0
+          let skillCategoriesToImprove = 0
 
           // for each target skill in the profile, calculate the difference between the user's skill points and the target skill points
           for (const targetSkill of profile.targetSkills) {
+            
             // find the user's skill that matches the target skill category
             const userSkill = user.skills.find(
               (skill) => skill.skillCategory === targetSkill.skillCategory
@@ -161,15 +177,39 @@ export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
 
             // if the user has the skill, calculate the difference
             if (userSkill) {
+              const color = userSkill.skillPoints / targetSkill.skillPoints
+              if (color < 0.6) {
+                colorScore -= 1
+              } else if (color >= 0.6 && color < 1) {
+                colorScore += 1
+              } else {
+                colorScore += 2
+              }
+
+              // calculate numerical difference for tiebreaker
               const difference = userSkill.skillPoints - targetSkill.skillPoints
-              totalDifference += difference
+              numericalScore += difference
             } else {
               // if the user doesn't have the skill, consider it as a negative difference
-              totalDifference -= targetSkill.skillPoints
+              colorScore -= 1
+              numericalScore -= targetSkill.skillPoints
             }
+
+            const userTargetSkill = user.targetSkills.find(
+              (skill) => skill.skillCategory === targetSkill.skillCategory
+            )
+
+            if (userTargetSkill && userSkill) {
+
+              if (userTargetSkill.skillPoints > userSkill.skillPoints) {
+                skillCategoriesToImprove += 1
+              }
+
+            }
+
           }
 
-          return totalDifference
+          return { colorScore, numericalScore, skillCategoriesToImprove }
         }
 
         // push profile data, assigned employees data, and suitable employees data to the iteratively constructed payload
@@ -181,10 +221,9 @@ export const getProfilesWithAssignedEmployeesAndSuitableEmployeesService =
       }
 
       return payload
-    } catch (err) {
-      throw new Error(
-        `Failed to get profiles with assigned and suitable employees: ${err.message}`
-      )
+    } catch (error) {
+      console.error('Error in getProfilesWithAssignedEmployeesAndSuitableEmployeesService:', error)
+      throw error
     }
   }
 
