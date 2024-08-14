@@ -8,12 +8,10 @@ import {
 } from '../controllers/skill.js'
 
 describe('Skill Controller Tests', () => {
-  // Test createNewSkillCategoryController
   describe('createNewSkillCategoryController', () => {
     it('should return 201 with the created skill category data', async () => {
       const req = {
         body: {
-          // Provide skill category data here
           name: 'Test Skill Category',
           maxPoints: 100,
         },
@@ -23,7 +21,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewSkillCategoryService
       skill.createNewSkillCategoryService = jest.fn().mockResolvedValue({
         _id: '123',
         name: 'Test Skill Category',
@@ -42,7 +39,6 @@ describe('Skill Controller Tests', () => {
     it('should return 500 if an error occurs', async () => {
       const req = {
         body: {
-          // Provide skill category data here
           name: 'Test Skill Category',
           maxPoints: 100,
         },
@@ -52,7 +48,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewSkillCategoryService to throw an error
       skill.createNewSkillCategoryService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -67,7 +62,6 @@ describe('Skill Controller Tests', () => {
     })
   })
 
-  // Test getSkillCategoriesController
   describe('getSkillCategoriesController', () => {
     it('should return 200 with the fetched skill categories', async () => {
       const res = {
@@ -75,7 +69,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getSkillCategoriesService
       skill.getSkillCategoriesService = jest.fn().mockResolvedValue([
         { _id: '123', name: 'Test Skill Category', maxPoints: 100 },
         { _id: '456', name: 'Another Skill Category', maxPoints: 200 },
@@ -99,7 +92,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getSkillCategoriesService to throw an error
       skill.getSkillCategoriesService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -114,7 +106,6 @@ describe('Skill Controller Tests', () => {
     })
   })
 
-  // Test updateSkillCategoryController
   describe('updateSkillCategoryController', () => {
     it('should return 200 with the updated skill category data', async () => {
       const req = {
@@ -122,7 +113,6 @@ describe('Skill Controller Tests', () => {
           skillId: '123',
         },
         body: {
-          // Provide updated skill category data here
           name: 'Updated Skill Category',
           maxPoints: 150,
         },
@@ -132,7 +122,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock updateSkillCategoryService
       skill.updateSkillCategoryService = jest.fn().mockResolvedValue({
         _id: '123',
         name: 'Updated Skill Category',
@@ -154,8 +143,6 @@ describe('Skill Controller Tests', () => {
           skillId: '123',
         },
         body: {
-          // Provide updated skill category data here
-          name: 'Updated Skill Category',
           maxPoints: 150,
         },
       }
@@ -164,7 +151,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock updateSkillCategoryService to throw an error
       skill.updateSkillCategoryService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -179,7 +165,6 @@ describe('Skill Controller Tests', () => {
     })
   })
 
-  // Test deleteSkillCategoryController
   describe('deleteSkillCategoryController', () => {
     it('should return 200 with the deleted skill category data', async () => {
       const req = {
@@ -192,7 +177,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock deleteSkillCategoryService
       skill.deleteSkillCategoryService = jest.fn().mockResolvedValue({
         _id: '123',
         name: 'Test Skill Category',
@@ -219,7 +203,6 @@ describe('Skill Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock deleteSkillCategoryService to throw an error
       skill.deleteSkillCategoryService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
