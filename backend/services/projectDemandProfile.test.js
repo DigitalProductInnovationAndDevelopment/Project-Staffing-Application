@@ -7,8 +7,8 @@ const mockingoose = require('mockingoose')
 
 import { createNewProfileService } from './projectDemandProfile.js'
 
-jest.mock('../models/demand')
-jest.mock('../models/projectDemandProfile')
+jest.mock('../models/demand.js')
+jest.mock('../models/projectDemandProfile.js')
 
 describe('Project Service Tests', () => {
   describe('getAllProfileIdsByProjectIdService', () => {
