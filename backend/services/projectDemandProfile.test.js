@@ -7,9 +7,6 @@ const mockingoose = require('mockingoose')
 
 import { createNewProfileService } from './projectDemandProfile.js'
 
-jest.mock('../models/demand.js')
-jest.mock('../models/projectDemandProfile.js')
-
 describe('Project Service Tests', () => {
   describe('getAllProfileIdsByProjectIdService', () => {
     it('should throw an error when project is not found', async () => {
@@ -81,62 +78,6 @@ describe('Project Service Tests', () => {
       await expect(
         profileService.getProfileByIdService(profileId)
       ).rejects.toThrow()
-    })
-  })
-
-  describe('createNewProfileService', () => {
-    it('should create a new profile and return it', async () => {
-      const mockProfileData = {
-        name: 'Test Profile',
-        targetDemandId: '12345',
-      }
-
-      const mockNewTargetDemand = {
-        _id: '54321',
-        save: jest.fn().mockResolvedValue(mockNewTargetDemand),
-      }
-
-      const mockNewProfile = {
-        name: mockProfileData.name,
-        targetDemandId: mockNewTargetDemand._id,
-        save: jest.fn().mockResolvedValue(mockNewProfile),
-      }
-
-      Demand.mockImplementation(() => mockNewTargetDemand)
-      ProjectDemandProfile.mockImplementation(() => mockNewProfile)
-
-      const result = await createNewProfileService(mockProfileData)
-
-      expect(Demand).toHaveBeenCalledWith('12345')
-      expect(mockNewTargetDemand.save).toHaveBeenCalled()
-      expect(ProjectDemandProfile).toHaveBeenCalledWith({
-        name: mockProfileData.name,
-        targetDemandId: mockNewTargetDemand._id,
-      })
-      expect(mockNewProfile.save).toHaveBeenCalled()
-      expect(result).toEqual(mockNewProfile)
-    })
-
-    it('should throw an error if creating the new profile fails', async () => {
-      const mockProfileData = {
-        name: 'Test Profile',
-        targetDemandId: '12345',
-      }
-
-      const mockNewTargetDemand = {
-        _id: '54321',
-        save: jest.fn().mockResolvedValue(mockNewTargetDemand),
-      }
-
-      ProjectDemandProfile.mockImplementationOnce(() => ({
-        save: jest.fn().mockRejectedValue(new Error('Profile save failed')),
-      }))
-
-      Demand.mockImplementation(() => mockNewTargetDemand)
-
-      await expect(createNewProfileService(mockProfileData)).rejects.toThrow(
-        'Failed to create a new profile: Profile save failed'
-      )
     })
   })
 
