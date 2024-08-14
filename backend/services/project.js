@@ -25,8 +25,9 @@ export const getAllProjectsWithProfilesEmployeesAndDemandService = async () => {
       )
 
       // get all employees of a project
-      const allEmployees =
-        await getAllEmployeesByProfileIdsService(allProfileIds)
+      const allEmployees = await getAllEmployeesByProfileIdsService(
+        allProfileIds
+      )
 
       // get demand of profiles
       const demand = await getDemandByProfileIdsService(allProfileIds)
@@ -48,12 +49,16 @@ export const getAllProjectsWithProfilesEmployeesAndDemandService = async () => {
 
 // Function to get all projects
 export const getAllProjectsService = async () => {
-  const projects = await Project.find()
-  if (!projects) {
-    throw new Error('Projects not found')
-  }
+  try {
+    const projects = await Project.find()
+    if (!projects) {
+      throw new Error('Projects not found')
+    }
 
-  return projects
+    return projects
+  } catch (err) {
+    throw new Error(`Failed to get all projects: ${err.message}`)
+  }
 }
 
 // Function to get a project by project ID

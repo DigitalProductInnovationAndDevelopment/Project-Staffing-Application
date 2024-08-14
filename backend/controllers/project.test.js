@@ -9,7 +9,6 @@ import {
 } from '../controllers/project.js'
 
 describe('Project Controller Tests', () => {
-  // Test getAllProjectsController
   describe('getAllProjectsController', () => {
     it('should return all projects with profiles, employees, and demand', async () => {
       const res = {
@@ -21,7 +20,6 @@ describe('Project Controller Tests', () => {
         { id: 2, projectName: 'Project 2', kickOffDate: '2021-02-01' },
       ]
 
-      // Mock getAllProjectsWithProfilesEmployeesAndDemandService to return some projects
       projectService.getAllProjectsWithProfilesEmployeesAndDemandService = jest
         .fn()
         .mockResolvedValue(projects)
@@ -38,7 +36,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getAllProjectsWithProfilesEmployeesAndDemandService to return null
       projectService.getAllProjectsWithProfilesEmployeesAndDemandService = jest
         .fn()
         .mockResolvedValue(null)
@@ -55,7 +52,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getAllProjectsWithProfilesEmployeesAndDemandService to throw an error
       projectService.getAllProjectsWithProfilesEmployeesAndDemandService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -70,7 +66,6 @@ describe('Project Controller Tests', () => {
     })
   })
 
-  // Test getProjectByIdController
   describe('getProjectByIdController', () => {
     it('should return the project with the given ID', async () => {
       const req = {
@@ -88,7 +83,6 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock getProjectByProjectIdService to return a project
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(project)
@@ -110,7 +104,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getProjectByProjectIdService to return null
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(null)
@@ -132,7 +125,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getProjectByProjectIdService to throw an error
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -147,7 +139,6 @@ describe('Project Controller Tests', () => {
     })
   })
 
-  // Test createNewProjectController
   describe('createNewProjectController', () => {
     it('should create a new project', async () => {
       const req = {
@@ -166,7 +157,6 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock createNewProjectService to return the created project
       projectService.createNewProjectService = jest
         .fn()
         .mockResolvedValue(project)
@@ -192,7 +182,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewProjectService to throw an error
       projectService.createNewProjectService = jest.fn().mockResolvedValue(null)
 
       await createNewProjectController(req, res)
@@ -215,7 +204,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewProjectService to throw an error
       projectService.createNewProjectService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -230,7 +218,6 @@ describe('Project Controller Tests', () => {
     })
   })
 
-  // Test updateProjectController
   describe('updateProjectController', () => {
     it('should update the project with the given ID', async () => {
       const req = {
@@ -252,12 +239,10 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock getProjectByProjectIdService to return a project
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(project)
 
-      // Mock updateProjectService to return the updated project
       projectService.updateProjectService = jest.fn().mockResolvedValue(project)
 
       await updateProjectController(req, res)
@@ -284,7 +269,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getProjectByProjectIdService to return null
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(null)
@@ -315,12 +299,10 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock getProjectByProjectIdService to return a project
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(project)
 
-      // Mock updateProjectService to throw an error
       projectService.updateProjectService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -335,7 +317,6 @@ describe('Project Controller Tests', () => {
     })
   })
 
-  // Test deleteProjectController
   describe('deleteProjectController', () => {
     it('should delete the project with the given ID', async () => {
       const req = {
@@ -353,12 +334,10 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock getProjectByProjectIdService to return a project
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(project)
 
-      // Mock deleteProjectService to return the deleted project
       projectService.deleteProjectService = jest.fn().mockResolvedValue(project)
 
       await deleteProjectController(req, res)
@@ -381,7 +360,6 @@ describe('Project Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getProjectByProjectIdService to return null
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(null)
@@ -408,12 +386,10 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock getProjectByProjectIdService to return a project
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(project)
 
-      // Mock deleteProjectService to return null
       projectService.deleteProjectService = jest.fn().mockResolvedValue(null)
 
       await deleteProjectController(req, res)
@@ -440,12 +416,10 @@ describe('Project Controller Tests', () => {
         kickOffDate: '2021-01-01',
       }
 
-      // Mock getProjectByProjectIdService to return a project
       projectService.getProjectByProjectIdService = jest
         .fn()
         .mockResolvedValue(project)
 
-      // Mock deleteProjectService to throw an error
       projectService.deleteProjectService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))

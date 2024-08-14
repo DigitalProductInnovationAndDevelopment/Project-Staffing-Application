@@ -1,0 +1,6 @@
+{
+  "name": "your-project-name",
+  "jest": {
+    "config": "./backend/jest.config.js"
+  }
+}

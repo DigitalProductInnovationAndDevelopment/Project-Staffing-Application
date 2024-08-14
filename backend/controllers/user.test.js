@@ -9,12 +9,10 @@ import {
 } from '../controllers/user.js'
 
 describe('User Controller Tests', () => {
-  // Test createNewUserController
   describe('createNewUserController', () => {
     it('should return 201 with success message and user data if user is created successfully', async () => {
       const req = {
         body: {
-          // Provide user data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -26,7 +24,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewUserService to return a new user
       user.createNewUserService = jest.fn().mockResolvedValue({
         id: 1,
         firstName: 'John',
@@ -51,7 +48,6 @@ describe('User Controller Tests', () => {
     it('should return 500 with error message if user could not be created by createNewUserService ', async () => {
       const req = {
         body: {
-          // Provide user data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -63,7 +59,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewUserService to return null
       user.createNewUserService = jest.fn().mockResolvedValue(null)
 
       await createNewUserController(req, res)
@@ -77,7 +72,6 @@ describe('User Controller Tests', () => {
     it('should return 500 with error message if an error occurs', async () => {
       const req = {
         body: {
-          // Provide user data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -89,7 +83,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock createNewUserService to throw an error
       user.createNewUserService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -104,7 +97,6 @@ describe('User Controller Tests', () => {
     })
   })
 
-  // Test getAllUsersController
   describe('getAllUsersController', () => {
     it('should return 200 with all users', async () => {
       const res = {
@@ -112,7 +104,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getAllUsersService to return all users
       user.getAllUsersService = jest.fn().mockResolvedValue([
         { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@doe.com' },
         {
@@ -143,7 +134,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getAllUsersService to return null
       user.getAllUsersService = jest.fn().mockResolvedValue(null)
 
       await getAllUsersController({}, res)
@@ -172,7 +162,6 @@ describe('User Controller Tests', () => {
     })
   })
 
-  // Test getUserByIdController
   describe('getUserByIdController', () => {
     it('should return 200 with user data if user is found', async () => {
       const req = {
@@ -185,7 +174,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getUserByUserIdService to return a user
       user.getUserByUserIdService = jest.fn().mockResolvedValue({
         id: 1,
         firstName: 'John',
@@ -215,7 +203,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getUserByUserIdService to return null
       user.getUserByUserIdService = jest.fn().mockResolvedValue(null)
 
       await getUserByIdController(req, res)
@@ -235,7 +222,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock getUserByUserIdService to throw an error
       user.getUserByUserIdService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -250,7 +236,6 @@ describe('User Controller Tests', () => {
     })
   })
 
-  // Test updateUserController
   describe('updateUserController', () => {
     it('should return 200 with success message and updated user data if user is updated successfully', async () => {
       const req = {
@@ -258,7 +243,6 @@ describe('User Controller Tests', () => {
           userId: 1,
         },
         body: {
-          // Provide update data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -269,7 +253,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock updateUserService to return updated user
       user.updateUserService = jest.fn().mockResolvedValue({
         id: 1,
         firstName: 'John',
@@ -297,7 +280,6 @@ describe('User Controller Tests', () => {
           userId: 1,
         },
         body: {
-          // Provide update data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -308,7 +290,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock updateUserService to throw "User not found." error
       user.updateUserService = jest
         .fn()
         .mockRejectedValue(new Error('User not found'))
@@ -328,7 +309,6 @@ describe('User Controller Tests', () => {
           userId: 1,
         },
         body: {
-          // Provide update data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -346,7 +326,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock updateUserService to throw "Invalid target skill points." error
       user.updateUserService = jest
         .fn()
         .mockRejectedValue(
@@ -371,7 +350,6 @@ describe('User Controller Tests', () => {
           userId: 1,
         },
         body: {
-          // Provide update data here
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@doe.com',
@@ -382,7 +360,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock updateUserService to throw an error
       user.updateUserService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))
@@ -397,7 +374,6 @@ describe('User Controller Tests', () => {
     })
   })
 
-  // Test deleteUserController
   describe('deleteUserController', () => {
     it('should return 200 with success message and deleted user data if user is deleted successfully', async () => {
       const req = {
@@ -410,7 +386,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock deleteUserService to return deleted user
       user.deleteUserService = jest.fn().mockResolvedValue({
         id: 1,
         firstName: 'John',
@@ -443,7 +418,6 @@ describe('User Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock deleteUserService to throw an error
       user.deleteUserService = jest
         .fn()
         .mockRejectedValue(new Error('Some error.'))

@@ -4,12 +4,10 @@ import { loginController, logoutController } from '../controllers/auth.js'
 import jwt from 'jsonwebtoken'
 
 describe('Auth Controller Tests', () => {
-  // Test loginController
   describe('loginController', () => {
     it('should return 400 if user does not exist', async () => {
       const req = {
         body: {
-          // Provide invalid user data here
           email: 'test@auth.com',
           password: '0000',
         },
@@ -29,7 +27,6 @@ describe('Auth Controller Tests', () => {
     it('should return 200 with token and user data if login is successful', async () => {
       const req = {
         body: {
-          // Provide valid user data here
           email: 'test@auth.com',
           password: '0000',
         },
@@ -64,7 +61,6 @@ describe('Auth Controller Tests', () => {
     it('should return 400 if loginService throws "User does not exist" error', async () => {
       const req = {
         body: {
-          // Provide valid user data here
           email: 'test@auth.com',
           password: 'password',
         },
@@ -74,7 +70,6 @@ describe('Auth Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock loginService to throw "User does not exist." error
       auth.loginService = jest
         .fn()
         .mockRejectedValue(new Error('User does not exist'))
@@ -88,7 +83,6 @@ describe('Auth Controller Tests', () => {
     it('should return 400 if loginService throws "Invalid credentials" error', async () => {
       const req = {
         body: {
-          // Provide valid user data here
           email: 'test@auth.com',
           password: 'password',
         },
@@ -98,7 +92,6 @@ describe('Auth Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock loginService to throw "Invalid credentials." error
       auth.loginService = jest
         .fn()
         .mockRejectedValue(new Error('Invalid credentials'))
@@ -112,7 +105,6 @@ describe('Auth Controller Tests', () => {
     it('should return 500 if any other error occurs', async () => {
       const req = {
         body: {
-          // Provide valid user data here
           email: 'test@auth.com',
           password: 'password',
         },
@@ -122,7 +114,6 @@ describe('Auth Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock loginService to throw any other error
       auth.loginService = jest
         .fn()
         .mockRejectedValue(new Error('Some other error.'))
@@ -139,7 +130,6 @@ describe('Auth Controller Tests', () => {
     it('should return 500 if loginService throws any other error', async () => {
       const req = {
         body: {
-          // Provide valid user data here
           email: 'test@one.com',
           password: 'password',
         },
@@ -149,7 +139,6 @@ describe('Auth Controller Tests', () => {
         json: jest.fn(),
       }
 
-      // Mock loginService to throw any other error
       auth.loginService = jest
         .fn()
         .mockRejectedValue(new Error('Some other error.'))
@@ -164,7 +153,6 @@ describe('Auth Controller Tests', () => {
     })
   })
 
-  // Test logoutController
   describe('logoutController', () => {
     it('should clear jwt_token cookie and return 200', async () => {
       const res = {
